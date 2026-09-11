@@ -122,9 +122,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.3.2**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.3.3**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.2` do projeto é exportada como `vendor.version: 1.3-2`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.3` do projeto é exportada como `vendor.version: 1.3-3`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z

@@ -20,6 +20,20 @@ TEMPLATE_NAME = "VERTIV by SNMP"
 VENDOR_NAME = "Net Tech"
 EXPECTED_GROUP = "Templates/Power"
 REQUIRED_DASHBOARD_NAME = "VERTIV UPS Overview"
+DASHBOARD_TEXT_VALUE_KEYS = {
+    "vertiv.system.status",
+    "ups.output.source",
+    "ups.battery.status",
+    "vertiv.topology",
+    "vertiv.battery.test.result",
+    "vertiv.shutdown.reason",
+    "vertiv.eco.status",
+    "vertiv.battery.cabinet.type",
+    "vertiv.battery.test.interval",
+    "vertiv.inverter.state",
+    "vertiv.battery.charge.status",
+    "vertiv.battery.autotest",
+}
 UUID_RE = re.compile(r"^[0-9a-f]{32}$")
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 MACRO_RE = re.compile(r"\{\$[A-Z0-9_.]+\}")
@@ -209,6 +223,47 @@ def validate_one(
                         errors.append(
                             f"dashboard graph reference is invalid: {value!r}"
                         )
+
+                if widget.get("type") == "item":
+                    fields_by_name = {
+                        str(field.get("name")): field
+                        for field in widget.get("fields", [])
+                    }
+                    item_field = fields_by_name.get("itemid.0", {})
+                    item_ref = item_field.get("value", {})
+                    item_key = (
+                        str(item_ref.get("key", ""))
+                        if isinstance(item_ref, dict)
+                        else ""
+                    )
+                    shown = {
+                        str(field.get("value"))
+                        for name, field in fields_by_name.items()
+                        if name.startswith("show.")
+                    }
+                    if shown != {"2"}:
+                        errors.append(
+                            f"dashboard item widget typography requires value-only display: {widget.get('name')!r}"
+                        )
+                    expected_size = (
+                        "24" if item_key in DASHBOARD_TEXT_VALUE_KEYS else "27"
+                    )
+                    for field_name, expected_value in (
+                        ("value_size", expected_size),
+                        ("decimal_size", "16"),
+                        ("units_size", "16"),
+                        ("value_h_pos", "1"),
+                        ("value_v_pos", "1"),
+                    ):
+                        actual = str(
+                            fields_by_name.get(field_name, {}).get("value", "")
+                        )
+                        if actual != expected_value:
+                            errors.append(
+                                "dashboard item widget typography mismatch: "
+                                f"{widget.get('name')!r} {field_name}={actual!r}; "
+                                f"expected {expected_value!r}"
+                            )
 
     groups = {str(g.get("name")) for g in template.get("groups", [])}
     if EXPECTED_GROUP not in groups:

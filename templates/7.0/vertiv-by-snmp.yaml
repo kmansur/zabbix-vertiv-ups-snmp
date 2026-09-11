@@ -61,10 +61,13 @@ zabbix_export:
       Version 1.3.2 normalizes Vertiv private enumeration objects that some management cards return as textual SNMP strings instead of numeric enum values. The preprocessing accepts both textual and numeric representations so value maps and numeric trigger expressions remain portable.
 
 
+      Version 1.3.3 refines dashboard typography for compact item-value cards, reducing value/unit font sizes and removing change indicators to avoid truncation.
+
+
       Export target: Zabbix 7.0.'
     vendor:
       name: Net Tech
-      version: 1.3-2
+      version: 1.3-3
     groups:
     - name: Templates/Power
     items:
@@ -2083,10 +2086,22 @@ zabbix_export:
               key: vertiv.system.status
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output source
           x: '12'
@@ -2101,10 +2116,22 @@ zabbix_export:
               key: ups.output.source
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Active alarms
           x: '24'
@@ -2119,10 +2146,22 @@ zabbix_export:
               key: ups.alarms.present
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery status
           x: '36'
@@ -2137,10 +2176,22 @@ zabbix_export:
               key: ups.battery.status
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery charge
           x: '48'
@@ -2155,10 +2206,22 @@ zabbix_export:
               key: ups.battery.charge
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Runtime remaining
           x: '60'
@@ -2173,10 +2236,22 @@ zabbix_export:
               key: ups.battery.runtime
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: graph
           name: Battery charge and runtime
           x: '0'
@@ -2283,10 +2358,22 @@ zabbix_export:
               key: vertiv.input.voltage.l1n
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Input L1-L2
           x: '12'
@@ -2301,10 +2388,22 @@ zabbix_export:
               key: vertiv.input.voltage.l12
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output L1-N
           x: '24'
@@ -2319,10 +2418,22 @@ zabbix_export:
               key: vertiv.output.voltage.l1n
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output L1-L2
           x: '36'
@@ -2337,10 +2448,22 @@ zabbix_export:
               key: vertiv.output.voltage.l12
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Bypass L1-N
           x: '48'
@@ -2355,10 +2478,22 @@ zabbix_export:
               key: vertiv.bypass.voltage.l1n
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Bypass L1-L2
           x: '60'
@@ -2373,10 +2508,22 @@ zabbix_export:
               key: vertiv.bypass.voltage.l12
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Input total power
           x: '0'
@@ -2391,10 +2538,22 @@ zabbix_export:
               key: vertiv.input.power.total
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output power
           x: '12'
@@ -2409,10 +2568,22 @@ zabbix_export:
               key: vertiv.output.power
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output apparent power
           x: '24'
@@ -2427,10 +2598,22 @@ zabbix_export:
               key: vertiv.output.apparent.power
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Output frequency
           x: '36'
@@ -2445,10 +2628,22 @@ zabbix_export:
               key: ups.output.frequency
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Input frequency
           x: '48'
@@ -2463,10 +2658,22 @@ zabbix_export:
               key: vertiv.input.frequency
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Topology
           x: '60'
@@ -2481,10 +2688,22 @@ zabbix_export:
               key: vertiv.topology
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: graph
           name: Input phase power
           x: '0'
@@ -2531,10 +2750,22 @@ zabbix_export:
               key: ups.battery.charge
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Runtime remaining
           x: '12'
@@ -2549,10 +2780,22 @@ zabbix_export:
               key: ups.battery.runtime
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery current
           x: '24'
@@ -2567,10 +2810,22 @@ zabbix_export:
               key: vertiv.battery.current
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery temperature
           x: '36'
@@ -2585,10 +2840,22 @@ zabbix_export:
               key: vertiv.battery.temperature
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Inlet temperature
           x: '48'
@@ -2603,10 +2870,22 @@ zabbix_export:
               key: vertiv.inlet.temperature
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery test result
           x: '60'
@@ -2621,10 +2900,22 @@ zabbix_export:
               key: vertiv.battery.test.result
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Shutdown reason
           x: '0'
@@ -2639,10 +2930,22 @@ zabbix_export:
               key: vertiv.shutdown.reason
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: ECO mode
           x: '12'
@@ -2657,10 +2960,22 @@ zabbix_export:
               key: vertiv.eco.status
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery cabinet
           x: '24'
@@ -2675,10 +2990,22 @@ zabbix_export:
               key: vertiv.battery.cabinet.type
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery test interval
           x: '36'
@@ -2693,10 +3020,22 @@ zabbix_export:
               key: vertiv.battery.test.interval
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '24'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: item
           name: Battery discharges
           x: '48'
@@ -2711,10 +3050,22 @@ zabbix_export:
               key: vertiv.battery.discharge.count
           - type: INTEGER
             name: show.0
-            value: '4'
-          - type: INTEGER
-            name: show.1
             value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
         - type: graph
           name: Battery charge and runtime
           x: '0'

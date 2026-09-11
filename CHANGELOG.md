@@ -14,6 +14,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.3.3] - 2026-09-11
+
+### Changed
+
+- Tuned dashboard card value sizes to prevent truncation.
+- Mapped/status values use 24%; numeric values use 27%.
+- Decimal and unit sizes use 16%.
+- Removed change indicators from compact cards, preserving space for values such as `Normal operation`, `External` and `8 weeks`.
+- Kept layout, graphs, items, triggers and SNMP collection functionally unchanged.
+
 ## [1.3.2] - 2026-09-11
 
 ### Fixed

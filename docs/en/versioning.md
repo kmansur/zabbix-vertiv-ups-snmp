@@ -7,7 +7,7 @@ This project uses **Semantic Versioning** (`MAJOR.MINOR.PATCH`).
 Current version:
 
 ```text
-1.3.2
+1.3.3
 ```
 
 ## Rules
@@ -30,7 +30,7 @@ Git tag: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-For example, project version `1.3.2` is exported as `vendor.version: 1.3-2`. The release workflow validates the tag against `VERSION` and validates both template exports before publishing the release archive.
+For example, project version `1.3.3` is exported as `vendor.version: 1.3-3`. The release workflow validates the tag against `VERSION` and validates both template exports before publishing the release archive.
 
 ## Zabbix compatibility does not define project version
 
