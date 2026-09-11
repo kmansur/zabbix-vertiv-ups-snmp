@@ -31,8 +31,60 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements-dev.txt
 
+      - name: Make builder deterministic
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("tools/apply_production_hardening.py")
+          text = path.read_text(encoding="utf-8")
+          text = text.replace(
+              "def new_uuid() -> str:\n    return uuid.uuid4().hex\n",
+              "_UUID_NAMESPACE = uuid.UUID('3ab60c73-4b8a-4e91-9e78-4457d6036945')\n"
+              "_uuid_counter = 0\n\n"
+              "def reset_uuid_counter() -> None:\n"
+              "    global _uuid_counter\n"
+              "    _uuid_counter = 0\n\n"
+              "def new_uuid() -> str:\n"
+              "    global _uuid_counter\n"
+              "    _uuid_counter += 1\n"
+              "    return uuid.uuid5(_UUID_NAMESPACE, f'vertiv-1.5.0-{_uuid_counter}').hex\n",
+          )
+          text = text.replace(
+              "def transform_template(path: Path) -> None:\n    data = yaml.safe_load(path.read_text(encoding=\"utf-8\"))\n",
+              "def transform_template(path: Path) -> None:\n    reset_uuid_counter()\n    data = yaml.safe_load(path.read_text(encoding=\"utf-8\"))\n",
+          )
+          path.write_text(text, encoding="utf-8")
+          PY
+
       - name: Apply production hardening
         run: python tools/apply_production_hardening.py
+
+      - name: Update versioning guides for candidate
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path("docs/en/versioning.md"): [
+                  ("Current version:\n\n```text\n1.4.1\n```", "Current candidate version:\n\n```text\n1.5.0\n```\n\nStable release remains **1.4.1** until field homologation is completed."),
+                  ("For example, project version `1.4.1` is exported as `vendor.version: 1.4-1`.", "For example, candidate project version `1.5.0` is exported as `vendor.version: 1.5-0`."),
+              ],
+              Path("docs/pt-BR/versioning.md"): [
+                  ("Versão atual:\n\n```text\n1.4.1\n```", "Versão candidata atual:\n\n```text\n1.5.0\n```\n\nA release estável permanece **1.4.1** até a conclusão da homologação em campo."),
+                  ("Por exemplo, a versão do projeto `1.4.1` é exportada como `vendor.version: 1.4-1`.", "Por exemplo, a versão candidata `1.5.0` é exportada como `vendor.version: 1.5-0`."),
+              ],
+          }
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              for old, new in pairs:
+                  text = text.replace(old, new)
+              if "1.5.0" not in text:
+                  text += "\n\nCandidate version: 1.5.0\n"
+              path.write_text(text, encoding="utf-8")
+          PY
 
       - name: Keep permanent workflows for connector-managed update
         shell: bash
