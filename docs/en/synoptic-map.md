@@ -12,7 +12,7 @@ Two small UPS icons are embedded in the export, so the map does not depend on a 
 
 ## Generate a map
 
-The host must already exist in Zabbix and should already be linked to **VERTIV by SNMP**.
+The host must already exist in Zabbix and should already be linked to **Vertiv by SNMP**.
 
 For Zabbix 7.0:
 

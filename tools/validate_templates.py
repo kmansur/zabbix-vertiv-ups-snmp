@@ -16,11 +16,12 @@ TEMPLATE_FILES = {
     "7.0": ROOT / "templates" / "7.0" / "vertiv-by-snmp.yaml",
     "8.0": ROOT / "templates" / "8.0" / "vertiv-by-snmp.yaml",
 }
-TEMPLATE_NAME = "VERTIV by SNMP"
+TEMPLATE_TECHNICAL_NAME = "VERTIV by SNMP"
+TEMPLATE_DISPLAY_NAME = "Vertiv by SNMP"
 VENDOR_NAME = "Net Tech"
 EXPECTED_GROUP = "Templates/Power"
-REQUIRED_DASHBOARD_NAME = "VERTIV UPS Overview"
-DASHBOARD_TEXT_VALUE_KEYS = {
+REQUIRED_DASHBOARD_NAME = "Vertiv UPS Overview"
+DASHBOARD_STATUS_VALUE_KEYS = {
     "vertiv.system.status",
     "ups.output.source",
     "ups.battery.status",
@@ -30,9 +31,6 @@ DASHBOARD_TEXT_VALUE_KEYS = {
     "vertiv.eco.status",
     "vertiv.battery.cabinet.type",
     "vertiv.battery.test.interval",
-    "vertiv.inverter.state",
-    "vertiv.battery.charge.status",
-    "vertiv.battery.autotest",
 }
 UUID_RE = re.compile(r"^[0-9a-f]{32}$")
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
@@ -177,10 +175,10 @@ def validate_one(
     else:
         template = templates[0]
 
-    if template.get("template") != TEMPLATE_NAME:
-        errors.append(f"technical template name must be {TEMPLATE_NAME!r}")
-    if template.get("name") != TEMPLATE_NAME:
-        errors.append(f"visible template name must be {TEMPLATE_NAME!r}")
+    if template.get("template") != TEMPLATE_TECHNICAL_NAME:
+        errors.append(f"technical template name must be {TEMPLATE_TECHNICAL_NAME!r}")
+    if template.get("name") != TEMPLATE_DISPLAY_NAME:
+        errors.append(f"visible template name must be {TEMPLATE_DISPLAY_NAME!r}")
 
     vendor = template.get("vendor", {})
     if vendor.get("name") != VENDOR_NAME:
@@ -207,7 +205,7 @@ def validate_one(
                         field.get("type") == "ITEM"
                         and isinstance(value, dict)
                         and (
-                            value.get("host") != TEMPLATE_NAME
+                            value.get("host") != TEMPLATE_TECHNICAL_NAME
                             or str(value.get("key")) not in fixed_keys_for_dashboard
                         )
                     ):
@@ -216,7 +214,7 @@ def validate_one(
                         field.get("type") == "GRAPH"
                         and isinstance(value, dict)
                         and (
-                            value.get("host") != TEMPLATE_NAME
+                            value.get("host") != TEMPLATE_TECHNICAL_NAME
                             or str(value.get("name")) not in graph_names_for_dashboard
                         )
                     ):
@@ -243,26 +241,78 @@ def validate_one(
                     }
                     if shown != {"2"}:
                         errors.append(
-                            f"dashboard item widget typography requires value-only display: {widget.get('name')!r}"
+                            f"dashboard item widget requires value-only display: {widget.get('name')!r}"
                         )
-                    expected_size = (
-                        "24" if item_key in DASHBOARD_TEXT_VALUE_KEYS else "27"
-                    )
-                    for field_name, expected_value in (
-                        ("value_size", expected_size),
-                        ("decimal_size", "16"),
-                        ("units_size", "16"),
-                        ("value_h_pos", "1"),
-                        ("value_v_pos", "1"),
-                    ):
+                    for field_name in ("value_h_pos", "value_v_pos"):
                         actual = str(
                             fields_by_name.get(field_name, {}).get("value", "")
                         )
-                        if actual != expected_value:
+                        if actual != "1":
                             errors.append(
-                                "dashboard item widget typography mismatch: "
-                                f"{widget.get('name')!r} {field_name}={actual!r}; "
-                                f"expected {expected_value!r}"
+                                f"dashboard item widget alignment mismatch: {widget.get('name')!r} "
+                                f"{field_name}={actual!r}; expected '1'"
+                            )
+
+                    if item_key in DASHBOARD_STATUS_VALUE_KEYS:
+                        if (
+                            str(fields_by_name.get("value_size", {}).get("value", ""))
+                            != "21"
+                        ):
+                            errors.append(
+                                f"dashboard status card value_size must be 21: {widget.get('name')!r}"
+                            )
+                        if (
+                            str(
+                                fields_by_name.get("decimal_places", {}).get(
+                                    "value", ""
+                                )
+                            )
+                            != "0"
+                        ):
+                            errors.append(
+                                f"dashboard status card decimal_places must be 0: {widget.get('name')!r}"
+                            )
+                        if "description" in fields_by_name:
+                            errors.append(
+                                f"dashboard status card must use native value rendering: {widget.get('name')!r}"
+                            )
+                        if "bg_color" not in fields_by_name:
+                            errors.append(
+                                f"dashboard status card is missing background color: {widget.get('name')!r}"
+                            )
+                    else:
+                        expected_size = {
+                            "ups.battery.charge": "26",
+                            "ups.battery.runtime": "24",
+                        }.get(item_key, "27")
+                        actual_size = str(
+                            fields_by_name.get("value_size", {}).get("value", "")
+                        )
+                        if actual_size != expected_size:
+                            errors.append(
+                                f"dashboard numeric card value_size mismatch: {widget.get('name')!r} "
+                                f"{actual_size!r}; expected {expected_size!r}"
+                            )
+                        for field_name in ("decimal_size", "units_size"):
+                            actual = str(
+                                fields_by_name.get(field_name, {}).get("value", "")
+                            )
+                            if actual != "16":
+                                errors.append(
+                                    f"dashboard numeric card typography mismatch: {widget.get('name')!r} "
+                                    f"{field_name}={actual!r}; expected '16'"
+                                )
+                        if (
+                            item_key in {"ups.alarms.present", "ups.battery.runtime"}
+                            and str(
+                                fields_by_name.get("decimal_places", {}).get(
+                                    "value", ""
+                                )
+                            )
+                            != "0"
+                        ):
+                            errors.append(
+                                f"dashboard numeric card decimal_places must be 0: {widget.get('name')!r}"
                             )
 
     groups = {str(g.get("name")) for g in template.get("groups", [])}
@@ -369,7 +419,7 @@ def validate_one(
     for graph in export.get("graphs", []):
         for graph_item in graph.get("graph_items", []):
             ref = graph_item.get("item", {})
-            if ref.get("host") != TEMPLATE_NAME:
+            if ref.get("host") != TEMPLATE_TECHNICAL_NAME:
                 errors.append(
                     f"graph {graph.get('name')!r} references unexpected host "
                     f"{ref.get('host')!r}"

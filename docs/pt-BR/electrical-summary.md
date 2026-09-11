@@ -68,3 +68,7 @@ Os arquivos Vertiv fornecidos identificam objetos úteis na árvore privada `.2.
 Entretanto, os arquivos fornecidos não definem a codificação numérica do estado retornado ao consultar esses objetos. Por isso a versão 1.1.0 **não** inventa interpretação `0/1`, `3/6` ou qualquer outra e não cria triggers específicas de polling para esses eventos.
 
 No próximo passo de validação, consulte um nobreak representativo em condição normal e, quando for seguro, durante uma condição conhecida. Depois de confirmarmos os estados retornados, esses OIDs podem ser promovidos para itens e triggers suportados.
+
+## Limitação conhecida de escala
+
+Os OIDs privados Vertiv de potência de entrada (`6318`-`6320`) são mantidos para troubleshooting, mas a escala numérica não é definida pela lista de parâmetros SNMP fornecida. No equipamento atualmente testado, o total calculado não apresentou magnitude compatível com a interface web do nobreak. Por isso o card/gráfico de potência de entrada não é destacado no dashboard nativo e nenhum trigger deve depender desses valores até que a escala seja confirmada no firmware alvo.

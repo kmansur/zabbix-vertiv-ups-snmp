@@ -52,7 +52,7 @@ Configure a versão SNMP e as credenciais nas configurações do host/interface 
 Vincule:
 
 ```text
-VERTIV by SNMP
+Vertiv by SNMP
 ```
 
 Aguarde os primeiros ciclos de coleta.

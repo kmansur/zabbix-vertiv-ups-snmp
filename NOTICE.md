@@ -2,7 +2,7 @@
 
 **English** | [Português (Brasil)](NOTICE.pt-BR.md)
 
-`VERTIV by SNMP` is a community-maintained Zabbix template for monitoring Vertiv/Liebert UPS systems by SNMP.
+`Vertiv by SNMP` is a community-maintained Zabbix template for monitoring Vertiv/Liebert UPS systems by SNMP.
 
 ## Attribution
 

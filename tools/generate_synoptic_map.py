@@ -12,8 +12,8 @@ from typing import Any
 
 import yaml
 
-ICON_OK = "VERTIV UPS Synoptic - OK"
-ICON_PROBLEM = "VERTIV UPS Synoptic - Problem"
+ICON_OK = "Vertiv UPS Synoptic - OK"
+ICON_PROBLEM = "Vertiv UPS Synoptic - Problem"
 SUPPORTED_VERSIONS = ("7.0", "8.0")
 
 
@@ -127,7 +127,7 @@ def build_export(host: str, zabbix_version: str = "7.0") -> dict[str, Any]:
     problem_icon = base64.b64encode(make_ups_icon(problem=True)).decode("ascii")
 
     map_data = {
-        "name": f"VERTIV UPS Synoptic - {host}",
+        "name": f"Vertiv UPS Synoptic - {host}",
         "width": "1200",
         "height": "650",
         "label_type": "0",
@@ -229,12 +229,12 @@ def render_yaml(host: str, zabbix_version: str = "7.0") -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Generate an importable Zabbix VERTIV UPS synoptic map."
+        description="Generate an importable Zabbix Vertiv UPS synoptic map."
     )
     parser.add_argument(
         "--host",
         required=True,
-        help="Exact Zabbix host name already linked to VERTIV by SNMP.",
+        help="Exact Zabbix host name already linked to Vertiv by SNMP.",
     )
     parser.add_argument(
         "--zabbix-version",

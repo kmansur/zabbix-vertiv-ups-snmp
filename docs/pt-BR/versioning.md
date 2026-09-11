@@ -7,7 +7,7 @@ Este projeto utiliza **Versionamento Semântico** (`MAJOR.MINOR.PATCH`).
 Versão atual:
 
 ```text
-1.3.3
+1.4.0
 ```
 
 ## Regras
@@ -30,10 +30,14 @@ Tag Git: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-Por exemplo, a versão `1.3.3` do projeto é exportada como `vendor.version: 1.3-3`. O workflow de release valida a tag contra `VERSION` e valida os dois exports antes de publicar o pacote da release.
+Por exemplo, a versão `1.4.0` do projeto é exportada como `vendor.version: 1.4-0`. O workflow de release valida a tag contra `VERSION` e valida os dois exports antes de publicar o pacote da release.
 
 ## Compatibilidade Zabbix não define a versão do projeto
 
 A versão do projeto descreve este repositório. A versão do export Zabbix (`7.0` ou `8.0`) descreve o formato de configuração de destino.
 
 Portanto a versão de projeto `1.1.0` pode existir simultaneamente nos exports Zabbix 7.0 e Zabbix 8.0.
+
+## Identificador técnico estável
+
+A partir da 1.4.0 o nome visível do template é **Vertiv by SNMP**, enquanto o identificador técnico do export permanece `VERTIV by SNMP`. Manter o identificador técnico estável é intencional: isso permite atualizar instalações existentes sem criar um segundo template apenas por causa da capitalização.

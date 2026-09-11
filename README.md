@@ -1,4 +1,4 @@
-# VERTIV by SNMP
+# Vertiv by SNMP
 
 [![CI](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml)
@@ -16,6 +16,10 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export for Zabbix 8.0 development builds; runtime validation is still required |
 
 Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs/en/zabbix-8.0.md](docs/en/zabbix-8.0.md).
+
+## Project status
+
+**Engineering maturity: 85%** — see [project status and remaining work](docs/en/project-status.md).
 
 ## What the template monitors
 
@@ -58,7 +62,7 @@ tools/                   Template and documentation validation tools
 1. Configure SNMP on the Vertiv/Liebert UPS management card. Prefer SNMPv3 when supported.
 2. In Zabbix, create or select the UPS host and configure its SNMP interface.
 3. Import the YAML for your Zabbix version.
-4. Link **VERTIV by SNMP** to the host.
+4. Link **Vertiv by SNMP** to the host.
 5. Review **Monitoring → Latest data** and confirm the reported values against the UPS LCD/web interface.
 6. Tune the template macros for the expected battery runtime, load and temperature limits.
 
@@ -122,9 +126,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-Current project version: **1.3.3**. The project follows Semantic Versioning.
+Current project version: **1.4.0**. The project follows Semantic Versioning.
 
-Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.3.3` is exported as `vendor.version: 1.3-3`.
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.4.0` is exported as `vendor.version: 1.4-0`.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z

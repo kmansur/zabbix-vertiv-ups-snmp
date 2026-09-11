@@ -1,4 +1,4 @@
-# VERTIV by SNMP
+# Vertiv by SNMP
 
 [![CI](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml)
@@ -16,6 +16,10 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export de compatibilidade preliminar para builds de desenvolvimento do Zabbix 8.0; ainda requer validação em execução |
 
 O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimento. Consulte [docs/pt-BR/zabbix-8.0.md](docs/pt-BR/zabbix-8.0.md).
+
+## Status do projeto
+
+**Maturidade de engenharia: 85%** — consulte o [status e os trabalhos restantes](docs/pt-BR/project-status.md).
 
 ## O que o template monitora
 
@@ -58,7 +62,7 @@ tools/                   Validadores dos templates e documentação
 1. Configure SNMP na placa de gerenciamento do nobreak Vertiv/Liebert. Prefira SNMPv3 quando suportado.
 2. No Zabbix, crie ou selecione o host do nobreak e configure sua interface SNMP.
 3. Importe o YAML correspondente à sua versão do Zabbix.
-4. Vincule **VERTIV by SNMP** ao host.
+4. Vincule **Vertiv by SNMP** ao host.
 5. Verifique **Monitoring → Latest data** e compare os valores com o LCD/interface web do nobreak.
 6. Ajuste as macros do template conforme a autonomia, carga e temperatura esperadas.
 
@@ -122,9 +126,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.3.3**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.4.0**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.3` do projeto é exportada como `vendor.version: 1.3-3`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.4.0` do projeto é exportada como `vendor.version: 1.4-0`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z

@@ -20,7 +20,7 @@ def test_map_export_for_zabbix_7():
     data = build_export("UPS-SRV01", "7.0")
     export = data["zabbix_export"]
     assert export["version"] == "7.0"
-    assert export["maps"][0]["name"] == "VERTIV UPS Synoptic - UPS-SRV01"
+    assert export["maps"][0]["name"] == "Vertiv UPS Synoptic - UPS-SRV01"
     assert export["maps"][0]["selements"][0]["elements"] == [{"host": "UPS-SRV01"}]
     assert len(export["maps"][0]["lines"]) == 4
     assert {

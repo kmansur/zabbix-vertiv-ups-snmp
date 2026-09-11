@@ -2,7 +2,7 @@
 
 [English](NOTICE.md) | **Português (Brasil)**
 
-`VERTIV by SNMP` é um template Zabbix mantido pela comunidade para monitoramento de nobreaks Vertiv/Liebert via SNMP.
+`Vertiv by SNMP` é um template Zabbix mantido pela comunidade para monitoramento de nobreaks Vertiv/Liebert via SNMP.
 
 ## Atribuição
 

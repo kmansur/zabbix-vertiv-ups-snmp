@@ -12,7 +12,7 @@ Dois pequenos ícones de nobreak são incorporados ao export, portanto o mapa n�
 
 ## Gerar um mapa
 
-O host deve existir previamente no Zabbix e deve estar vinculado ao **VERTIV by SNMP**.
+O host deve existir previamente no Zabbix e deve estar vinculado ao **Vertiv by SNMP**.
 
 Para Zabbix 7.0:
 

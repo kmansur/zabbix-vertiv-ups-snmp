@@ -20,7 +20,7 @@ O repositório GitHub de referência foi inspecionado em 2026-09-10. Sua raiz ap
 
 Como não existe permissão explícita para redistribuir ou relicenciar aquele arquivo original, este repositório não inclui uma cópia dele.
 
-O template mantido `VERTIV by SNMP` foi substancialmente reescrito em torno da RFC 1628 UPS-MIB e dos OIDs privados Vertiv/Liebert, incluindo nova lógica de monitoramento, nomenclatura, chaves, limites, LLD, value maps, documentação e ferramentas.
+O template mantido `Vertiv by SNMP` foi substancialmente reescrito em torno da RFC 1628 UPS-MIB e dos OIDs privados Vertiv/Liebert, incluindo nova lógica de monitoramento, nomenclatura, chaves, limites, LLD, value maps, documentação e ferramentas.
 
 ## Por que MIT
 

@@ -2,7 +2,7 @@
 
 [English](../en/README.md)
 
-`VERTIV by SNMP` foi desenvolvido para oferecer monitoramento prático, seguro e transparente de nobreaks Vertiv/Liebert no Zabbix.
+`Vertiv by SNMP` foi desenvolvido para oferecer monitoramento prático, seguro e transparente de nobreaks Vertiv/Liebert no Zabbix.
 
 O template utiliza dois espaços de OIDs SNMP:
 

@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/README.md)
 
-`VERTIV by SNMP` is designed to provide practical, safe and transparent monitoring of Vertiv/Liebert UPS systems in Zabbix.
+`Vertiv by SNMP` is designed to provide practical, safe and transparent monitoring of Vertiv/Liebert UPS systems in Zabbix.
 
 The template uses two SNMP namespaces:
 
