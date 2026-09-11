@@ -60,7 +60,7 @@ jobs:
           version="$(tr -d '\r\n' < VERSION)"
           gh release create "${GITHUB_REF_NAME}" \
             "dist/zabbix-vertiv-ups-snmp-${version}.zip" \
-            "templates/zabbix-7.0/vertiv-by-snmp.yaml" \
-            "templates/zabbix-8.0/vertiv-by-snmp.yaml" \
+            "templates/7.0/vertiv-by-snmp.yaml" \
+            "templates/8.0/vertiv-by-snmp.yaml" \
             --title "VERTIV by SNMP ${GITHUB_REF_NAME}" \
             --generate-notes

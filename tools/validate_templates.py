@@ -12,8 +12,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_FILES = {
-    "7.0": ROOT / "templates" / "zabbix-7.0" / "vertiv-by-snmp.yaml",
-    "8.0": ROOT / "templates" / "zabbix-8.0" / "vertiv-by-snmp.yaml",
+    "7.0": ROOT / "templates" / "7.0" / "vertiv-by-snmp.yaml",
+    "8.0": ROOT / "templates" / "8.0" / "vertiv-by-snmp.yaml",
 }
 TEMPLATE_NAME = "VERTIV by SNMP"
 VENDOR_NAME = "Net Tech"
@@ -68,6 +68,12 @@ def load_version() -> str:
     if not SEMVER_RE.fullmatch(version):
         raise ValidationError(f"VERSION is not Semantic Versioning: {version!r}")
     return version
+
+
+def zabbix_vendor_version(project_version: str) -> str:
+    """Convert project SemVer X.Y.Z to Zabbix vendor version X.Y-Z."""
+    major, minor, patch = project_version.split(".")
+    return f"{major}.{minor}-{patch}"
 
 
 def load_template(path: Path) -> dict[str, Any]:
@@ -150,9 +156,10 @@ def validate_one(
     vendor = template.get("vendor", {})
     if vendor.get("name") != VENDOR_NAME:
         errors.append(f"vendor.name must be {VENDOR_NAME!r}")
-    if str(vendor.get("version")) != project_version:
+    expected_vendor_version = zabbix_vendor_version(project_version)
+    if str(vendor.get("version")) != expected_vendor_version:
         errors.append(
-            f"vendor.version={vendor.get('version')!r}; expected {project_version!r}"
+            f"vendor.version={vendor.get('version')!r}; expected {expected_vendor_version!r}"
         )
 
     groups = {str(g.get("name")) for g in template.get("groups", [])}

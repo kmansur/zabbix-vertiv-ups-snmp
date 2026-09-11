@@ -11,6 +11,10 @@ def test_version_is_semver():
     assert validate_templates.SEMVER_RE.fullmatch(validate_templates.load_version())
 
 
+def test_zabbix_vendor_version_format():
+    assert validate_templates.zabbix_vendor_version("1.1.0") == "1.1-0"
+
+
 def test_versioned_templates_validate():
     version = validate_templates.load_version()
     loaded = {}

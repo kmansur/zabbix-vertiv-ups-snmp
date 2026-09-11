@@ -5,7 +5,7 @@
 The repository contains a separate export at:
 
 ```text
-templates/zabbix-8.0/vertiv-by-snmp.yaml
+templates/8.0/vertiv-by-snmp.yaml
 ```
 
 Zabbix currently documents 8.0 as a development version. The 8.0 file uses export version `8.0` and is kept semantically aligned with the 7.0 template.

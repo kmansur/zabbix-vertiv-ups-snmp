@@ -12,8 +12,8 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/zabbix-7.0/vertiv-by-snmp.yaml` | Supported export; validate device-specific OIDs on the target UPS |
-| 8.0 | `templates/zabbix-8.0/vertiv-by-snmp.yaml` | Preview compatibility export for Zabbix 8.0 development builds; runtime validation is still required |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Supported export; validate device-specific OIDs on the target UPS |
+| 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export for Zabbix 8.0 development builds; runtime validation is still required |
 
 Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs/en/zabbix-8.0.md](docs/en/zabbix-8.0.md).
 
@@ -120,13 +120,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Current project version: **1.1.0**. The project follows Semantic Versioning.
 
-For a release, these values must agree:
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.1.0` is exported as `vendor.version: 1.1-0`.
 
 ```text
-VERSION
-Zabbix vendor.version in every maintained export
-Git tag (vX.Y.Z)
-GitHub Release
+VERSION / Git tag / GitHub Release: X.Y.Z
+Zabbix vendor.version: X.Y-Z
 ```
 
 ## License and attribution

@@ -20,17 +20,17 @@ A versão **1.1.0** é uma release MINOR porque adiciona itens elétricos de res
 
 ## Consistência da release
 
-Antes de criar uma tag, todos estes valores devem conter a mesma versão:
+Os identificadores da release usam Versionamento Semântico (`X.Y.Z`), enquanto os metadados do template Zabbix usam o formato de vendor equivalente (`X.Y-Z`).
 
 ```text
-VERSION
-templates/zabbix-7.0/... vendor.version
-templates/zabbix-8.0/... vendor.version
-Git tag vX.Y.Z
-GitHub Release
+VERSION: X.Y.Z
+templates/7.0/... vendor.version: X.Y-Z
+templates/8.0/... vendor.version: X.Y-Z
+Tag Git: vX.Y.Z
+GitHub Release: vX.Y.Z
 ```
 
-O workflow de release valida a tag contra `VERSION` e valida os dois exports antes de publicar o pacote da release.
+Por exemplo, a versão `1.1.0` do projeto é exportada como `vendor.version: 1.1-0`. O workflow de release valida a tag contra `VERSION` e valida os dois exports antes de publicar o pacote da release.
 
 ## Compatibilidade Zabbix não define a versão do projeto
 

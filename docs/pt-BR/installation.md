@@ -36,8 +36,8 @@ No Zabbix:
 1. abra **Data collection → Templates**;
 2. clique em **Import**;
 3. selecione o arquivo da versão correspondente:
-   - Zabbix 7.0: `templates/zabbix-7.0/vertiv-by-snmp.yaml`;
-   - Zabbix 8.0: `templates/zabbix-8.0/vertiv-by-snmp.yaml`;
+   - Zabbix 7.0: `templates/7.0/vertiv-by-snmp.yaml`;
+   - Zabbix 8.0: `templates/8.0/vertiv-by-snmp.yaml`;
 4. revise o resumo da importação;
 5. importe o template.
 

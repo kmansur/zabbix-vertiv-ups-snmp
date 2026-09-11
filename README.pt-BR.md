@@ -12,8 +12,8 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/zabbix-7.0/vertiv-by-snmp.yaml` | Export suportado; valide os OIDs específicos no nobreak utilizado |
-| 8.0 | `templates/zabbix-8.0/vertiv-by-snmp.yaml` | Export de compatibilidade preliminar para builds de desenvolvimento do Zabbix 8.0; ainda requer validação em execução |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export suportado; valide os OIDs específicos no nobreak utilizado |
+| 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export de compatibilidade preliminar para builds de desenvolvimento do Zabbix 8.0; ainda requer validação em execução |
 
 O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimento. Consulte [docs/pt-BR/zabbix-8.0.md](docs/pt-BR/zabbix-8.0.md).
 
@@ -120,13 +120,11 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 Versão atual do projeto: **1.1.0**. O projeto utiliza Versionamento Semântico.
 
-Para uma release, estes valores devem ser iguais:
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.1.0` do projeto é exportada como `vendor.version: 1.1-0`.
 
 ```text
-VERSION
-Zabbix vendor.version em todos os exports mantidos
-Tag Git (vX.Y.Z)
-GitHub Release
+VERSION / tag Git / GitHub Release: X.Y.Z
+Zabbix vendor.version: X.Y-Z
 ```
 
 ## Licença e atribuição

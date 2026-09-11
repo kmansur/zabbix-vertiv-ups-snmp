@@ -53,6 +53,9 @@ zabbix_export:
 
 
       Export target: Zabbix 8.0.'
+    vendor:
+      name: 'Net Tech'
+      version: 1.1-0
     groups:
     - name: Templates/Power
     items:
@@ -1854,9 +1857,6 @@ zabbix_export:
         newvalue: 20 weeks
       - value: '4'
         newvalue: 26 weeks
-    vendor:
-      name: Net Tech
-      version: 1.1.0
     tags:
     - tag: class
       value: power
