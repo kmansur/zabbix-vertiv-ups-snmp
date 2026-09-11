@@ -18,6 +18,25 @@ A versão 1.5.0 foi preparada para entrar em homologação com todo o endurecime
 - teste de importação pela API de um Zabbix 7 real no CI/workflow de release;
 - proveniência das fontes MIB/OID e matriz de compatibilidade.
 
+## Histórico e planejamento de capacidade
+
+O template prioriza visibilidade operacional de um nobreak, com vários itens de status/bateria coletados a cada 30 segundos e valores elétricos normalmente a cada minuto. Em ambientes com muitos equipamentos, revise a retenção de histórico antes de vincular o template em larga escala.
+
+A quantidade aproximada de amostras brutas gerada por um único item continuamente suportado é:
+
+| Intervalo | Amostras por dia por item |
+| --- | ---: |
+| 30 s | 2.880 |
+| 1 min | 1.440 |
+| 2 min | 720 |
+| 5 min | 288 |
+| 15 min | 96 |
+| 1 h | 24 |
+
+Vários itens numéricos mantêm atualmente 90 dias de histórico bruto para que uma instalação nova seja útil sem depender de configuração adicional de housekeeping. Em implantações maiores, use a política global de housekeeping/retenção do Zabbix ou overrides no template/host de acordo com a capacidade do banco. Um padrão prático de produção é manter histórico de alta resolução somente pelo período necessário para análise de incidentes e conservar trends numéricas por mais tempo para capacidade. Itens de identificação/texto/log não se beneficiam de trends numéricas e são configurados dessa forma.
+
+O heartbeat dedicado `ups.snmp.uptime` mantém propositalmente apenas 7 dias de histórico e **não** usa descarte de valores inalterados, pois o trigger de disponibilidade `nodata()` de cinco minutos depende de receber uma amostra em cada ciclo de polling.
+
 ## Procedimento de homologação
 
 1. Importe o template Zabbix 7 da candidata 1.5.0 com **Update existing** habilitado.
