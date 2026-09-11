@@ -1,0 +1,134 @@
+name: Finalize release 1.4.0
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/finalize-release-140.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Resolve release commit
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_sha="$(git rev-parse HEAD^)"
+          version="$(git show "${release_sha}:VERSION" | tr -d '\r\n')"
+          if [[ "${version}" != "1.4.0" ]]; then
+            echo "Expected parent commit VERSION=1.4.0, got ${version}" >&2
+            exit 1
+          fi
+          echo "sha=${release_sha}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout release commit
+        run: git checkout --detach "${{ steps.release.outputs.sha }}"
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Validate release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q tools tests
+          ruff check tools tests
+          ruff format --check tools tests
+          pytest -q
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+
+      - name: Build release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.release.outputs.version }}"
+          package="zabbix-vertiv-ups-snmp-${version}"
+          rm -rf dist
+          mkdir -p "dist/${package}"
+          cp -r templates docs tools "dist/${package}/"
+          cp README.md README.pt-BR.md \
+             CHANGELOG.md CHANGELOG.pt-BR.md \
+             CONTRIBUTING.md CONTRIBUTING.pt-BR.md \
+             SECURITY.md SECURITY.pt-BR.md \
+             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION requirements-dev.txt \
+             "dist/${package}/"
+          cp templates/7.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-7.0.yaml"
+          cp templates/8.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-8.0.yaml"
+          (cd dist && zip -q -r "${package}.zip" "${package}")
+          (cd dist && sha256sum \
+            vertiv-by-snmp-zabbix-7.0.yaml \
+            vertiv-by-snmp-zabbix-8.0.yaml \
+            "${package}.zip" > SHA256SUMS)
+
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_sha="${{ steps.release.outputs.sha }}"
+          version="${{ steps.release.outputs.version }}"
+          tag="v${version}"
+          if git rev-parse "refs/tags/${tag}" >/dev/null 2>&1; then
+            existing="$(git rev-list -n1 "${tag}")"
+            [[ "${existing}" == "${release_sha}" ]] || { echo "Tag ${tag} already points to ${existing}" >&2; exit 1; }
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git tag -a "${tag}" "${release_sha}" -m "Vertiv by SNMP ${version}"
+            git push origin "refs/tags/${tag}"
+          fi
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            echo "Release ${tag} already exists"
+          else
+            gh release create "${tag}" \
+              "dist/vertiv-by-snmp-zabbix-7.0.yaml" \
+              "dist/vertiv-by-snmp-zabbix-8.0.yaml" \
+              "dist/zabbix-vertiv-ups-snmp-${version}.zip" \
+              "dist/SHA256SUMS" \
+              --target "${release_sha}" \
+              --title "Vertiv by SNMP ${tag}" \
+              --generate-notes
+          fi
+
+      - name: Clean temporary and superseded branches
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            'automation-phase-2-3'
+            'bootstrap-template-import'
+            'dependabot/github_actions/actions/checkout-7'
+            'dependabot/github_actions/actions/setup-python-7'
+            'preview/dashboard-status-cards'
+            'preview/dashboard-status-cards-2'
+            'preview/dashboard-status-cards-final'
+            'release/1.4.0'
+            'release/1.4.0-merge'
+            'release-candidate-1.4.0'
+            'noop-pr-base-check'
+          )
+          for branch in "${branches[@]}"; do
+            if git ls-remote --exit-code --heads origin "${branch}" >/dev/null 2>&1; then
+              echo "Deleting ${branch}"
+              git push origin --delete "${branch}" || true
+            fi
+          done
