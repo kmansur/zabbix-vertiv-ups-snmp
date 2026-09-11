@@ -39,6 +39,13 @@ jobs:
         run: |
           git checkout -- .github/workflows/ci.yml .github/workflows/release.yml
 
+      - name: Normalize generated Python
+        shell: bash
+        run: |
+          chmod +x tools/apply_production_hardening.py tools/zabbix_api_import_test.py
+          ruff check --fix --unsafe-fixes tools tests
+          ruff format tools tests
+
       - name: Compile Python sources
         run: python -m compileall -q tools tests
 
