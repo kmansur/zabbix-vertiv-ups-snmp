@@ -18,6 +18,13 @@ def test_visible_and_technical_template_names_are_intentional():
         assert template["dashboards"][0]["name"] == "Vertiv UPS Overview"
 
 
+def test_trigger_docs_use_the_stable_technical_identifier():
+    for path in (ROOT / "docs/en/triggers.md", ROOT / "docs/pt-BR/triggers.md"):
+        text = path.read_text(encoding="utf-8")
+        assert "/VERTIV by SNMP/" in text
+        assert "/Vertiv by SNMP/" not in text
+
+
 def test_release_assets_have_unique_names_and_checksums():
     text = (ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8")
     assert "vertiv-by-snmp-zabbix-7.0.yaml" in text
