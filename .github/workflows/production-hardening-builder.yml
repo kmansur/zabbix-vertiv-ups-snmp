@@ -1,0 +1,121 @@
+name: Production hardening builder
+
+on:
+  push:
+    branches:
+      - production/1.5.0-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-validate:
+    if: ${{ !contains(github.event.head_commit.message, '[hardening-generated]') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install development dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Apply production hardening
+        run: python tools/apply_production_hardening.py
+
+      - name: Keep permanent workflows for connector-managed update
+        shell: bash
+        run: |
+          git checkout -- .github/workflows/ci.yml .github/workflows/release.yml
+
+      - name: Compile Python sources
+        run: python -m compileall -q tools tests
+
+      - name: Ruff lint
+        run: ruff check tools tests
+
+      - name: Ruff format check
+        run: ruff format --check tools tests
+
+      - name: Run tests
+        run: pytest -q
+
+      - name: Validate versioned templates
+        run: python tools/validate_templates.py
+
+      - name: Validate bilingual documentation
+        run: python tools/validate_docs.py
+
+      - name: Validate production readiness
+        run: python tools/validate_production.py
+
+      - name: Start disposable Zabbix 7.0 stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create zabbix-hardening
+          docker run -d --name zabbix-db --network zabbix-hardening \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            postgres:16-alpine
+          for i in $(seq 1 60); do
+            if docker exec zabbix-db pg_isready -U zabbix -d zabbix >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec zabbix-db pg_isready -U zabbix -d zabbix
+
+          docker run -d --name zabbix-server --network zabbix-hardening \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            zabbix/zabbix-server-pgsql:alpine-7.0-latest
+
+          docker run -d --name zabbix-web --network zabbix-hardening -p 8080:8080 \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            -e ZBX_SERVER_HOST=zabbix-server \
+            -e ZBX_SERVER_NAME="Vertiv hardening validation" \
+            zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
+
+      - name: Import template through Zabbix API
+        run: python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 300
+
+      - name: Container diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          docker ps -a || true
+          docker logs zabbix-db || true
+          docker logs zabbix-server || true
+          docker logs zabbix-web || true
+
+      - name: Commit generated candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Karim Mansur"
+          git config user.email "karim.mansur@outlook.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit"
+            exit 0
+          fi
+          git commit -m "feat: production hardening for v1.5.0 [hardening-generated]"
+          git push origin HEAD:production/1.5.0-hardening
