@@ -1,0 +1,70 @@
+name: Finalize 1.4.0 preview
+
+on:
+  push:
+    branches:
+      - preview/dashboard-status-cards-final
+    paths:
+      - .github/finalize_140.py
+      - .github/workflows/finalize-140-preview.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout preview branch
+        uses: actions/checkout@v7
+        with:
+          ref: preview/dashboard-status-cards-final
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Apply 1.4.0 finalization
+        run: python .github/finalize_140.py
+
+      - name: Format and validate full project
+        shell: bash
+        run: |
+          set -euo pipefail
+          ruff check --fix tools tests
+          ruff format tools tests
+          python -m compileall -q tools tests
+          ruff check tools tests
+          ruff format --check tools tests
+          pytest -q
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/generate_synoptic_map.py --host 'UPS-TEST' --output /tmp/vertiv-ups-map.yaml
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          data = yaml.safe_load(Path('/tmp/vertiv-ups-map.yaml').read_text(encoding='utf-8'))
+          assert data['zabbix_export']['version'] == '7.0'
+          assert data['zabbix_export']['maps'][0]['selements'][0]['elements'][0]['host'] == 'UPS-TEST'
+          PY
+
+      - name: Commit final 1.4.0 candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git reset .github/finalize_140.py .github/workflows/finalize-140-preview.yml
+          git add -u .github/finalize_140.py .github/workflows/finalize-140-preview.yml || true
+          if git diff --cached --quiet; then
+            echo 'No release candidate changes to commit.'
+            exit 0
+          fi
+          git commit -m 'release: prepare Vertiv by SNMP 1.4.0'
+          git push origin HEAD:preview/dashboard-status-cards-final
