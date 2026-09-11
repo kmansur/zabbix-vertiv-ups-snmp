@@ -2,42 +2,199 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-Version 1.2.0 adds the **Vertiv UPS Overview** template dashboard. It is imported together with the template and automatically follows the monitored host.
+The **Vertiv UPS Overview** template dashboard is imported together with the template and automatically follows the monitored host. The screenshots below were captured from a real Vertiv UPS running the v1.4.1 dashboard while the unit was in normal online operation. Values are examples only; voltage, load, runtime and temperature depend on the UPS model, battery system and connected load.
 
-## Pages
+The dashboard is intentionally split into three pages:
 
-- **Overview** — system status, output source, active alarms, battery status/charge/runtime and all six built-in trend graphs.
-- **Electrical** — fixed input, output and bypass summary values plus phase-power and phase-load graphs.
-- **Battery & Environment** — battery, runtime, temperatures, test/status metadata and battery/environment trends.
+- **Overview** — operational health, battery state, output power and phase load at a glance.
+- **Electrical** — detailed input, output and bypass measurements plus cumulative power-quality counters.
+- **Battery & Environment** — battery, runtime, test/configuration status and environmental temperature.
 
-The dashboard uses only template items and graphs already validated by the repository. No write/control OIDs are introduced.
+The dashboard uses only read-only monitoring items and graphs already provided by the template. It does not introduce SNMP write/control operations.
 
-## Card typography
+## Status-card colors
 
-Version 1.3.3 refines **Item value** widgets for better readability in compact cards:
+Status cards use soft background colors to make state changes visible without overwhelming the page:
 
-- mapped/status values: 24% value size;
-- numeric values: 27% value size;
-- decimals and units: 16% size;
-- values centered horizontally and vertically;
-- change indicators removed from cards to avoid truncating mapped values.
+- **Green** — normal/healthy state.
+- **Yellow** — attention or non-normal state that should be reviewed.
+- **Orange** — degraded condition or stronger warning.
+- **Red** — critical/fault state.
+- **Light blue / neutral** — informational or configuration value rather than a health state.
 
-The widget title continues to identify each metric, so the card only needs to display the value and preserves more usable space. Graphs, items, triggers and SNMP collection are unchanged by this adjustment.
+Mapped enum cards keep the native Zabbix value-map rendering, for example `Normal (3)` or `Passed (1)`. This preserves reliable numeric semantics for triggers and thresholds while still presenting a readable state label.
 
+## Overview
 
-## Version 1.4.0 status-card behavior
+![Vertiv UPS Overview dashboard](../images/dashboard-overview.png)
 
-The finalized dashboard uses the native mapped **Item value** rendering for status cards. This keeps Zabbix value maps reliable across frontends while dynamic thresholds color the card background. Enum/status cards use zero decimal places, so mapped values render with compact raw suffixes such as `Normal (3)` instead of `Normal (3.00)`.
+The Overview page is the first place to look during normal operation and during an incident. Its top row answers six questions immediately: Is the UPS healthy? Where is the load being powered from? Are alarms active? Is the battery healthy? Is it charged? How much runtime is estimated?
 
-Severity colors use soft backgrounds: green for normal, yellow for attention, orange for degraded/alarm states and red for critical states. Static informational/configuration cards use a neutral or light-blue background.
+### System status, output source and alarms
 
-The private calculated input-power card and input-phase-power graph are intentionally not featured on the dashboard because the supplied Vertiv SNMP documentation does not define the scale of those private OIDs. The underlying items remain available for field validation and troubleshooting.
+- **System status** should normally remain green and show `Normal operation`.
+- **Output source** should normally show `Normal`. A change to Battery or Bypass is operationally significant even if the load remains powered.
+- **Active alarms** is the number of currently reported UPS-MIB alarms. Zero is the expected healthy state.
+- **Battery status** should normally show `Normal`.
+- **Battery charge** is the estimated state of charge.
+- **Runtime remaining** is a display-oriented conversion of the RFC1628 runtime value from minutes to hours. The raw item remains in minutes for trigger logic.
 
+### Battery charge and runtime
 
-## Field refinements in version 1.4.1
+This graph combines two different scales:
 
-The **Overview** page uses three primary graphs in one row: battery charge/runtime, output power and output phase load. The cumulative-counter graph was removed from the dashboard because cumulative lines are not a useful operational event visualization.
+- **Left axis:** battery charge in percent.
+- **Right axis:** estimated runtime in hours.
 
-The **Electrical** page shows blackout, brownout and bad-line values as counter cards and gives the output phase-load graph the full page width. **Battery & Environment** displays runtime in hours and uses a dedicated inlet-temperature graph.
+During normal utility operation with a fully charged battery, both lines may remain almost flat. During a real outage or battery test, charge and runtime should decrease as the UPS supplies the load.
 
-The raw `ups.battery.runtime` item remains in minutes to preserve RFC1628 semantics and trigger behavior. The calculated `ups.battery.runtime.hours` item is presentation-only. Private battery temperature remains available in Latest data and in the legacy `UPS: Temperatures` graph, but is not used by the default environmental graph because some firmware can expose non-physical/sentinel-like values when no useful battery-temperature sensor is present.
+How to read it:
+
+- A gradual decline during battery operation is expected.
+- A sudden runtime drop can be caused by a large increase in load or by the UPS recalculating its estimate.
+- Falling runtime while charge still appears high can be meaningful because runtime is load-dependent, whereas charge is an energy-state estimate.
+- Runtime is an estimate reported by the UPS, not a guaranteed autonomy figure. In the example screenshot, the device reports about 72 hours; that value comes from the UPS itself and should be interpreted in the context of its current load and battery configuration.
+
+### Output power
+
+The graph displays:
+
+- **Output power (kW):** active/real power actually consumed by the load.
+- **Output apparent power (kVA):** electrical capacity being demanded from the UPS.
+
+Normally, apparent power is equal to or greater than active power. The gap between kW and kVA is related to the load power factor.
+
+How to read it:
+
+- A smooth trend reflects relatively stable IT/electrical load.
+- Sudden upward steps normally indicate equipment being powered on or increased demand.
+- Sudden downward steps may indicate load removal or an unexpected shutdown.
+- A sustained rise toward the UPS capacity deserves attention even if no overload alarm has fired yet.
+- A growing separation between kW and kVA can indicate a worsening aggregate power factor or a different load mix.
+
+### Output phase load
+
+This graph shows the output-load percentage for L1, L2 and L3.
+
+How to read it:
+
+- The three lines should remain reasonably close on a balanced three-phase installation.
+- A short transient difference is common when equipment switches or cycles.
+- A persistent separation between one phase and the others indicates load imbalance and should be investigated.
+- A phase approaching the configured warning/critical load thresholds is more important than the total average alone.
+
+The example screenshot shows all three phases in roughly the low-to-mid 20% range, which is a well-balanced operating condition.
+
+## Electrical
+
+![Vertiv UPS Electrical dashboard](../images/dashboard-electrical.png)
+
+The Electrical page is intended for power-path validation and troubleshooting.
+
+### Voltage cards
+
+The dashboard presents representative line-to-neutral and line-to-line values for input, output and bypass:
+
+- **Input L1-N / L1-L2** — utility/input voltage.
+- **Output L1-N / L1-L2** — voltage delivered to the protected load.
+- **Bypass L1-N / L1-L2** — alternate path voltage available to the UPS.
+
+In a balanced three-phase system, line-to-line voltage is approximately √3 times line-to-neutral voltage. The sample values are consistent with that relationship. Large deviations between phases, sudden steps or an unavailable bypass voltage deserve investigation.
+
+### Power and frequency cards
+
+- **Output power** and **Output apparent power** provide an instantaneous summary of load demand.
+- **Output frequency**, **Input frequency** and **Bypass frequency** should normally remain close to the site's nominal frequency.
+- **Topology** shows the operating class reported by the Vertiv UPS; the sample unit reports `Online`.
+
+A persistent input/output frequency difference, unstable input frequency or a bypass frequency outside the accepted range may explain transfer or bypass-availability events.
+
+### Power-quality counters
+
+The cards **Input blackouts**, **Input brownouts** and **Bad input lines** are cumulative counters. They are not current active alarms.
+
+How to read them:
+
+- `68` blackouts means the UPS has accumulated 68 blackout events over the counter's lifetime/reset interval; it does **not** mean 68 outages are currently active.
+- Brownouts count input undervoltage/sag events as exposed by the device.
+- Bad input lines comes from the UPS-MIB input-line-bad counter/state and should normally remain at zero on a healthy source.
+- The most useful signal is often an **increase** in the counter. Compare the current value with its previous value when investigating a recent event.
+
+These counters are shown as cards rather than trend graphs because plotting a cumulative counter often produces a mostly flat or stair-step line and can be misleading as an operational event view.
+
+### Output phase load — full-width view
+
+The full-width graph is the same L1/L2/L3 load view shown on Overview, but with more horizontal space for troubleshooting. Use it to compare phase behavior over a longer incident window and to identify persistent imbalance or phase-specific changes.
+
+## Battery & Environment
+
+![Vertiv UPS Battery and Environment dashboard](../images/dashboard-battery-environment.png)
+
+This page concentrates battery health, test/configuration state and environmental temperature.
+
+### Battery and status cards
+
+- **Battery charge** — estimated charge percentage.
+- **Runtime remaining** — estimated autonomy in hours for display purposes.
+- **Battery current** — current into/out of the battery as exposed by the Vertiv private MIB.
+- **Battery temperature** — private Vertiv battery-temperature value.
+- **Inlet temperature** — UPS inlet/ambient-air temperature.
+- **Battery test result** — most recent battery-test state.
+- **Shutdown reason** — last/current shutdown reason reported by the device.
+- **ECO mode** — ECO-mode state.
+- **Battery cabinet** — detected/configured battery-cabinet type.
+- **Battery test interval** — configured automatic test interval.
+- **Battery discharges** — cumulative number of battery discharge events.
+
+`Battery discharges` is a historical counter, not the number of batteries and not the number of currently active discharges.
+
+### Battery temperature caveat
+
+On the field-tested Vertiv firmware, the private battery-temperature OID reports approximately `-0.1 °C` even while inlet temperature is about 24–25 °C. That is not physically plausible for the installation and may represent a sentinel/unavailable sensor value or a model-specific interpretation.
+
+For that reason:
+
+- the item is still collected and retained for troubleshooting;
+- it remains visible as a card;
+- it is **not** used by the default environmental trend graph;
+- operators should validate this metric against the UPS local/web interface before relying on it for environmental decisions.
+
+### Inlet temperature
+
+The graph shows only the inlet-air temperature, which is the useful environmental metric confirmed on the field-tested unit.
+
+How to read it:
+
+- Look at the numeric Y-axis before judging visual movement. Zabbix automatically scales the graph, so a change from 24 °C to 25 °C can look large even though it is only a 1 °C variation.
+- A stable narrow band is normal.
+- A sustained upward trend is more important than one isolated sample.
+- Warning/critical lines in the graph come from the configured template triggers/macros; adapt them to the equipment room and manufacturer requirements rather than treating example defaults as universal environmental limits.
+
+### Battery charge and runtime — focused view
+
+The same dual-axis graph from Overview is repeated here so battery investigation does not require switching pages. Use the longer time range selector in Zabbix when analyzing a discharge, recharge cycle or battery test.
+
+## Why there are no additional default graphs
+
+Version 1.4.1 intentionally keeps the default dashboard small. The current graphs answer the main operational questions without duplicating every numeric item as a trend.
+
+Items such as input/output/bypass voltage and frequency are still retained in history and can be graphed from Latest data when investigating power-quality incidents. They are kept as cards in the default dashboard because, under normal operation, those values are usually stable and adding permanent graphs would increase visual noise.
+
+The private Vertiv input-power phase OIDs are also not featured because their SNMP scaling has not yet been validated across devices/firmware. The project avoids presenting an apparently authoritative graph until that scale is confirmed in the field.
+
+## Recommended reading order during an incident
+
+1. Check **System status**, **Output source** and **Active alarms**.
+2. Check **Battery status**, **Battery charge** and **Runtime remaining**.
+3. Inspect **Output power** for a sudden load change.
+4. Inspect **Output phase load** for overload or imbalance.
+5. Open **Electrical** and compare input/output/bypass voltage and frequency.
+6. Check whether blackout/brownout counters increased.
+7. Open **Battery & Environment** and review inlet temperature, battery-test result and shutdown reason.
+8. Expand the dashboard time range to include the period before and after the incident.
+
+## Field-validation notes
+
+The dashboard was field-tested with a Vertiv UPS/management card that returns private enum values as strings such as `Normal Operation`, `Online`, `Passed` and `External`. The template normalizes those responses to canonical numeric values so Zabbix value maps, triggers and colored cards remain consistent.
+
+The raw RFC1628 runtime item remains authoritative for trigger calculations, while `ups.battery.runtime.hours` exists only to make the dashboard easier to read.
