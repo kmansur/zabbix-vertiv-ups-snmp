@@ -52,10 +52,13 @@ zabbix_export:
       The supplied event/condition OID lists identify alarms but do not define the return-state encoding of the pollable .2.100.* objects. Event-specific polling triggers are intentionally not fabricated until live values are validated.
 
 
+      Version 1.2.0 adds the native VERTIV UPS Overview dashboard with status, battery, electrical, bypass, environmental and trend views.
+
+
       Export target: Zabbix 7.0.'
     vendor:
-      name: 'Net Tech'
-      version: 1.1-0
+      name: Net Tech
+      version: 1.2-0
     groups:
     - name: Templates/Power
     items:
@@ -1864,6 +1867,688 @@ zabbix_export:
       value: ups
     - tag: vendor
       value: vertiv
+    dashboards:
+    - uuid: ecba661b8bf2d5d72c92aea49668fb19
+      name: VERTIV UPS Overview
+      pages:
+      - name: Overview
+        widgets:
+        - type: item
+          name: System status
+          x: '0'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.system.status
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output source
+          x: '12'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.output.source
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Active alarms
+          x: '24'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.alarms.present
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery status
+          x: '36'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.battery.status
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery charge
+          x: '48'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.battery.charge
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Runtime remaining
+          x: '60'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.battery.runtime
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: graph
+          name: Battery charge and runtime
+          x: '0'
+          y: '2'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Battery charge and runtime'
+          - type: STRING
+            name: reference
+            value: A0000
+        - type: graph
+          name: Output power
+          x: '24'
+          y: '2'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Output power'
+          - type: STRING
+            name: reference
+            value: A0001
+        - type: graph
+          name: Temperatures
+          x: '48'
+          y: '2'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Temperatures'
+          - type: STRING
+            name: reference
+            value: A0002
+        - type: graph
+          name: Power quality counters
+          x: '0'
+          y: '7'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Power quality counters'
+          - type: STRING
+            name: reference
+            value: B0000
+        - type: graph
+          name: Input phase power
+          x: '24'
+          y: '7'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Input phase power'
+          - type: STRING
+            name: reference
+            value: B0001
+        - type: graph
+          name: Output phase load
+          x: '48'
+          y: '7'
+          width: '24'
+          height: '5'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Output phase load'
+          - type: STRING
+            name: reference
+            value: B0002
+      - name: Electrical
+        widgets:
+        - type: item
+          name: Input L1-N
+          x: '0'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.voltage.l1n
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Input L1-L2
+          x: '12'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.voltage.l12
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output L1-N
+          x: '24'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.output.voltage.l1n
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output L1-L2
+          x: '36'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.output.voltage.l12
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Bypass L1-N
+          x: '48'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.bypass.voltage.l1n
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Bypass L1-L2
+          x: '60'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.bypass.voltage.l12
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Input total power
+          x: '0'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.power.total
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output power
+          x: '12'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.output.power
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output apparent power
+          x: '24'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.output.apparent.power
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Output frequency
+          x: '36'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.output.frequency
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Input frequency
+          x: '48'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.frequency
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Topology
+          x: '60'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.topology
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: graph
+          name: Input phase power
+          x: '0'
+          y: '4'
+          width: '36'
+          height: '6'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Input phase power'
+          - type: STRING
+            name: reference
+            value: C0000
+        - type: graph
+          name: Output phase load
+          x: '36'
+          y: '4'
+          width: '36'
+          height: '6'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Output phase load'
+          - type: STRING
+            name: reference
+            value: C0001
+      - name: Battery & Environment
+        widgets:
+        - type: item
+          name: Battery charge
+          x: '0'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.battery.charge
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Runtime remaining
+          x: '12'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.battery.runtime
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery current
+          x: '24'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.current
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery temperature
+          x: '36'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.temperature
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Inlet temperature
+          x: '48'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.inlet.temperature
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery test result
+          x: '60'
+          y: '0'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.test.result
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Shutdown reason
+          x: '0'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.shutdown.reason
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: ECO mode
+          x: '12'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.eco.status
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery cabinet
+          x: '24'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.cabinet.type
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery test interval
+          x: '36'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.test.interval
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: item
+          name: Battery discharges
+          x: '48'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.battery.discharge.count
+          - type: INTEGER
+            name: show.0
+            value: '4'
+          - type: INTEGER
+            name: show.1
+            value: '2'
+        - type: graph
+          name: Battery charge and runtime
+          x: '0'
+          y: '4'
+          width: '36'
+          height: '6'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Battery charge and runtime'
+          - type: STRING
+            name: reference
+            value: D0000
+        - type: graph
+          name: Temperatures
+          x: '36'
+          y: '4'
+          width: '36'
+          height: '6'
+          fields:
+          - type: GRAPH
+            name: graphid.0
+            value:
+              host: VERTIV by SNMP
+              name: 'UPS: Temperatures'
+          - type: STRING
+            name: reference
+            value: D0001
   graphs:
   - uuid: 5ba6adbff3c74aa1b32a8eefef68c5d4
     name: 'UPS: Battery charge and runtime'

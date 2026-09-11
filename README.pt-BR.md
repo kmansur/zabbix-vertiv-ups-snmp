@@ -86,6 +86,7 @@ Português (Brasil):
 - [Configuração e macros](docs/pt-BR/configuration.md)
 - [Métricas e OIDs](docs/pt-BR/metrics.md)
 - [Resumo elétrico](docs/pt-BR/electrical-summary.md)
+- [Dashboard nativo](docs/pt-BR/dashboard.md)
 - [Triggers](docs/pt-BR/triggers.md)
 - [Arquitetura SNMP](docs/pt-BR/snmp.md)
 - [Troubleshooting](docs/pt-BR/troubleshooting.md)
@@ -118,9 +119,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.1.0**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.2.0**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.1.0` do projeto é exportada como `vendor.version: 1.1-0`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.2.0` do projeto é exportada como `vendor.version: 1.2-0`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z

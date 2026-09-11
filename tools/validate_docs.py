@@ -24,6 +24,7 @@ DOC_BASENAMES = [
     "configuration.md",
     "metrics.md",
     "electrical-summary.md",
+    "dashboard.md",
     "triggers.md",
     "snmp.md",
     "troubleshooting.md",

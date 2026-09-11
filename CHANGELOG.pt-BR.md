@@ -14,6 +14,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.2.0] - 2026-09-11
+
+### Adicionado
+
+- Dashboard nativo de template **VERTIV UPS Overview**.
+- Páginas Overview, Electrical e Battery & Environment.
+- Cards de estado do nobreak, fonte da saída, alarmes, carga/autonomia da bateria e principais valores elétricos.
+- Integração do dashboard com os seis gráficos nativos do template.
+- Documentação bilíngue do dashboard.
+
 ## [1.1.0] - 2026-09-11
 
 ### Adicionado

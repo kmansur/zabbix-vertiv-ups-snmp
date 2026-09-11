@@ -18,6 +18,7 @@ TEMPLATE_FILES = {
 TEMPLATE_NAME = "VERTIV by SNMP"
 VENDOR_NAME = "Net Tech"
 EXPECTED_GROUP = "Templates/Power"
+REQUIRED_DASHBOARD_NAME = "VERTIV UPS Overview"
 UUID_RE = re.compile(r"^[0-9a-f]{32}$")
 SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+$")
 MACRO_RE = re.compile(r"\{\$[A-Z0-9_.]+\}")
@@ -161,6 +162,39 @@ def validate_one(
         errors.append(
             f"vendor.version={vendor.get('version')!r}; expected {expected_vendor_version!r}"
         )
+
+    dashboards = template.get("dashboards", [])
+    dashboard_names = {str(d.get("name")) for d in dashboards}
+    if REQUIRED_DASHBOARD_NAME not in dashboard_names:
+        errors.append(f"template must contain dashboard {REQUIRED_DASHBOARD_NAME!r}")
+
+    fixed_keys_for_dashboard = {str(i.get("key")) for i in template.get("items", [])}
+    graph_names_for_dashboard = {str(g.get("name")) for g in export.get("graphs", [])}
+    for dashboard in dashboards:
+        for page in dashboard.get("pages", []):
+            for widget in page.get("widgets", []):
+                for field in widget.get("fields", []):
+                    value = field.get("value")
+                    if (
+                        field.get("type") == "ITEM"
+                        and isinstance(value, dict)
+                        and (
+                            value.get("host") != TEMPLATE_NAME
+                            or str(value.get("key")) not in fixed_keys_for_dashboard
+                        )
+                    ):
+                        errors.append(f"dashboard item reference is invalid: {value!r}")
+                    if (
+                        field.get("type") == "GRAPH"
+                        and isinstance(value, dict)
+                        and (
+                            value.get("host") != TEMPLATE_NAME
+                            or str(value.get("name")) not in graph_names_for_dashboard
+                        )
+                    ):
+                        errors.append(
+                            f"dashboard graph reference is invalid: {value!r}"
+                        )
 
     groups = {str(g.get("name")) for g in template.get("groups", [])}
     if EXPECTED_GROUP not in groups:

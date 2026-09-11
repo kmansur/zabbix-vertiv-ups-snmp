@@ -14,6 +14,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.2.0] - 2026-09-11
+
+### Added
+
+- Native **VERTIV UPS Overview** template dashboard.
+- Overview, Electrical and Battery & Environment pages.
+- Status cards for UPS state, output source, alarms, battery charge/runtime and key electrical values.
+- Dashboard integration with all six built-in template graphs.
+- Bilingual dashboard documentation.
+
 ## [1.1.0] - 2026-09-11
 
 ### Added
