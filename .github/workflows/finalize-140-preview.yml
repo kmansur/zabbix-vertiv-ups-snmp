@@ -32,11 +32,38 @@ jobs:
       - name: Apply 1.4.0 finalization
         run: python .github/finalize_140.py
 
+      - name: Normalize generated validator style
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('tools/validate_templates.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''                        if item_key in {"ups.alarms.present", "ups.battery.runtime"}:
+                            if str(fields_by_name.get("decimal_places", {}).get("value", "")) != "0":
+                                errors.append(
+                                    f"dashboard numeric card decimal_places must be 0: {widget.get('name')!r}"
+                                )
+'''
+          new = '''                        if (
+                            item_key in {"ups.alarms.present", "ups.battery.runtime"}
+                            and str(fields_by_name.get("decimal_places", {}).get("value", "")) != "0"
+                        ):
+                            errors.append(
+                                f"dashboard numeric card decimal_places must be 0: {widget.get('name')!r}"
+                            )
+'''
+          if old not in text:
+              raise SystemExit('validator style anchor not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Format and validate full project
         shell: bash
         run: |
           set -euo pipefail
-          ruff check --fix --unsafe-fixes tools tests
+          ruff check --fix tools tests
           ruff format tools tests
           python -m compileall -q tools tests
           ruff check tools tests
