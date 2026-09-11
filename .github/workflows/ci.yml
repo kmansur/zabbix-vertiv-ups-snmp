@@ -56,3 +56,65 @@ jobs:
 
       - name: Validate bilingual documentation parity
         run: python tools/validate_docs.py
+
+      - name: Validate production readiness
+        run: python tools/validate_production.py
+
+  zabbix-import:
+    name: Zabbix 7.0 real import
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Start disposable Zabbix 7.0 stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create zabbix-ci
+          docker run -d --name zabbix-db --network zabbix-ci \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            postgres:16-alpine
+          for i in $(seq 1 60); do
+            if docker exec zabbix-db pg_isready -U zabbix -d zabbix >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec zabbix-db pg_isready -U zabbix -d zabbix
+
+          docker run -d --name zabbix-server --network zabbix-ci \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            zabbix/zabbix-server-pgsql:alpine-7.0-latest
+
+          docker run -d --name zabbix-web --network zabbix-ci -p 8080:8080 \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            -e ZBX_SERVER_HOST=zabbix-server \
+            -e ZBX_SERVER_NAME="Vertiv template CI" \
+            zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
+
+      - name: Import template through Zabbix API
+        run: python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 300
+
+      - name: Container diagnostics on failure
+        if: failure()
+        shell: bash
+        run: |
+          docker ps -a || true
+          docker logs zabbix-db || true
+          docker logs zabbix-server || true
+          docker logs zabbix-web || true
