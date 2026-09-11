@@ -3,6 +3,7 @@ name: Bootstrap template exports
 on:
   push:
     branches:
+      - main
       - bootstrap-template-import
 
 permissions:
@@ -51,4 +52,4 @@ jobs:
           git add templates/zabbix-7.0/vertiv-by-snmp.yaml templates/zabbix-8.0/vertiv-by-snmp.yaml
           git diff --cached --quiet && exit 0
           git commit -m "feat: add VERTIV by SNMP 1.0.0 templates"
-          git push origin HEAD:bootstrap-template-import
+          git push origin HEAD:${GITHUB_REF_NAME}
