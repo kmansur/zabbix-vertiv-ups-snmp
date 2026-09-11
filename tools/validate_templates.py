@@ -54,6 +54,19 @@ REQUIRED_PHASE1_KEYS = {
 }
 UNVALIDATED_EVENT_BRANCH = "1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.100."
 
+REQUIRED_VERTIV_ENUM_SAMPLES = {
+    "vertiv.system.status": "Normal Operation",
+    "vertiv.inverter.state": "on",
+    "vertiv.eco.status": "off",
+    "vertiv.topology": "Online",
+    "vertiv.shutdown.reason": "None",
+    "vertiv.battery.charge.status": "fully charged",
+    "vertiv.battery.test.result": "Passed",
+    "vertiv.battery.autotest": "disabled",
+    "vertiv.battery.test.interval": "8 weeks",
+    "vertiv.battery.cabinet.type": "External",
+}
+
 # Consequential control branches/OIDs intentionally excluded from this project.
 FORBIDDEN_OID_PREFIXES = (
     "1.3.6.1.2.1.33.1.8",  # UPS-MIB shutdown/control group
@@ -221,6 +234,29 @@ def validate_one(
     duplicates = sorted({uuid for uuid in uuids if uuids.count(uuid) > 1})
     if duplicates:
         errors.append(f"duplicate UUIDs inside export: {duplicates[:5]}")
+
+    item_by_key = {str(item.get("key")): item for item in template.get("items", [])}
+    for enum_key, sample in REQUIRED_VERTIV_ENUM_SAMPLES.items():
+        enum_item = item_by_key.get(enum_key)
+        if enum_item is None:
+            errors.append(f"missing required Vertiv enum item {enum_key!r}")
+            continue
+        preprocessing = enum_item.get("preprocessing", [])
+        if not preprocessing or preprocessing[0].get("type") != "JAVASCRIPT":
+            errors.append(
+                f"Vertiv enum item {enum_key!r} must start with JAVASCRIPT preprocessing"
+            )
+            continue
+        params = preprocessing[0].get("parameters", [])
+        script = str(params[0]) if params else ""
+        if "VERTIV_ENUM_NORMALIZER" not in script:
+            errors.append(
+                f"Vertiv enum item {enum_key!r} is missing the enum normalizer marker"
+            )
+        if sample.lower() not in script.lower():
+            errors.append(
+                f"Vertiv enum item {enum_key!r} normalizer does not include live sample {sample!r}"
+            )
 
     fixed_keys, prototype_keys = collect_item_keys(template)
     missing_phase1 = sorted(REQUIRED_PHASE1_KEYS - set(fixed_keys))

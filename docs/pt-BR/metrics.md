@@ -19,6 +19,10 @@ A tabela abaixo documenta os itens fixos incluídos no template atual. A disponi
 
 ## Status
 
+> **Enums privados Vertiv:** algumas placas retornam esses objetos como texto em vez do código numérico. Desde a versão 1.3.2, os itens enumerados privados usam pré-processamento para aceitar ambos os formatos e armazenar o código numérico canônico.
+
+
+
 | Chave | Item | OID | Unidade | Intervalo | Fonte |
 | --- | --- | --- | --- | --- | --- |
 | `vertiv.system.status` | UPS: System status | `1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4123` | — | 30s | Vertiv/Liebert enterprise MIB |

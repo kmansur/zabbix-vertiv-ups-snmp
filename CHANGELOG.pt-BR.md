@@ -14,6 +14,16 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.3.2] - 2026-09-11
+
+### Corrigido
+
+- Normalização dos enums privados Vertiv que algumas placas retornam como `STRING` em vez de valores numéricos SNMP.
+- Os dez itens de estado/configuração afetados agora aceitam tanto o texto retornado pela placa quanto o enum numérico canônico.
+- Mantidos os tipos `Numeric (unsigned)`, value maps e triggers numéricos, preservando compatibilidade entre diferentes placas/firmwares.
+- Mapeamentos validados em equipamento real para `Normal Operation`, `on`, `off`, `Online`, `None`, `fully charged`, `Passed`, `disabled`, `8 weeks` e `External`.
+- Validador do repositório reforçado para exigir o pré-processamento de normalização nesses itens.
+
 ## [1.3.1] - 2026-09-11
 
 ### Corrigido

@@ -14,6 +14,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.3.2] - 2026-09-11
+
+### Fixed
+
+- Normalize Vertiv private enums that some management cards return as SNMP `STRING` values instead of numeric enums.
+- The ten affected status/configuration items now accept both the textual representation returned by the card and the canonical numeric enum.
+- Numeric item types, value maps and numeric trigger expressions are preserved for compatibility across different cards/firmware.
+- Live mappings validated on real hardware for `Normal Operation`, `on`, `off`, `Online`, `None`, `fully charged`, `Passed`, `disabled`, `8 weeks` and `External`.
+- Repository validation now requires enum-normalization preprocessing on these items.
+
 ## [1.3.1] - 2026-09-11
 
 ### Fixed

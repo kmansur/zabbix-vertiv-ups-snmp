@@ -19,6 +19,10 @@ The table below documents the fixed items included in the current template. OID 
 
 ## Status
 
+> **Vertiv private enums:** some management cards return these objects as text instead of the numeric enum code. Since version 1.3.2, private enumerated items preprocess both representations and store the canonical numeric code.
+
+
+
 | Key | Item | OID | Unit | Interval | Source |
 | --- | --- | --- | --- | --- | --- |
 | `vertiv.system.status` | UPS: System status | `1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4123` | — | 30s | Vertiv/Liebert enterprise MIB |

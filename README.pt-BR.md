@@ -47,8 +47,8 @@ docs/
 ├── en/                  Documentação em inglês
 └── pt-BR/               Documentação em português do Brasil
 templates/
-├── zabbix-7.0/          Export para Zabbix 7.0
-└── zabbix-8.0/          Export para Zabbix 8.0
+├── 7.0/          Export para Zabbix 7.0
+└── 8.0/          Export para Zabbix 8.0
 tests/                   Testes dos validadores
 tools/                   Validadores dos templates e documentação
 ```
@@ -122,9 +122,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.3.1**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.3.2**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.1` do projeto é exportada como `vendor.version: 1.3-1`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.2` do projeto é exportada como `vendor.version: 1.3-2`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z

@@ -71,6 +71,14 @@ Open an issue with:
 - value shown by the UPS interface;
 - model/card/firmware.
 
+## A private Vertiv enum is returned as a string / Numeric (unsigned)
+
+Some Vertiv/Liebert management cards return enumerated private objects as text, such as `Normal Operation`, `on`, `Online`, `fully charged` or `Passed`, while other cards/firmware may return the numeric enum code.
+
+Starting with version 1.3.2, the template normalizes both representations to the canonical numeric code before storage. This keeps value maps and numeric triggers working with both behaviors.
+
+If `Value of type "string" is not suitable for value type "Numeric (unsigned)"` still appears, verify that the template has `vendor.version: 1.3-2` or newer and provide the OID plus the raw text returned by `snmpget -On`.
+
 ## Too many alerts
 
 Review host-level macro overrides for runtime, charge, load and temperature thresholds. Defaults are intentionally generic and must be adapted to the installation.

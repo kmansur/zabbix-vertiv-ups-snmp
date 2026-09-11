@@ -58,10 +58,13 @@ zabbix_export:
       Version 1.3.0 adds an optional generator for an importable Zabbix network-map synoptic view of a monitored Vertiv UPS host.
 
 
+      Version 1.3.2 normalizes Vertiv private enumeration objects that some management cards return as textual SNMP strings instead of numeric enum values. The preprocessing accepts both textual and numeric representations so value maps and numeric trigger expressions remain portable.
+
+
       Export target: Zabbix 7.0.'
     vendor:
       name: Net Tech
-      version: 1.3-1
+      version: 1.3-2
     groups:
     - name: Templates/Power
     items:
@@ -201,6 +204,25 @@ zabbix_export:
       delay: 30s
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"abnormal operation":32,"normal operation":1,"normal with alarm":16,"normal with warning":8,"startup":2};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.system.status: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -285,6 +307,25 @@ zabbix_export:
       delay: 1m
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"off":0,"on":1};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.inverter.state: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -301,6 +342,25 @@ zabbix_export:
       delay: 5m
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"off":0,"on":1};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.eco.status: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -317,6 +377,25 @@ zabbix_export:
       delay: 1h
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"line interactive":2,"offline":1,"online":3,"unknown":0};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.topology: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 1d
@@ -333,6 +412,25 @@ zabbix_export:
       delay: 5m
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"dc bus overload":3,"external signal command":10,"input under voltage":8,"line swap":5,"low battery":6,"none":0,"output short":4,"over temperature":1,"overload":2,"power factor correction fail":9,"remote command":7};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.shutdown.reason: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -482,6 +580,25 @@ zabbix_export:
       delay: 1m
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"charging":1,"discharging":2,"fully charged":0,"not charging (charger off)":3};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.battery.charge.status: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -498,6 +615,25 @@ zabbix_export:
       delay: 5m
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"failed":2,"in progress":3,"inhibited":5,"passed":1,"system failure":4,"unknown":0};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.battery.test.result: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 6h
@@ -520,6 +656,25 @@ zabbix_export:
       delay: 1h
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"disabled":0,"enabled":1};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.battery.autotest: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 1d
@@ -1491,6 +1646,25 @@ zabbix_export:
       delay: 1h
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"external":1,"internal":0,"lrt":2};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.battery.cabinet.type: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 1d
@@ -1508,6 +1682,25 @@ zabbix_export:
       delay: 1h
       history: 90d
       preprocessing:
+      - type: JAVASCRIPT
+        parameters:
+        - '// VERTIV_ENUM_NORMALIZER
+
+          var s = String(value).trim();
+
+          if (/^-?\d+$/.test(s)) { return parseInt(s, 10); }
+
+          var p = s.match(/\((-?\d+)\)\s*$/);
+
+          if (p) { return parseInt(p[1], 10); }
+
+          var k = s.toLowerCase().replace(/\s+/g, '' '');
+
+          var map = {"12 weeks":1,"16 weeks":2,"20 weeks":3,"26 weeks":4,"8 weeks":0};
+
+          if (map[k] !== undefined) { return map[k]; }
+
+          throw ''Unsupported Vertiv enum value for vertiv.battery.test.interval: '' + value;'
       - type: DISCARD_UNCHANGED_HEARTBEAT
         parameters:
         - 1d

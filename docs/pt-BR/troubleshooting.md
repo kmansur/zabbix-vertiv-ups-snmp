@@ -71,6 +71,14 @@ Abra uma issue informando:
 - valor exibido pela interface do nobreak;
 - modelo/placa/firmware.
 
+## Um enum privado Vertiv aparece como string / Numeric (unsigned)
+
+Algumas placas Vertiv/Liebert retornam objetos enumerados da árvore privada como texto, por exemplo `Normal Operation`, `on`, `Online`, `fully charged` ou `Passed`, enquanto outras placas/firmwares podem retornar o código numérico do enum.
+
+A partir da versão 1.3.2, o template normaliza automaticamente os dois formatos para o código numérico canônico antes do armazenamento. Isso mantém os value maps e triggers numéricos funcionando em ambos os comportamentos.
+
+Se ainda ocorrer a mensagem `Value of type "string" is not suitable for value type "Numeric (unsigned)"`, confirme que o template possui `vendor.version: 1.3-2` ou superior e envie o OID e o texto bruto retornado por `snmpget -On`.
+
 ## Muitos alertas
 
 Revise as macros sobrescritas no host para autonomia, carga da bateria, carga do nobreak e temperatura. Os padrões são genéricos e devem ser adaptados à instalação.
