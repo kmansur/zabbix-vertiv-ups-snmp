@@ -2,15 +2,19 @@
 
 [Português (Brasil)](../pt-BR/dashboard-status-preview.md)
 
-This provisional branch experiments with cleaner and more operational UPS status cards without changing SNMP collection, triggers, or the project version.
+This provisional branch keeps the dynamic pastel backgrounds and returns status cards to the native **Item value** rendering after the description-macro experiment proved unreliable on the tested Zabbix 7 frontend.
 
-## What changes
+## Current preview behavior
 
-- Status/value-map cards show only the mapped text (for example `Normal operation`, `Normal`, `Passed`, `External`, `8 weeks`).
-- The raw numeric suffix normally rendered by the Item value widget is suppressed by showing a value-map-aware `{ITEM.LASTVALUE}` macro in the widget Description field.
-- Numeric thresholds continue to use the original numeric item, so background colors can change dynamically.
-- Pastel colors are used for readability: green = normal, yellow = attention, orange = alarm/degraded, red = critical, blue = informational/configuration.
-- System status receives additional width in the Overview row.
-- Active alarms, battery charge, and remaining runtime receive numeric threshold backgrounds.
+- Status cards keep dynamic green/yellow/orange/red backgrounds based on the original numeric item and thresholds.
+- Status text is rendered natively through the existing value map.
+- Status/enum cards use zero decimal places, so mapped values render with a shorter raw suffix such as `(1)` instead of `(1.00)`.
+- Long cards retain the widened layout introduced by the previous preview.
+- Active alarms are rendered as an integer.
+- Battery charge and runtime keep their dynamic severity backgrounds.
 
-This is a preview only. The main branch remains unchanged until the visual result is approved.
+## Confirmed limitation
+
+The attempt to strip the parenthesized numeric suffix by rendering a macro/regular expression in the widget Description field produced broken strings such as `\1`, `\3`, and `\0` on the tested Zabbix 7 frontend. This branch intentionally removes that experiment.
+
+The main branch remains unchanged while this visual behavior is evaluated.

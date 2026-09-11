@@ -2087,27 +2087,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.system.status
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -2141,6 +2120,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.4.threshold
             value: '32'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Output source
           x: '16'
@@ -2153,27 +2153,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: ups.output.source
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -2219,6 +2198,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.6.threshold
             value: '7'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Active alarms
           x: '28'
@@ -2270,6 +2270,9 @@ zabbix_export:
           - type: STRING
             name: thresholds.2.threshold
             value: '3'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Battery status
           x: '38'
@@ -2282,27 +2285,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: ups.battery.status
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -2330,6 +2312,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.3.threshold
             value: '4'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Battery charge
           x: '50'
@@ -2345,9 +2348,6 @@ zabbix_export:
           - type: INTEGER
             name: show.0
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '27'
           - type: INTEGER
             name: decimal_size
             value: '16'
@@ -2381,6 +2381,9 @@ zabbix_export:
           - type: STRING
             name: thresholds.2.threshold
             value: '80'
+          - type: INTEGER
+            name: value_size
+            value: '26'
         - type: item
           name: Runtime remaining
           x: '61'
@@ -2396,9 +2399,6 @@ zabbix_export:
           - type: INTEGER
             name: show.0
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '27'
           - type: INTEGER
             name: decimal_size
             value: '16'
@@ -2432,6 +2432,12 @@ zabbix_export:
           - type: STRING
             name: thresholds.2.threshold
             value: '30'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
+          - type: INTEGER
+            name: value_size
+            value: '24'
         - type: graph
           name: Battery charge and runtime
           x: '0'
@@ -2866,30 +2872,30 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.topology
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: E3F2FD
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: graph
           name: Input phase power
           x: '0'
@@ -2938,9 +2944,6 @@ zabbix_export:
             name: show.0
             value: '2'
           - type: INTEGER
-            name: value_size
-            value: '27'
-          - type: INTEGER
             name: decimal_size
             value: '16'
           - type: INTEGER
@@ -2973,6 +2976,9 @@ zabbix_export:
           - type: STRING
             name: thresholds.2.threshold
             value: '80'
+          - type: INTEGER
+            name: value_size
+            value: '26'
         - type: item
           name: Runtime remaining
           x: '12'
@@ -2988,9 +2994,6 @@ zabbix_export:
           - type: INTEGER
             name: show.0
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '27'
           - type: INTEGER
             name: decimal_size
             value: '16'
@@ -3024,6 +3027,12 @@ zabbix_export:
           - type: STRING
             name: thresholds.2.threshold
             value: '30'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
+          - type: INTEGER
+            name: value_size
+            value: '24'
         - type: item
           name: Battery current
           x: '24'
@@ -3126,27 +3135,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.battery.test.result
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -3186,6 +3174,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.5.threshold
             value: '5'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Shutdown reason
           x: '0'
@@ -3198,27 +3207,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.shutdown.reason
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -3288,6 +3276,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.10.threshold
             value: '10'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: ECO mode
           x: '12'
@@ -3300,27 +3309,6 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.eco.status
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: ECEFF1
@@ -3336,6 +3324,27 @@ zabbix_export:
           - type: STRING
             name: thresholds.1.threshold
             value: '1'
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Battery cabinet
           x: '24'
@@ -3348,30 +3357,30 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.battery.cabinet.type
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: E3F2FD
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Battery test interval
           x: '36'
@@ -3384,30 +3393,30 @@ zabbix_export:
             value:
               host: VERTIV by SNMP
               key: vertiv.battery.test.interval
-          - type: INTEGER
-            name: show.0
-            value: '1'
-          - type: STRING
-            name: description
-            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
-          - type: INTEGER
-            name: desc_size
-            value: '18'
-          - type: INTEGER
-            name: desc_h_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_v_pos
-            value: '1'
-          - type: INTEGER
-            name: desc_bold
-            value: '1'
-          - type: STRING
-            name: desc_color
-            value: '263238'
           - type: STRING
             name: bg_color
             value: E3F2FD
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '21'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: value_bold
+            value: '1'
+          - type: STRING
+            name: value_color
+            value: '263238'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: item
           name: Battery discharges
           x: '48'
