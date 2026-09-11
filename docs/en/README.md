@@ -30,3 +30,7 @@ After the first import, compare Zabbix values with the UPS LCD/web interface and
 Current version: **1.1.0**.
 
 See [Versioning](versioning.md) and [CHANGELOG](../../CHANGELOG.md).
+
+- [MIB/OID sources and provenance](mib-sources.md)
+- [Compatibility matrix](compatibility.md)
+- [Production readiness and homologation](production-readiness.md)

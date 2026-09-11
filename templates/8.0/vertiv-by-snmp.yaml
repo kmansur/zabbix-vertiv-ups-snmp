@@ -71,10 +71,13 @@ zabbix_export:
 
 
 
+      Version 1.5.0 hardens production monitoring with an explicit SNMP heartbeat, RFC1628 identification/test coverage, active-alarm table discovery, safe-by-default handling of unvalidated private metrics, standard battery current/temperature objects, and production CI import validation. Vendor-private event encodings remain unguessed.
+
+
       Export target: Zabbix 8.0.'
     vendor:
       name: Net Tech
-      version: 1.4-1
+      version: 1.5-0
     groups:
     - name: Templates/Power
     items:
@@ -158,6 +161,7 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
+      inventory_link: MODEL
     - uuid: 06a5c47396dd42fbb76069972f96c3df
       name: 'UPS: System serial number'
       type: SNMP_AGENT
@@ -174,6 +178,7 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
+      inventory_link: SERIALNO_A
     - uuid: 1968ad9bf7c941c9892c4f4c00542554
       name: 'UPS: Firmware version'
       type: SNMP_AGENT
@@ -190,6 +195,7 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
+      inventory_link: SOFTWARE
     - uuid: 0bb9ef8dce534e5c84120b091f83050c
       name: 'UPS: System name'
       type: SNMP_AGENT
@@ -206,6 +212,7 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
+      inventory_link: NAME
     - uuid: 33d164a0f0954b9ca80fa29ee624cd66
       name: 'UPS: System status'
       type: SNMP_AGENT
@@ -573,7 +580,7 @@ zabbix_export:
       - tag: component
         value: battery
     - uuid: bd1cd5617caf48dfb64575644a3c04e4
-      name: 'UPS: Battery temperature'
+      name: 'UPS: Battery temperature (Vertiv private, experimental)'
       type: SNMP_AGENT
       snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4156
       key: vertiv.battery.temperature
@@ -584,17 +591,8 @@ zabbix_export:
       tags:
       - tag: component
         value: battery
-      triggers:
-      - uuid: 652440d8405a4ea8bafbbed3c33d5204
-        expression: last(/VERTIV by SNMP/vertiv.battery.temperature)>={$UPS.BATTERY.TEMP.WARN} and last(/VERTIV by SNMP/vertiv.battery.temperature)<{$UPS.BATTERY.TEMP.CRIT}
-        name: UPS battery temperature is high on {HOST.NAME}
-        priority: WARNING
-        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
-      - uuid: 876adecddc394b0c8e1529a9b3424d8c
-        expression: last(/VERTIV by SNMP/vertiv.battery.temperature)>={$UPS.BATTERY.TEMP.CRIT}
-        name: UPS battery temperature is critically high on {HOST.NAME}
-        priority: HIGH
-        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
+      status: DISABLED
+      description: Vertiv private battery-temperature object. It returned a sentinel-like -0.1 °C on the field-validated ITA-20kVA and is disabled by default. Use RFC1628 ups.battery.temperature for production alerts; enable this private item only for model-specific troubleshooting.
     - uuid: 933b0e2ef1bb46ebb319fdd548fe0d73
       name: 'UPS: Battery charge state'
       type: SNMP_AGENT
@@ -833,17 +831,7 @@ zabbix_export:
       tags:
       - tag: component
         value: output
-      triggers:
-      - uuid: 0b661d1830e14a91a449f6bcce76c03e
-        expression: last(/VERTIV by SNMP/vertiv.output.load)>={$UPS.LOAD.WARN} and last(/VERTIV by SNMP/vertiv.output.load)<{$UPS.LOAD.CRIT}
-        name: UPS load is high on {HOST.NAME}
-        priority: WARNING
-        opdata: 'Load: {ITEM.LASTVALUE1} %'
-      - uuid: 567934593a86414a824b794128cbb33c
-        expression: last(/VERTIV by SNMP/vertiv.output.load)>={$UPS.LOAD.CRIT}
-        name: UPS load is critically high on {HOST.NAME}
-        priority: HIGH
-        opdata: 'Load: {ITEM.LASTVALUE1} %'
+      description: Vertiv private aggregate output-load value retained for field comparison. Production load alerting uses RFC1628 upsOutputPercentLoad discovery prototypes instead of this vendor-private item.
     - uuid: 6329ccafecbe4af981e489f0c4b60c5b
       name: 'UPS: Output apparent power rating'
       type: SNMP_AGENT
@@ -1283,10 +1271,11 @@ zabbix_export:
       history: 90d
       value_type: FLOAT
       units: W
-      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface. Disabled by default in v1.5.0 because the supplied Vertiv SNMP parameter list does not define this private object's scale. Enable only for model-specific troubleshooting after comparison with the UPS UI.
       tags:
       - tag: component
         value: input
+      status: DISABLED
     - uuid: 251263aa26ff415aaac2607ce1357c48
       name: 'UPS: Input power L2'
       type: SNMP_AGENT
@@ -1296,10 +1285,11 @@ zabbix_export:
       history: 90d
       value_type: FLOAT
       units: W
-      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface. Disabled by default in v1.5.0 because the supplied Vertiv SNMP parameter list does not define this private object's scale. Enable only for model-specific troubleshooting after comparison with the UPS UI.
       tags:
       - tag: component
         value: input
+      status: DISABLED
     - uuid: 1e37d562acb54ef2bf994966588e81f3
       name: 'UPS: Input power L3'
       type: SNMP_AGENT
@@ -1309,10 +1299,11 @@ zabbix_export:
       history: 90d
       value_type: FLOAT
       units: W
-      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface. Disabled by default in v1.5.0 because the supplied Vertiv SNMP parameter list does not define this private object's scale. Enable only for model-specific troubleshooting after comparison with the UPS UI.
       tags:
       - tag: component
         value: input
+      status: DISABLED
     - uuid: 2c5a536783e04badb6b7449177e85288
       name: 'UPS: Bypass voltage L1-L2'
       type: SNMP_AGENT
@@ -1742,10 +1733,259 @@ zabbix_export:
       value_type: FLOAT
       units: W
       params: last(//vertiv.input.power.l1)+last(//vertiv.input.power.l2)+last(//vertiv.input.power.l3)
-      description: Calculated as the sum of the three Vertiv input phase-power items. The result inherits any vendor-specific scaling behavior of those source items and must be validated against the UPS UI.
+      description: Calculated as the sum of the three Vertiv input phase-power items. The result inherits any vendor-specific scaling behavior of those source items and must be validated against the UPS UI. Disabled by default in v1.5.0 because the supplied Vertiv SNMP parameter list does not define this private object's scale. Enable only for model-specific troubleshooting after comparison with the UPS UI.
       tags:
       - tag: component
         value: input
+      status: DISABLED
+    - uuid: 0edaed02c754469ba83194a7ddc80cf9
+      name: 'UPS: Manufacturer (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.1.1.0
+      key: ups.ident.manufacturer
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: RFC1628 upsIdentManufacturer.
+      inventory_link: VENDOR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: a266a6b35eed49d0ac3b5d0fbb2eb8e4
+      name: 'UPS: Model (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.1.2.0
+      key: ups.ident.model
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: RFC1628 upsIdentModel.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 41381616c1be44839001c4ec3398b056
+      name: 'UPS: UPS software version (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.1.3.0
+      key: ups.ident.ups.software
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: RFC1628 upsIdentUPSSoftwareVersion.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 3f39b2a89665446fa0806f46f38b023c
+      name: 'UPS: Agent software version (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.1.4.0
+      key: ups.ident.agent.software
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: RFC1628 upsIdentAgentSoftwareVersion.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 72276992cf85400fa630206533cfd4d7
+      name: 'UPS: Name (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.1.5.0
+      key: ups.ident.name
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: RFC1628 upsIdentName. Although the MIB object is read-write, this template only performs SNMP GET operations.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 5699f88221464fe08694b26b7c8cf6b1
+      name: 'UPS: SNMP agent uptime'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.3.0
+      key: ups.snmp.uptime
+      delay: 1m
+      history: 7d
+      trends: '0'
+      value_type: FLOAT
+      units: uptime
+      description: SNMPv2-MIB sysUpTime.0 converted from TimeTicks (0.01 s) to seconds. This item is a dedicated polling heartbeat and intentionally does not discard unchanged values.
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.01'
+      tags:
+      - tag: component
+        value: availability
+      triggers:
+      - uuid: ba3c583019824777b6557a7d230a7149
+        expression: nodata(/VERTIV by SNMP/ups.snmp.uptime,5m)=1
+        name: UPS SNMP data unavailable on {HOST.NAME}
+        priority: HIGH
+        description: No sysUpTime sample was received for five minutes. Check the management card, network path, SNMP credentials and Zabbix server/proxy availability.
+        tags:
+        - tag: scope
+          value: availability
+      - uuid: a37fc84b5918424591c10fd2ef5c243a
+        expression: change(/VERTIV by SNMP/ups.snmp.uptime)<0
+        name: UPS management agent uptime reset on {HOST.NAME}
+        priority: INFO
+        description: sysUpTime decreased, indicating a management-card/agent restart or a TimeTicks wrap. Correlate with firmware/network events before escalating.
+        tags:
+        - tag: scope
+          value: notice
+    - uuid: b4f2b854342d46dd8cc760014119d636
+      name: 'UPS: Battery current (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.6.0
+      key: ups.battery.current
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: RFC1628 upsBatteryCurrent. Raw units are 0.1 Amp DC.
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      tags:
+      - tag: component
+        value: battery
+    - uuid: e64f12085ad64bb99939161a57778d72
+      name: 'UPS: Battery temperature (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.7.0
+      key: ups.battery.temperature
+      delay: 2m
+      history: 90d
+      units: °C
+      description: 'RFC1628 upsBatteryTemperature: ambient temperature at or near the battery casing. This standard object is authoritative for the default temperature alerts in v1.5.0.'
+      tags:
+      - tag: component
+        value: battery
+      triggers:
+      - uuid: f0333cd160f447cfaf650a1b067e6161
+        expression: last(/VERTIV by SNMP/ups.battery.temperature)>={$UPS.BATTERY.TEMP.WARN} and last(/VERTIV by SNMP/ups.battery.temperature)<{$UPS.BATTERY.TEMP.CRIT}
+        name: UPS battery temperature is high on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
+      - uuid: d19ee731b8cc4ab5af274a11fe9a870a
+        expression: last(/VERTIV by SNMP/ups.battery.temperature)>={$UPS.BATTERY.TEMP.CRIT}
+        name: UPS battery temperature is critically high on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
+    - uuid: 932a0c9b44874a688721f4a0fbedb163
+      name: 'UPS: Diagnostic test result summary (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.7.3.0
+      key: ups.test.results.summary
+      delay: 5m
+      history: 90d
+      description: RFC1628 upsTestResultsSummary (read-only result object).
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: test
+      valuemap:
+        name: UPS RFC1628 test result
+      triggers:
+      - uuid: 5b1fbddf6cff4ba096db2e02e7dad95c
+        expression: last(/VERTIV by SNMP/ups.test.results.summary)=2
+        name: UPS diagnostic test completed with warning on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Result: {ITEM.LASTVALUE1}'
+      - uuid: 37c180451adf4d66ad8e93f8dff7088b
+        expression: last(/VERTIV by SNMP/ups.test.results.summary)=3
+        name: UPS diagnostic test failed on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Result: {ITEM.LASTVALUE1}'
+    - uuid: 46633338efbc4ed1ad52307fe195031d
+      name: 'UPS: Diagnostic test result detail (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.7.4.0
+      key: ups.test.results.detail
+      delay: 5m
+      history: 30d
+      trends: '0'
+      value_type: TEXT
+      description: RFC1628 upsTestResultsDetail (read-only result text).
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: test
+    - uuid: 594f9cff3d544a8691505ea09f6aee3e
+      name: 'UPS: Diagnostic test start uptime marker (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.7.5.0
+      key: ups.test.start.time
+      delay: 5m
+      history: 30d
+      trends: '0'
+      value_type: FLOAT
+      units: s
+      description: RFC1628 upsTestStartTime converted from TimeTicks to seconds. This is a sysUpTime-relative marker, not a wall-clock timestamp.
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.01'
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: test
+    - uuid: 12dd2a4c2a4a4bc8909a10162a44f5ab
+      name: 'UPS: Diagnostic test elapsed time (RFC1628)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.7.6.0
+      key: ups.test.elapsed.time
+      delay: 5m
+      history: 30d
+      trends: '0'
+      value_type: FLOAT
+      units: s
+      description: RFC1628 upsTestElapsedTime converted from TimeTicks to seconds.
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.01'
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: test
     discovery_rules:
     - uuid: 892ca15e79f943fca1a69373351353c9
       name: UPS input lines discovery
@@ -1908,6 +2148,68 @@ zabbix_export:
       lifetime_type: DELETE_AFTER
       enabled_lifetime: 1d
       description: Discovers UPS bypass lines/phases exposed by RFC1628 UPS-MIB.
+    - uuid: 1d7785ede18142b6839265bb6d92fd45
+      name: UPS active alarms discovery
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#UPSALARMDESCR},1.3.6.1.2.1.33.1.6.2.1.2]
+      key: ups.alarm.discovery
+      delay: 1m
+      lifetime: 1d
+      enabled_lifetime_type: DISABLE_AFTER
+      enabled_lifetime: 1h
+      lifetime_type: DELETE_AFTER
+      description: Discovers rows from RFC1628 upsAlarmTable. Each row exists only while the corresponding alarm condition is active. The generic active-alarm count trigger remains the authoritative alert; this discovery provides human-readable diagnostic detail without inventing vendor-private state encodings.
+      item_prototypes:
+      - uuid: 3646246359ae42af9d50cc61097980e9
+        name: 'UPS: Active alarm {#SNMPINDEX}: Description'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.6.2.1.2.{#SNMPINDEX}
+        key: ups.alarm.descr[{#SNMPINDEX}]
+        delay: 1m
+        history: 30d
+        trends: '0'
+        value_type: CHAR
+        description: RFC1628 upsAlarmDescr. Standard well-known alarm OIDs are translated by the value map; implementation-specific OIDs are retained verbatim for troubleshooting.
+        preprocessing:
+        - type: JAVASCRIPT
+          parameters:
+          - '// RFC1628_ALARM_OID_NORMALIZER
+
+            var s = String(value).trim();
+
+            if (s.charAt(0) === ''.'') { s = s.substring(1); }
+
+            return s;'
+        - type: DISCARD_UNCHANGED_HEARTBEAT
+          parameters:
+          - 1h
+        tags:
+        - tag: component
+          value: alarms
+        - tag: scope
+          value: diagnostic
+        valuemap:
+          name: UPS RFC1628 alarm description
+      - uuid: f6d13f16924e4e0881e666b5b3ec95d6
+        name: 'UPS: Active alarm {#SNMPINDEX}: Detected at agent uptime'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.6.2.1.3.{#SNMPINDEX}
+        key: ups.alarm.time[{#SNMPINDEX}]
+        delay: 1m
+        history: 30d
+        trends: '0'
+        value_type: FLOAT
+        units: s
+        description: RFC1628 upsAlarmTime, converted from TimeTicks to seconds. This is the management agent uptime value when the alarm was detected, not a wall-clock timestamp.
+        preprocessing:
+        - type: MULTIPLIER
+          parameters:
+          - '0.01'
+        tags:
+        - tag: component
+          value: alarms
+        - tag: scope
+          value: diagnostic
     macros:
     - macro: '{$UPS.RUNTIME.WARN}'
       value: '10'
@@ -2079,6 +2381,72 @@ zabbix_export:
         newvalue: 20 weeks
       - value: '4'
         newvalue: 26 weeks
+    - uuid: 78eaa78ad0804dd8b0cbdc882218c522
+      name: UPS RFC1628 test result
+      mappings:
+      - value: '1'
+        newvalue: Done - pass
+      - value: '2'
+        newvalue: Done - warning
+      - value: '3'
+        newvalue: Done - error
+      - value: '4'
+        newvalue: Aborted
+      - value: '5'
+        newvalue: In progress
+      - value: '6'
+        newvalue: No tests initiated
+    - uuid: 98febd9d690b410abdb378f21991dbda
+      name: UPS RFC1628 alarm description
+      mappings:
+      - value: 1.3.6.1.2.1.33.1.6.3.1
+        newvalue: Battery bad / replacement required
+      - value: 1.3.6.1.2.1.33.1.6.3.2
+        newvalue: On battery
+      - value: 1.3.6.1.2.1.33.1.6.3.3
+        newvalue: Low battery
+      - value: 1.3.6.1.2.1.33.1.6.3.4
+        newvalue: Depleted battery
+      - value: 1.3.6.1.2.1.33.1.6.3.5
+        newvalue: Temperature out of tolerance
+      - value: 1.3.6.1.2.1.33.1.6.3.6
+        newvalue: Input out of tolerance
+      - value: 1.3.6.1.2.1.33.1.6.3.7
+        newvalue: Output out of tolerance
+      - value: 1.3.6.1.2.1.33.1.6.3.8
+        newvalue: Output overload
+      - value: 1.3.6.1.2.1.33.1.6.3.9
+        newvalue: On bypass
+      - value: 1.3.6.1.2.1.33.1.6.3.10
+        newvalue: Bypass out of tolerance
+      - value: 1.3.6.1.2.1.33.1.6.3.11
+        newvalue: Output off as requested
+      - value: 1.3.6.1.2.1.33.1.6.3.12
+        newvalue: UPS off as requested
+      - value: 1.3.6.1.2.1.33.1.6.3.13
+        newvalue: Charger failed
+      - value: 1.3.6.1.2.1.33.1.6.3.14
+        newvalue: UPS output off
+      - value: 1.3.6.1.2.1.33.1.6.3.15
+        newvalue: UPS system off
+      - value: 1.3.6.1.2.1.33.1.6.3.16
+        newvalue: Fan failure
+      - value: 1.3.6.1.2.1.33.1.6.3.17
+        newvalue: Fuse failure
+      - value: 1.3.6.1.2.1.33.1.6.3.18
+        newvalue: General fault
+      - value: 1.3.6.1.2.1.33.1.6.3.19
+        newvalue: Diagnostic test failed
+      - value: 1.3.6.1.2.1.33.1.6.3.20
+        newvalue: Communications lost
+      - value: 1.3.6.1.2.1.33.1.6.3.21
+        newvalue: Awaiting power
+      - value: 1.3.6.1.2.1.33.1.6.3.22
+        newvalue: Shutdown pending
+      - value: 1.3.6.1.2.1.33.1.6.3.23
+        newvalue: Shutdown imminent
+      - value: 1.3.6.1.2.1.33.1.6.3.24
+        newvalue: Test in progress
     tags:
     - tag: class
       value: power
@@ -2269,27 +2637,15 @@ zabbix_export:
           - type: STRING
             name: bg_color
             value: C8E6C9
-          - type: STRING
-            name: thresholds.0.color
-            value: FFF3CD
-          - type: STRING
-            name: thresholds.0.threshold
-            value: '1'
-          - type: STRING
-            name: thresholds.1.color
-            value: FFE0B2
-          - type: STRING
-            name: thresholds.1.threshold
-            value: '2'
-          - type: STRING
-            name: thresholds.2.color
-            value: FFCDD2
-          - type: STRING
-            name: thresholds.2.threshold
-            value: '3'
           - type: INTEGER
             name: decimal_places
             value: '0'
+          - type: STRING
+            name: thresholds.0.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
         - type: item
           name: Battery status
           x: '38'
@@ -3130,7 +3486,7 @@ zabbix_export:
             name: itemid.0
             value:
               host: VERTIV by SNMP
-              key: vertiv.battery.temperature
+              key: ups.battery.temperature
           - type: INTEGER
             name: show.0
             value: '2'
@@ -3552,20 +3908,6 @@ zabbix_export:
         key: ups.battery.runtime.hours
       yaxisside: RIGHT
     show_work_period: 'NO'
-  - uuid: 6d7b9f0cd3e1470db1be3946e75eb348
-    name: 'UPS: Temperatures'
-    graph_items:
-    - sortorder: '0'
-      color: 199C0D
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.battery.temperature
-    - sortorder: '1'
-      color: F63100
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.inlet.temperature
-    show_work_period: 'NO'
   - uuid: 10644ca3eae74b2c9f3161741a6e4f42
     name: 'UPS: Output power'
     graph_items:
@@ -3579,44 +3921,6 @@ zabbix_export:
       item:
         host: VERTIV by SNMP
         key: vertiv.output.apparent.power
-    show_work_period: 'NO'
-  - uuid: 064f4d061660455896cdce49203ad34f
-    name: 'UPS: Power quality counters'
-    graph_items:
-    - sortorder: '0'
-      color: F63100
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.input.blackout.count
-    - sortorder: '1'
-      color: 6C59DC
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.input.brownout.count
-    - sortorder: '2'
-      color: B0AF07
-      item:
-        host: VERTIV by SNMP
-        key: ups.input.line.bads
-    show_work_period: 'NO'
-  - uuid: feb3f825ea404920a196f0bb51b92daa
-    name: 'UPS: Input phase power'
-    graph_items:
-    - sortorder: '0'
-      color: 199C0D
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.input.power.l1
-    - sortorder: '1'
-      color: F63100
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.input.power.l2
-    - sortorder: '2'
-      color: 2774A4
-      item:
-        host: VERTIV by SNMP
-        key: vertiv.input.power.l3
     show_work_period: 'NO'
   - uuid: 515934afe52244218a5800fc1a35b393
     name: 'UPS: Output phase load'

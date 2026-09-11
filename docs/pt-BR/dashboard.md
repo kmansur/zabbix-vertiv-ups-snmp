@@ -137,7 +137,7 @@ Essa página concentra saúde da bateria, configuração/teste e temperatura amb
 - **Battery charge** — percentual estimado de carga.
 - **Runtime remaining** — autonomia estimada em horas para apresentação.
 - **Battery current** — corrente entrando/saindo da bateria conforme exposta pela MIB privada Vertiv.
-- **Battery temperature** — valor privado de temperatura da bateria informado pela Vertiv.
+- **Battery temperature** — temperatura padronizada RFC1628 (`upsBatteryTemperature`), usada para o card e alertas de produção.
 - **Inlet temperature** — temperatura do ar de entrada/ambiente do nobreak.
 - **Battery test result** — resultado do teste de bateria mais recente.
 - **Shutdown reason** — motivo de shutdown informado pelo equipamento.
@@ -148,16 +148,9 @@ Essa página concentra saúde da bateria, configuração/teste e temperatura amb
 
 `Battery discharges` é um contador histórico. Ele não representa quantidade de baterias nem número de descargas acontecendo simultaneamente.
 
-### Observação importante sobre Battery temperature
+### Temperatura da bateria: padrão x OID privado
 
-No firmware Vertiv validado em campo, o OID privado de temperatura da bateria retorna aproximadamente `-0,1 °C`, enquanto a temperatura de entrada está em torno de 24–25 °C. Isso não é fisicamente plausível para a instalação e pode representar valor sentinela/sensor indisponível ou interpretação específica daquele modelo.
-
-Por esse motivo:
-
-- o item continua sendo coletado e mantido para troubleshooting;
-- o valor continua visível no card;
-- ele **não** participa do gráfico ambiental padrão;
-- o operador deve comparar esse valor com a interface local/web do nobreak antes de utilizá-lo para decisões ambientais.
+A partir da candidata 1.5.0, o card e os triggers de produção usam `upsBatteryTemperature` da RFC1628. O OID privado Vertiv validado anteriormente retornava aproximadamente `-0,1 °C` e passou a ficar **desabilitado por padrão** como métrica experimental. Ele pode ser habilitado manualmente apenas para troubleshooting/model-specific validation.
 
 ### Inlet temperature
 

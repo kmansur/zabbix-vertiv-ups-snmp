@@ -137,7 +137,7 @@ This page concentrates battery health, test/configuration state and environmenta
 - **Battery charge** — estimated charge percentage.
 - **Runtime remaining** — estimated autonomy in hours for display purposes.
 - **Battery current** — current into/out of the battery as exposed by the Vertiv private MIB.
-- **Battery temperature** — private Vertiv battery-temperature value.
+- **Battery temperature** — standardized RFC1628 `upsBatteryTemperature`, used by the production card and alerts.
 - **Inlet temperature** — UPS inlet/ambient-air temperature.
 - **Battery test result** — most recent battery-test state.
 - **Shutdown reason** — last/current shutdown reason reported by the device.

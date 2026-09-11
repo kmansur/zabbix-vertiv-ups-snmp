@@ -8,6 +8,7 @@ workflow removes this builder after the generated commit is verified.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import uuid
@@ -25,8 +26,19 @@ VERSION = "1.5.0"
 VENDOR_VERSION = "1.5-0"
 
 
+_uuid_counter = 0
+
+
+def reset_uuid_counter() -> None:
+    global _uuid_counter
+    _uuid_counter = 0
+
+
 def new_uuid() -> str:
-    return uuid.uuid4().hex
+    global _uuid_counter
+    _uuid_counter += 1
+    seed = hashlib.sha256(f"vertiv-1.5.0-{_uuid_counter}".encode()).digest()[:16]
+    return uuid.UUID(bytes=seed, version=4).hex
 
 
 def tags(component: str, *extra: tuple[str, str]) -> list[dict[str, str]]:
@@ -211,7 +223,10 @@ def alarm_discovery() -> dict:
                     "retained verbatim for troubleshooting."
                 ),
                 "preprocessing": [
-                    {"type": "JAVASCRIPT", "parameters": [normalize_alarm_oid_script()]},
+                    {
+                        "type": "JAVASCRIPT",
+                        "parameters": [normalize_alarm_oid_script()],
+                    },
                     discard_unchanged("1h"),
                 ],
                 "tags": tags("alarms", ("scope", "diagnostic")),
@@ -289,7 +304,7 @@ def harden_dashboard(template: dict) -> None:
                 value = item_fields[0].get("value")
                 if not isinstance(value, dict):
                     continue
-                key = value.get("key")
+                value.get("key")
                 if widget.get("name") == "Battery temperature":
                     value["key"] = "ups.battery.temperature"
                 if widget.get("name") == "Active alarms":
@@ -320,6 +335,7 @@ def harden_dashboard(template: dict) -> None:
 
 
 def transform_template(path: Path) -> None:
+    reset_uuid_counter()
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     export = data["zabbix_export"]
     template = export["templates"][0]
@@ -637,11 +653,13 @@ def transform_template(path: Path) -> None:
         "UPS: Temperatures",
     }
     export["graphs"] = [
-        graph for graph in export.get("graphs", []) if graph.get("name") not in obsolete_graphs
+        graph
+        for graph in export.get("graphs", [])
+        if graph.get("name") not in obsolete_graphs
     ]
 
     class NoAliasDumper(yaml.SafeDumper):
-        def ignore_aliases(self, data):  # noqa: ANN001
+        def ignore_aliases(self, data):
             return True
 
     rendered = yaml.dump(
@@ -746,7 +764,10 @@ def write_production_docs() -> None:
 
 
 def update_doc_indexes() -> None:
-    for path, pt in ((ROOT / "docs/en/README.md", False), (ROOT / "docs/pt-BR/README.md", True)):
+    for path, pt in (
+        (ROOT / "docs/en/README.md", False),
+        (ROOT / "docs/pt-BR/README.md", True),
+    ):
         text = path.read_text(encoding="utf-8")
         if "mib-sources.md" in text:
             continue
@@ -794,7 +815,10 @@ def update_existing_docs() -> None:
         path.write_text(text, encoding="utf-8")
 
     # Electrical summary: legacy input-power graph is no longer part of production export.
-    for path, pt in ((ROOT / "docs/en/electrical-summary.md", False), (ROOT / "docs/pt-BR/electrical-summary.md", True)):
+    for path, pt in (
+        (ROOT / "docs/en/electrical-summary.md", False),
+        (ROOT / "docs/pt-BR/electrical-summary.md", True),
+    ):
         text = path.read_text(encoding="utf-8")
         if pt:
             text = re.sub(
@@ -810,7 +834,10 @@ def update_existing_docs() -> None:
         path.write_text(text, encoding="utf-8")
 
     # SNMP docs: add heartbeat/alarm-table path.
-    for path, pt in ((ROOT / "docs/en/snmp.md", False), (ROOT / "docs/pt-BR/snmp.md", True)):
+    for path, pt in (
+        (ROOT / "docs/en/snmp.md", False),
+        (ROOT / "docs/pt-BR/snmp.md", True),
+    ):
         text = path.read_text(encoding="utf-8")
         if "upsAlarmTable" in text:
             continue
@@ -821,7 +848,10 @@ def update_existing_docs() -> None:
         path.write_text(text.rstrip() + "\n" + addition, encoding="utf-8")
 
     # Metrics: append 1.5 additions rather than rewriting the large tables.
-    for path, pt in ((ROOT / "docs/en/metrics.md", False), (ROOT / "docs/pt-BR/metrics.md", True)):
+    for path, pt in (
+        (ROOT / "docs/en/metrics.md", False),
+        (ROOT / "docs/pt-BR/metrics.md", True),
+    ):
         text = path.read_text(encoding="utf-8")
         if "ups.snmp.uptime" in text:
             continue
@@ -845,7 +875,10 @@ def update_security_docs() -> None:
 
 
 def update_changelogs() -> None:
-    for path, pt in ((ROOT / "CHANGELOG.md", False), (ROOT / "CHANGELOG.pt-BR.md", True)):
+    for path, pt in (
+        (ROOT / "CHANGELOG.md", False),
+        (ROOT / "CHANGELOG.pt-BR.md", True),
+    ):
         text = path.read_text(encoding="utf-8")
         if "## [1.5.0]" in text:
             continue
@@ -1165,7 +1198,7 @@ if __name__ == "__main__":
 
 
 def write_tests() -> None:
-    test = r'''from pathlib import Path
+    test = r"""from pathlib import Path
 
 import yaml
 
@@ -1197,7 +1230,7 @@ def test_alarm_discovery_is_diagnostic_not_trigger_spam():
         assert not rule.get("trigger_prototypes")
         for proto in rule["item_prototypes"]:
             assert not proto.get("trigger_prototypes")
-'''
+"""
     (ROOT / "tests/test_validate_production.py").write_text(test, encoding="utf-8")
 
 
@@ -1210,7 +1243,7 @@ def update_ci_workflow() -> None:
             "      - name: Validate bilingual documentation parity\n        run: python tools/validate_docs.py\n\n      - name: Validate production readiness\n        run: python tools/validate_production.py\n",
         )
     if "zabbix-import:" not in text:
-        text += r'''
+        text += r"""
 
   zabbix-import:
     name: Zabbix 7.0 real import
@@ -1267,7 +1300,7 @@ def update_ci_workflow() -> None:
           docker logs zabbix-db || true
           docker logs zabbix-server || true
           docker logs zabbix-web || true
-'''
+"""
     path.write_text(text, encoding="utf-8")
 
 
@@ -1283,7 +1316,7 @@ def update_release_workflow() -> None:
     # disposable supported Zabbix 7 stack.
     if "Production import gate" not in text:
         marker = "      - name: Build release assets\n"
-        block = r'''      - name: Production import gate
+        block = r"""      - name: Production import gate
         shell: bash
         run: |
           set -euo pipefail
@@ -1305,7 +1338,7 @@ def update_release_workflow() -> None:
             zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
           python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 240
 
-'''
+"""
         text = text.replace(marker, block + marker, 1)
     path.write_text(text, encoding="utf-8")
 

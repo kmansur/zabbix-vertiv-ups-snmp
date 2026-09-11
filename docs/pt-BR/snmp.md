@@ -65,3 +65,9 @@ Um item de trap desabilitado é fornecido para a árvore privada Vertiv. Antes d
 5. somente então adicione preprocessing e triggers específicos dos eventos.
 
 Isso evita assumir incorretamente o formato de trap das diferentes placas de gerenciamento.
+
+## Disponibilidade e diagnóstico padronizado na candidata 1.5.0
+
+- `sysUpTime.0` (`1.3.6.1.2.1.1.3.0`) é coletado a cada minuto sem descarte de valores repetidos e alimenta o trigger de indisponibilidade SNMP por `nodata(5m)`.
+- `upsAlarmTable` (`1.3.6.1.2.1.33.1.6.2`) é descoberta dinamicamente para identificar alarmes ativos pelo OID de descrição.
+- `upsTestResultsSummary/Detail/StartTime/ElapsedTime` são lidos para diagnosticar testes; os objetos de comando `upsTestId`/`upsTestSpinLock` não são usados para iniciar testes.

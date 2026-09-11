@@ -25,3 +25,9 @@ Se o problema puder ser descrito com segurança sem informações sensíveis, ab
 O template mantido foi projetado para **monitoramento SNMP somente leitura**. Ele não inclui reboot, shutdown, chaveamento de tomadas ou outras ações SNMP de escrita.
 
 SNMPv3 com autenticação e privacidade é recomendado quando suportado pelo equipamento. Quando SNMPv2c for necessário, restrinja o acesso à community por IP de origem e política de rede.
+
+## Objetos RFC1628 read-write
+
+Alguns objetos padronizados, como `upsIdentName`, são definidos pelo RFC1628 como read-write. O template apenas os consulta por SNMP GET. Objetos de controle da UPS-MIB (`1.3.6.1.2.1.33.1.8`) e os objetos usados para iniciar/abortar testes (`upsTestId`/`upsTestSpinLock`) não fazem parte da lógica de controle deste projeto. A candidata 1.5.0 lê somente os objetos de **resultado** dos testes.
+
+Métricas privadas com escala/semântica não comprovada ficam desabilitadas por padrão e não alimentam alertas críticos.

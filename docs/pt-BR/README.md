@@ -30,3 +30,7 @@ Após a primeira importação, compare os valores do Zabbix com o LCD/interface 
 Versão atual: **1.1.0**.
 
 Consulte [Versionamento](versioning.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
+
+- [Fontes MIB/OID e proveniência](mib-sources.md)
+- [Matriz de compatibilidade](compatibility.md)
+- [Prontidão para produção e homologação](production-readiness.md)

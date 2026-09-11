@@ -14,6 +14,28 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.5.0] - Não lançado (candidata para homologação)
+
+### Adicionado
+
+- Heartbeat SNMP dedicado por `sysUpTime.0`, trigger de indisponibilidade por `nodata(5m)` e aviso de reset do agente.
+- Identificação RFC1628, corrente/temperatura de bateria padronizadas e resultados somente leitura de testes diagnósticos.
+- Descoberta de `upsAlarmTable` com value map dos 24 alarmes conhecidos da RFC1628.
+- Proveniência MIB/OID, matriz de compatibilidade e checklist de homologação de produção.
+- Validador específico de produção e teste CI de importação via API em Zabbix 7 real.
+
+### Alterado
+
+- Alertas de temperatura de bateria passam a usar `upsBatteryTemperature` RFC1628.
+- Alertas de carga permanecem nos protótipos `upsOutputPercentLoad` RFC1628; o agregado privado deixa de gerar trigger.
+- Card de alarmes fica vermelho para qualquer quantidade positiva, evitando sugerir severidade pela contagem.
+
+### Segurança / confiabilidade
+
+- Potência privada de entrada e temperatura privada de bateria ficam desabilitadas por padrão.
+- Gráficos legados baseados em métricas experimentais/contadores cumulativos foram removidos.
+- Nenhum OID de controle/escrita foi adicionado.
+
 ## [1.4.1] - 2026-09-11
 
 ### Corrigido

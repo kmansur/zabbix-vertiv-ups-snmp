@@ -144,3 +144,22 @@ Prototypes:
 Standard UPS-MIB scaling is applied where defined by RFC 1628, such as tenths of hertz, tenths of ampere, or tenths of volt for the corresponding objects.
 
 No arbitrary scaling multiplier is applied to Vertiv enterprise OIDs unless the supplied SNMP definition establishes it. Always compare vendor-specific values with the UPS LCD/web interface during commissioning.
+
+## Production additions in 1.5.0
+
+| Key | OID | Purpose |
+| --- | --- | --- |
+| `ups.snmp.uptime` | `1.3.6.1.2.1.1.3.0` | SNMP heartbeat / availability |
+| `ups.ident.manufacturer` | `1.3.6.1.2.1.33.1.1.1.0` | RFC1628 identification |
+| `ups.ident.model` | `1.3.6.1.2.1.33.1.1.2.0` | RFC1628 identification |
+| `ups.ident.ups.software` | `1.3.6.1.2.1.33.1.1.3.0` | UPS software/firmware |
+| `ups.ident.agent.software` | `1.3.6.1.2.1.33.1.1.4.0` | agent software |
+| `ups.ident.name` | `1.3.6.1.2.1.33.1.1.5.0` | administrative name (read only in this template) |
+| `ups.battery.current` | `1.3.6.1.2.1.33.1.2.6.0` | RFC1628 battery current, 0.1 A scale |
+| `ups.battery.temperature` | `1.3.6.1.2.1.33.1.2.7.0` | RFC1628 battery temperature |
+| `ups.test.results.summary` | `1.3.6.1.2.1.33.1.7.3.0` | diagnostic test result |
+| `ups.test.results.detail` | `1.3.6.1.2.1.33.1.7.4.0` | diagnostic test detail |
+| `ups.test.start.time` | `1.3.6.1.2.1.33.1.7.5.0` | test-start TimeTicks marker |
+| `ups.test.elapsed.time` | `1.3.6.1.2.1.33.1.7.6.0` | diagnostic test duration |
+
+Discovery key `ups.alarm.discovery` uses `upsAlarmDescr` (`...33.1.6.2.1.2`) and `upsAlarmTime` (`...33.1.6.2.1.3`) to list active conditions.
