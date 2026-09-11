@@ -1,0 +1,185 @@
+name: Normalize template metadata
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+
+      - name: Normalize directories, metadata and references
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git mv templates/zabbix-7.0 templates/7.0
+          git mv templates/zabbix-8.0 templates/8.0
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          project_version = Path('VERSION').read_text(encoding='utf-8').strip()
+          major, minor, patch = project_version.split('.')
+          vendor_version = f'{major}.{minor}-{patch}'
+
+          # Update all repository references to the versioned template directories.
+          skip_dirs = {'.git', '.ruff_cache', '.pytest_cache', '__pycache__'}
+          for path in root.rglob('*'):
+              if not path.is_file() or any(part in skip_dirs for part in path.parts):
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = text.replace('templates/zabbix-7.0', 'templates/7.0')
+              new = new.replace('templates/zabbix-8.0', 'templates/8.0')
+              if path == Path('tools/validate_templates.py'):
+                  new = new.replace('ROOT / "templates" / "zabbix-7.0"', 'ROOT / "templates" / "7.0"')
+                  new = new.replace('ROOT / "templates" / "zabbix-8.0"', 'ROOT / "templates" / "8.0"')
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+
+          # Put vendor metadata in the canonical position used by the Advanced ICMP template.
+          for export_version in ('7.0', '8.0'):
+              path = Path('templates') / export_version / 'vertiv-by-snmp.yaml'
+              text = path.read_text(encoding='utf-8')
+
+              # Remove any existing vendor block wherever it currently appears.
+              text, count = re.subn(
+                  r'\n    vendor:\n      name:\s*[\'\"]?Net Tech[\'\"]?\n      version:\s*[^\n]+\n',
+                  '\n',
+                  text,
+                  count=1,
+              )
+              if count != 1:
+                  raise SystemExit(f'Expected exactly one existing vendor block in {path}, found {count}')
+
+              marker = f"      Export target: Zabbix {export_version}.'\n"
+              vendor_block = (
+                  "    vendor:\n"
+                  "      name: 'Net Tech'\n"
+                  f"      version: {vendor_version}\n"
+              )
+              if marker not in text:
+                  raise SystemExit(f'Could not locate description end marker in {path}')
+              text = text.replace(marker, marker + vendor_block, 1)
+              path.write_text(text, encoding='utf-8')
+
+          # Make the validator compare Semantic Versioning with Zabbix's X.Y-Z vendor format.
+          validator = Path('tools/validate_templates.py')
+          text = validator.read_text(encoding='utf-8')
+
+          load_version_block = '''def load_version() -> str:\n    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()\n    if not SEMVER_RE.fullmatch(version):\n        raise ValidationError(f"VERSION is not Semantic Versioning: {version!r}")\n    return version\n'''
+          replacement_block = load_version_block + '''\n\ndef zabbix_vendor_version(project_version: str) -> str:\n    """Convert project SemVer X.Y.Z to the Zabbix vendor version X.Y-Z."""\n    major, minor, patch = project_version.split(".")\n    return f"{major}.{minor}-{patch}"\n'''
+          if load_version_block not in text:
+              raise SystemExit('Could not locate load_version() block in validator')
+          text = text.replace(load_version_block, replacement_block, 1)
+
+          old_check = '''    if str(vendor.get("version")) != project_version:\n        errors.append(\n            f"vendor.version={vendor.get('version')!r}; expected {project_version!r}"\n        )\n'''
+          new_check = '''    expected_vendor_version = zabbix_vendor_version(project_version)\n    if str(vendor.get("version")) != expected_vendor_version:\n        errors.append(\n            f"vendor.version={vendor.get('version')!r}; expected {expected_vendor_version!r}"\n        )\n'''
+          if old_check not in text:
+              raise SystemExit('Could not locate vendor.version validation block')
+          text = text.replace(old_check, new_check, 1)
+          validator.write_text(text, encoding='utf-8')
+
+          # Add a regression test for the Zabbix vendor version format.
+          test_file = Path('tests/test_validate_templates.py')
+          text = test_file.read_text(encoding='utf-8')
+          anchor = '''def test_version_is_semver():\n    assert validate_templates.SEMVER_RE.fullmatch(validate_templates.load_version())\n'''
+          test = anchor + '''\n\ndef test_zabbix_vendor_version_format():\n    assert validate_templates.zabbix_vendor_version("1.1.0") == "1.1-0"\n'''
+          if anchor not in text:
+              raise SystemExit('Could not locate version test anchor')
+          text = text.replace(anchor, test, 1)
+          test_file.write_text(text, encoding='utf-8')
+
+          # Clarify the two version formats in the main READMEs and versioning docs.
+          replacements = {
+              Path('README.md'): (
+                  'For a release, these values must agree:\n\n```text\nVERSION\nZabbix vendor.version in every maintained export\nGit tag (vX.Y.Z)\nGitHub Release\n```',
+                  'For a release, the project version uses Semantic Versioning (`X.Y.Z`), while Zabbix `vendor.version` uses the equivalent `X.Y-Z` format. For example, project version `1.1.0` is exported as `vendor.version: 1.1-0`.\n\n```text\nVERSION / Git tag / GitHub Release: X.Y.Z\nZabbix vendor.version: X.Y-Z\n```',
+              ),
+              Path('README.pt-BR.md'): (
+                  'Para um release, estes valores devem ser iguais:\n\n```text\nVERSION\nZabbix vendor.version em todos os exports mantidos\nGit tag (vX.Y.Z)\nGitHub Release\n```',
+                  'Para um release, a versão do projeto usa Semantic Versioning (`X.Y.Z`), enquanto o `vendor.version` do Zabbix usa o formato equivalente `X.Y-Z`. Por exemplo, a versão `1.1.0` do projeto é exportada como `vendor.version: 1.1-0`.\n\n```text\nVERSION / Git tag / GitHub Release: X.Y.Z\nZabbix vendor.version: X.Y-Z\n```',
+              ),
+          }
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Could not locate versioning paragraph in {path}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          en = Path('docs/en/versioning.md')
+          text = en.read_text(encoding='utf-8')
+          old = '''Before creating a tag, all of these must contain the same version:\n\n```text\nVERSION\ntemplates/7.0/... vendor.version\ntemplates/8.0/... vendor.version\nGit tag vX.Y.Z\nGitHub Release\n```\n\nThe release workflow validates the tag against `VERSION` and validates both template exports before publishing the release archive.'''
+          new = '''Before creating a tag, the project release identifiers use Semantic Versioning (`X.Y.Z`) and the Zabbix template metadata uses the equivalent vendor format (`X.Y-Z`):\n\n```text\nVERSION: X.Y.Z\ntemplates/7.0/... vendor.version: X.Y-Z\ntemplates/8.0/... vendor.version: X.Y-Z\nGit tag: vX.Y.Z\nGitHub Release: vX.Y.Z\n```\n\nFor example, project version `1.1.0` is exported as `vendor.version: 1.1-0`. The release workflow validates the tag against `VERSION` and validates both template exports before publishing the release archive.'''
+          if old not in text:
+              raise SystemExit('Could not locate English release consistency block')
+          en.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          pt = Path('docs/pt-BR/versioning.md')
+          text = pt.read_text(encoding='utf-8')
+          # Replace the corresponding block by headings to avoid relying on punctuation differences.
+          start = text.index('## Consistência do release')
+          end = text.index('## Compatibilidade com Zabbix', start)
+          new_section = '''## Consistência do release\n\nAntes de criar uma tag, os identificadores do projeto usam Semantic Versioning (`X.Y.Z`) e os metadados do template Zabbix usam o formato de vendor equivalente (`X.Y-Z`):\n\n```text\nVERSION: X.Y.Z\ntemplates/7.0/... vendor.version: X.Y-Z\ntemplates/8.0/... vendor.version: X.Y-Z\nGit tag: vX.Y.Z\nGitHub Release: vX.Y.Z\n```\n\nPor exemplo, a versão `1.1.0` do projeto é exportada como `vendor.version: 1.1-0`. O workflow de release valida a tag contra o arquivo `VERSION` e valida os dois exports antes de publicar o pacote.\n\n'''
+          pt.write_text(text[:start] + new_section + text[end:], encoding='utf-8')
+
+          # Verify directory names and metadata after transformation.
+          for export_version in ('7.0', '8.0'):
+              path = Path('templates') / export_version / 'vertiv-by-snmp.yaml'
+              text = path.read_text(encoding='utf-8')
+              expected = f"    vendor:\n      name: 'Net Tech'\n      version: {vendor_version}\n"
+              if text.count(expected) != 1:
+                  raise SystemExit(f'Invalid vendor metadata in {path}')
+
+          if Path('templates/zabbix-7.0').exists() or Path('templates/zabbix-8.0').exists():
+              raise SystemExit('Old template directories still exist')
+          PY
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Validate changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m compileall -q tools tests
+          ruff check tools tests
+          ruff format --check tools tests
+          pytest -q
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+
+      - name: Commit normalized structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore: normalize template metadata and version directories'
+          git push origin HEAD:main
