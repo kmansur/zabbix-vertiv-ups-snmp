@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Validate the versioned VERTIV by SNMP Zabbix templates."""
 
 from __future__ import annotations
@@ -37,14 +36,17 @@ FORBIDDEN_OID_PREFIXES = (
     "1.3.6.1.4.1.476.1.42.2.5.1",  # Vertiv/Liebert agent reboot
 )
 
+
 class ValidationError(Exception):
     """Raised when repository template validation fails."""
+
 
 def load_version() -> str:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     if not SEMVER_RE.fullmatch(version):
         raise ValidationError(f"VERSION is not Semantic Versioning: {version!r}")
     return version
+
 
 def load_template(path: Path) -> dict[str, Any]:
     if not path.is_file():
@@ -57,6 +59,7 @@ def load_template(path: Path) -> dict[str, Any]:
         raise ValidationError(f"Template root must be a mapping: {path}")
     return data
 
+
 def walk_objects(value: Any):
     if isinstance(value, dict):
         yield value
@@ -66,12 +69,14 @@ def walk_objects(value: Any):
         for child in value:
             yield from walk_objects(child)
 
+
 def collect_uuids(data: dict[str, Any]) -> list[str]:
     uuids: list[str] = []
     for obj in walk_objects(data):
         if "uuid" in obj:
             uuids.append(str(obj["uuid"]))
     return uuids
+
 
 def collect_trigger_objects(template: dict[str, Any]) -> list[dict[str, Any]]:
     triggers: list[dict[str, Any]] = []
@@ -84,6 +89,7 @@ def collect_trigger_objects(template: dict[str, Any]) -> list[dict[str, Any]]:
     triggers.extend(template.get("triggers", []))
     return triggers
 
+
 def collect_item_keys(template: dict[str, Any]) -> tuple[list[str], list[str]]:
     fixed = [str(item["key"]) for item in template.get("items", [])]
     prototypes: list[str] = []
@@ -91,7 +97,10 @@ def collect_item_keys(template: dict[str, Any]) -> tuple[list[str], list[str]]:
         prototypes.extend(str(item["key"]) for item in rule.get("item_prototypes", []))
     return fixed, prototypes
 
-def validate_one(export_version: str, data: dict[str, Any], project_version: str) -> None:
+
+def validate_one(
+    export_version: str, data: dict[str, Any], project_version: str
+) -> None:
     errors: list[str] = []
 
     export = data.get("zabbix_export")
@@ -128,9 +137,7 @@ def validate_one(export_version: str, data: dict[str, Any], project_version: str
     if EXPECTED_GROUP not in groups:
         errors.append(f"template must belong to {EXPECTED_GROUP!r}")
 
-    export_groups = {
-        str(g.get("name")) for g in export.get("template_groups", [])
-    }
+    export_groups = {str(g.get("name")) for g in export.get("template_groups", [])}
     if EXPECTED_GROUP not in export_groups:
         errors.append(f"export must define template group {EXPECTED_GROUP!r}")
 
@@ -202,9 +209,7 @@ def validate_one(export_version: str, data: dict[str, Any], project_version: str
                 )
 
     trap_items = [
-        item
-        for item in template.get("items", [])
-        if item.get("type") == "SNMP_TRAP"
+        item for item in template.get("items", []) if item.get("type") == "SNMP_TRAP"
     ]
     for item in trap_items:
         if item.get("status") != "DISABLED":
@@ -218,6 +223,7 @@ def validate_one(export_version: str, data: dict[str, Any], project_version: str
             f"Zabbix {export_version} template validation failed:\n  - {joined}"
         )
 
+
 def semantic_copy(data: dict[str, Any]) -> dict[str, Any]:
     normalized = copy.deepcopy(data)
     export = normalized["zabbix_export"]
@@ -230,26 +236,22 @@ def semantic_copy(data: dict[str, Any]) -> dict[str, Any]:
     template["description"] = description
     return normalized
 
-def validate_semantic_parity(
-    v7: dict[str, Any], v8: dict[str, Any]
-) -> None:
+
+def validate_semantic_parity(v7: dict[str, Any], v8: dict[str, Any]) -> None:
     if semantic_copy(v7) != semantic_copy(v8):
         raise ValidationError(
             "Zabbix 7.0 and 8.0 templates differ beyond the export-version marker"
         )
 
+
 def run() -> None:
     project_version = load_version()
-    loaded = {
-        version: load_template(path) for version, path in TEMPLATE_FILES.items()
-    }
+    loaded = {version: load_template(path) for version, path in TEMPLATE_FILES.items()}
     for version, data in loaded.items():
         validate_one(version, data, project_version)
     validate_semantic_parity(loaded["7.0"], loaded["8.0"])
-    print(
-        f"OK: validated VERTIV by SNMP {project_version} "
-        "for Zabbix 7.0 and 8.0"
-    )
+    print(f"OK: validated VERTIV by SNMP {project_version} for Zabbix 7.0 and 8.0")
+
 
 if __name__ == "__main__":
     try:

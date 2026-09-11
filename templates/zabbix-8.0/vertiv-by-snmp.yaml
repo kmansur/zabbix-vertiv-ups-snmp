@@ -1,0 +1,1288 @@
+# SPDX-License-Identifier: MIT
+# Copyright (C) 2026 Karim Mansur / Net Tech
+# See NOTICE.md for attribution to the original Vertiv template reference.
+zabbix_export:
+  version: '8.0'
+  template_groups:
+  - uuid: eb327d7746314d7eb80c6a951435cd00
+    name: Templates/Power
+  templates:
+  - uuid: eb9851170d614754903e231093437956
+    template: VERTIV by SNMP
+    name: VERTIV by SNMP
+    description: 'VERTIV by SNMP
+
+
+      Read-only Zabbix template for monitoring Vertiv/Liebert UPS systems by SNMP.
+
+
+      Monitoring model:
+
+      - RFC 1628 UPS-MIB (1.3.6.1.2.1.33) for standardized UPS measurements.
+
+      - Vertiv/Liebert enterprise MIB (1.3.6.1.4.1.476.1.42) for vendor-specific status and metrics.
+
+      - Dynamic discovery of input, output and bypass lines/phases.
+
+      - Configurable trigger thresholds through user macros.
+
+      - No reboot, shutdown, outlet-control or other write OIDs are included.
+
+
+      Project: https://github.com/kmansur/zabbix-vertiv-ups-snmp
+
+      Reference template: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+      Original reference author: Mihguel da Silva Santos Tavares de Araujo.
+
+      Maintained and substantially rewritten by Karim Mansur / Net Tech.
+
+
+      License: MIT for the original work in this repository. See LICENSE and NOTICE.md for attribution
+      and third-party licensing notes.
+
+
+      Important: Vertiv enterprise OID scaling and availability can vary by UPS model/management card. Validate values against the UPS LCD/web
+      interface after import.
+
+
+      Export target: Zabbix 8.0.'
+    groups:
+    - name: Templates/Power
+    items:
+    - uuid: 0acbe36282c64d0cbeef535d47bcab41
+      name: 'UPS: Agent manufacturer'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.2.1.1.0
+      key: vertiv.agent.manufacturer
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 9800ffdb001c4d0cbbc0c6985bc701d5
+      name: 'UPS: Agent model'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.2.1.2.0
+      key: vertiv.agent.model
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 38aed517d6a148eaa32e75137e5a38d8
+      name: 'UPS: Agent firmware version'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.2.1.3.0
+      key: vertiv.agent.firmware
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 5573249cedec4b718b1bf4fb31fde31d
+      name: 'UPS: Agent serial number'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.2.1.4.0
+      key: vertiv.agent.serial
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 4c8ada02c75c4b2fac45a839ead6312e
+      name: 'UPS: System model'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4240
+      key: vertiv.system.model
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 06a5c47396dd42fbb76069972f96c3df
+      name: 'UPS: System serial number'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4244
+      key: vertiv.system.serial
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 1968ad9bf7c941c9892c4f4c00542554
+      name: 'UPS: Firmware version'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4335
+      key: vertiv.system.firmware
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 0bb9ef8dce534e5c84120b091f83050c
+      name: 'UPS: System name'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4329
+      key: vertiv.system.name
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+    - uuid: 33d164a0f0954b9ca80fa29ee624cd66
+      name: 'UPS: System status'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4123
+      key: vertiv.system.status
+      delay: 30s
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: Vertiv system status
+      triggers:
+      - uuid: 25b91855962549b5819339f0ec7d0b0d
+        expression: last(/VERTIV by SNMP/vertiv.system.status)=8
+        name: UPS has a warning on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Status: {ITEM.LASTVALUE1}'
+      - uuid: 804bd8bc5296432398ba117c5883cebe
+        expression: last(/VERTIV by SNMP/vertiv.system.status)=16
+        name: UPS has an active alarm on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Status: {ITEM.LASTVALUE1}'
+      - uuid: a7435356eceb4a8f9568f91e71e71ac0
+        expression: last(/VERTIV by SNMP/vertiv.system.status)=32
+        name: UPS abnormal operation on {HOST.NAME}
+        priority: DISASTER
+        opdata: 'Status: {ITEM.LASTVALUE1}'
+    - uuid: 4060633defbf497490193cd4fcdb63d0
+      name: 'UPS: Output source'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.4.1.0
+      key: ups.output.source
+      delay: 30s
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: UPS output source
+      triggers:
+      - uuid: 155e45403d274d08a3de64371441b52a
+        expression: last(/VERTIV by SNMP/ups.output.source)=2
+        name: UPS output is OFF on {HOST.NAME}
+        priority: DISASTER
+        opdata: 'Source: {ITEM.LASTVALUE1}'
+      - uuid: dd1ed3fd7f924293b2599d72a62ee8b8
+        expression: last(/VERTIV by SNMP/ups.output.source)=4
+        name: UPS is operating on bypass on {HOST.NAME}
+        priority: AVERAGE
+        opdata: 'Source: {ITEM.LASTVALUE1}'
+      - uuid: 896e54062453422980caaa27f44ae2db
+        expression: last(/VERTIV by SNMP/ups.output.source)=5
+        name: UPS is operating on battery on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Source: {ITEM.LASTVALUE1}'
+    - uuid: 92f2a22e7d0241318a10c158481933bc
+      name: 'UPS: Alarms present'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.6.1.0
+      key: ups.alarms.present
+      delay: 30s
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1h
+      tags:
+      - tag: component
+        value: status
+      triggers:
+      - uuid: e48bcd10e3de46d7b8268a764e51943b
+        expression: last(/VERTIV by SNMP/ups.alarms.present)>0
+        name: UPS reports active alarm(s) on {HOST.NAME}
+        priority: AVERAGE
+        opdata: 'Active alarms: {ITEM.LASTVALUE1}'
+    - uuid: 398961ebd26940ca96e6ff1f065ebbee
+      name: 'UPS: Inverter state'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4746
+      key: vertiv.inverter.state
+      delay: 1m
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: Vertiv on/off
+    - uuid: be7fbc58df5f4008ab62100efbca1742
+      name: 'UPS: ECO mode status'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6198
+      key: vertiv.eco.status
+      delay: 5m
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: Vertiv on/off
+    - uuid: 428c8bb4f10e417898071c88bf7125ea
+      name: 'UPS: Topology'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6199
+      key: vertiv.topology
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: Vertiv UPS topology
+    - uuid: 6a217af7d9be4141a8daeaf7b2e16477
+      name: 'UPS: Shutdown reason'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6197
+      key: vertiv.shutdown.reason
+      delay: 5m
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: status
+      valuemap:
+        name: Vertiv shutdown reason
+    - uuid: afd5baad1dd54e10b1d60e7fa5ace32f
+      name: 'UPS: Battery status'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.1.0
+      key: ups.battery.status
+      delay: 30s
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: UPS battery status
+      triggers:
+      - uuid: c6fc3c42b3364bebb9180089126d1d5d
+        expression: last(/VERTIV by SNMP/ups.battery.status)=3
+        name: UPS battery is low on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Battery status: {ITEM.LASTVALUE1}'
+      - uuid: 9eea34e49bcb42d696473f1a1e5cc276
+        expression: last(/VERTIV by SNMP/ups.battery.status)=4
+        name: UPS battery is depleted on {HOST.NAME}
+        priority: DISASTER
+        opdata: 'Battery status: {ITEM.LASTVALUE1}'
+    - uuid: c9ce2948c08449aeb9547fa83164f144
+      name: 'UPS: Seconds on battery'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.2.0
+      key: ups.battery.seconds
+      delay: 30s
+      history: 90d
+      units: s
+      tags:
+      - tag: component
+        value: battery
+    - uuid: 8e18cee0f04346859509fa6780e3fe04
+      name: 'UPS: Estimated runtime remaining'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.3.0
+      key: ups.battery.runtime
+      delay: 30s
+      history: 90d
+      units: min
+      tags:
+      - tag: component
+        value: battery
+      triggers:
+      - uuid: 2a10a41a0f634267ad1627b8c6aedd1e
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.runtime)<{$UPS.RUNTIME.WARN} and last(/VERTIV
+          by SNMP/ups.battery.runtime)>={$UPS.RUNTIME.CRIT}
+        name: UPS battery runtime is low on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Runtime: {ITEM.LASTVALUE1} min'
+      - uuid: 6ad3c45f0e55428bbbc53194d6059b8b
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.runtime)<{$UPS.RUNTIME.CRIT}
+        name: UPS battery runtime is critically low on {HOST.NAME}
+        priority: DISASTER
+        opdata: 'Runtime: {ITEM.LASTVALUE1} min'
+    - uuid: acfc956817c34926b6f6036fddadbff0
+      name: 'UPS: Estimated battery charge'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.4.0
+      key: ups.battery.charge
+      delay: 30s
+      history: 90d
+      units: '%'
+      tags:
+      - tag: component
+        value: battery
+      triggers:
+      - uuid: 09e7758063c248d696b656cadc9c11c4
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.charge)<{$UPS.BATTERY.CHARGE.WARN} and last(/VERTIV
+          by SNMP/ups.battery.charge)>={$UPS.BATTERY.CHARGE.CRIT}
+        name: UPS battery charge is low on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Charge: {ITEM.LASTVALUE1} %'
+      - uuid: fc8dc627c293413d9c8d2c81b39c6da6
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.charge)<{$UPS.BATTERY.CHARGE.CRIT}
+        name: UPS battery charge is critically low on {HOST.NAME}
+        priority: DISASTER
+        opdata: 'Charge: {ITEM.LASTVALUE1} %'
+    - uuid: 04b66e47bdd147e0b4a851603cb2a12f
+      name: 'UPS: Battery voltage'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.2.5.0
+      key: ups.battery.voltage
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      tags:
+      - tag: component
+        value: battery
+    - uuid: adb5762455784a5b8f861f83d26b69dc
+      name: 'UPS: Battery current'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4149
+      key: vertiv.battery.current
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      tags:
+      - tag: component
+        value: battery
+    - uuid: bd1cd5617caf48dfb64575644a3c04e4
+      name: 'UPS: Battery temperature'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4156
+      key: vertiv.battery.temperature
+      delay: 2m
+      history: 90d
+      value_type: FLOAT
+      units: °C
+      tags:
+      - tag: component
+        value: battery
+      triggers:
+      - uuid: 652440d8405a4ea8bafbbed3c33d5204
+        expression: last(/VERTIV by SNMP/vertiv.battery.temperature)>={$UPS.BATTERY.TEMP.WARN} and last(/VERTIV by SNMP/vertiv.battery.temperature)<{$UPS.BATTERY.TEMP.CRIT}
+        name: UPS battery temperature is high on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
+      - uuid: 876adecddc394b0c8e1529a9b3424d8c
+        expression: last(/VERTIV by SNMP/vertiv.battery.temperature)>={$UPS.BATTERY.TEMP.CRIT}
+        name: UPS battery temperature is critically high on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Battery temperature: {ITEM.LASTVALUE1} °C'
+    - uuid: 933b0e2ef1bb46ebb319fdd548fe0d73
+      name: 'UPS: Battery charge state'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5799
+      key: vertiv.battery.charge.status
+      delay: 1m
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: Vertiv battery charge status
+    - uuid: e6706dde2baa4b64b33922d5d3131c19
+      name: 'UPS: Battery test result'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6181
+      key: vertiv.battery.test.result
+      delay: 5m
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 6h
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: Vertiv battery test result
+      triggers:
+      - uuid: 57d99d311a9142dc8708509ebf4ff087
+        expression: last(/VERTIV by SNMP/vertiv.battery.test.result)=2 or last(/VERTIV by SNMP/vertiv.battery.test.result)=4
+        name: UPS battery self-test failed on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Self-test result: {ITEM.LASTVALUE1}'
+    - uuid: d9ff15c330c6460cb28f23c233fbbaa3
+      name: 'UPS: Automatic battery test'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5803
+      key: vertiv.battery.autotest
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: Vertiv enabled/disabled
+    - uuid: d6eb72baf3f74e6f85f46d4fd8b79a40
+      name: 'UPS: Total number of battery discharges'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5767
+      key: vertiv.battery.discharge.count
+      delay: 5m
+      history: 90d
+      tags:
+      - tag: component
+        value: battery
+      triggers:
+      - uuid: b887ca3298e24825bc9a8569fcaaa51f
+        expression: change(/VERTIV by SNMP/vertiv.battery.discharge.count)>0
+        name: UPS registered a new battery discharge on {HOST.NAME}
+        priority: INFO
+        opdata: 'Discharges: {ITEM.LASTVALUE1}'
+    - uuid: ea37dacb4b3046bf86df9fe96defcc3f
+      name: 'UPS: Low battery warning time'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5802
+      key: vertiv.battery.low.warning.time
+      delay: 1h
+      history: 90d
+      units: min
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: battery
+    - uuid: 2a723ae47b7841bba38195529c3231b8
+      name: 'UPS: DC bus voltage'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4148
+      key: vertiv.dc.bus.voltage
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      tags:
+      - tag: component
+        value: battery
+    - uuid: 8e308bf0a6564a55933b1141fcd0e9ff
+      name: 'UPS: Input line bad count'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.3.1.0
+      key: ups.input.line.bads
+      delay: 5m
+      history: 90d
+      tags:
+      - tag: component
+        value: input
+      triggers:
+      - uuid: 3ab168e93b5a437ea29e64bdb8917d99
+        expression: change(/VERTIV by SNMP/ups.input.line.bads)>0
+        name: UPS detected a new bad input line event on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Input line bad count: {ITEM.LASTVALUE1}'
+    - uuid: 0357ef869e30458e9db0a9eb1aa80eb0
+      name: 'UPS: Input blackout count'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4120
+      key: vertiv.input.blackout.count
+      delay: 5m
+      history: 90d
+      tags:
+      - tag: component
+        value: input
+      triggers:
+      - uuid: 665a85b8aa38475dad1d0235408ab71a
+        expression: change(/VERTIV by SNMP/vertiv.input.blackout.count)>0
+        name: UPS registered a new input blackout on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Blackouts: {ITEM.LASTVALUE1}'
+    - uuid: 3379152b47c14771825d61c2d6ec7397
+      name: 'UPS: Input brownout count'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4119
+      key: vertiv.input.brownout.count
+      delay: 5m
+      history: 90d
+      tags:
+      - tag: component
+        value: input
+      triggers:
+      - uuid: ea7dbeb085fb4a9aab4c2eaf7bc0f1f5
+        expression: change(/VERTIV by SNMP/vertiv.input.brownout.count)>0
+        name: UPS registered a new input brownout on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Brownouts: {ITEM.LASTVALUE1}'
+    - uuid: 1a00f16e56194085944c9a32d080fef7
+      name: 'UPS: Output apparent power'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4209
+      key: vertiv.output.apparent.power
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: VA
+      tags:
+      - tag: component
+        value: output
+    - uuid: ae8de4a69eb74d9ba774aa7d272a6fc4
+      name: 'UPS: Output power'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4208
+      key: vertiv.output.power
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      tags:
+      - tag: component
+        value: output
+    - uuid: a8d9017d309f400fbee2f59790e2f88b
+      name: 'UPS: Output load'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5861
+      key: vertiv.output.load
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: '%'
+      tags:
+      - tag: component
+        value: output
+      triggers:
+      - uuid: 0b661d1830e14a91a449f6bcce76c03e
+        expression: last(/VERTIV by SNMP/vertiv.output.load)>={$UPS.LOAD.WARN} and last(/VERTIV by SNMP/vertiv.output.load)<{$UPS.LOAD.CRIT}
+        name: UPS load is high on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Load: {ITEM.LASTVALUE1} %'
+      - uuid: 567934593a86414a824b794128cbb33c
+        expression: last(/VERTIV by SNMP/vertiv.output.load)>={$UPS.LOAD.CRIT}
+        name: UPS load is critically high on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Load: {ITEM.LASTVALUE1} %'
+    - uuid: 6329ccafecbe4af981e489f0c4b60c5b
+      name: 'UPS: Output apparent power rating'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4264
+      key: vertiv.output.rating.va
+      delay: 1h
+      history: 90d
+      value_type: FLOAT
+      units: VA
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: output
+    - uuid: 104f1c4ac4504617a372eedea2ce8419
+      name: 'UPS: Input energy'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5900
+      key: vertiv.input.energy
+      delay: 15m
+      history: 90d
+      value_type: FLOAT
+      units: kWh
+      tags:
+      - tag: component
+        value: input
+    - uuid: 851794b2bd8b4dd4a8aa5f76aaefd492
+      name: 'UPS: Output energy'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5166
+      key: vertiv.output.energy
+      delay: 15m
+      history: 90d
+      value_type: FLOAT
+      units: kWh
+      tags:
+      - tag: component
+        value: output
+    - uuid: f32eb236d4a3482aa6603f357a19f463
+      name: 'UPS: Inlet air temperature'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4291
+      key: vertiv.inlet.temperature
+      delay: 2m
+      history: 90d
+      value_type: FLOAT
+      units: °C
+      tags:
+      - tag: component
+        value: environment
+      triggers:
+      - uuid: 2e67d89527914a90895df6a7487eabdd
+        expression: last(/VERTIV by SNMP/vertiv.inlet.temperature)>={$UPS.INLET.TEMP.WARN} and last(/VERTIV by SNMP/vertiv.inlet.temperature)<{$UPS.INLET.TEMP.CRIT}
+        name: UPS inlet air temperature is high on {HOST.NAME}
+        priority: WARNING
+        opdata: 'Inlet temperature: {ITEM.LASTVALUE1} °C'
+      - uuid: 60974a99137642c3bb8b852279e15270
+        expression: last(/VERTIV by SNMP/vertiv.inlet.temperature)>={$UPS.INLET.TEMP.CRIT}
+        name: UPS inlet air temperature is critically high on {HOST.NAME}
+        priority: HIGH
+        opdata: 'Inlet temperature: {ITEM.LASTVALUE1} °C'
+    - uuid: e34e924bb4b34fc491bf6e8dcec7656f
+      name: 'UPS: Total system operating time'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4292
+      key: vertiv.system.operating.time
+      delay: 1h
+      history: 90d
+      value_type: FLOAT
+      units: h
+      tags:
+      - tag: component
+        value: status
+    - uuid: 253b5a0b443144f4a5bc7efc59279337
+      name: 'UPS: Nominal input voltage'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.1.0
+      key: ups.config.input.voltage
+      delay: 1h
+      history: 90d
+      units: V
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: d2b4eef0154d4fa38df12883c1fae69c
+      name: 'UPS: Nominal input frequency'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.2.0
+      key: ups.config.input.frequency
+      delay: 1h
+      history: 90d
+      value_type: FLOAT
+      units: Hz
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: 5625b928a2b34393ac58ebc00521009d
+      name: 'UPS: Nominal output voltage'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.3.0
+      key: ups.config.output.voltage
+      delay: 1h
+      history: 90d
+      units: V
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: 40a9243a3c9c4b4fa0d4995721938f1b
+      name: 'UPS: Nominal output frequency'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.4.0
+      key: ups.config.output.frequency
+      delay: 1h
+      history: 90d
+      value_type: FLOAT
+      units: Hz
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: afc045b5a9014db2bb97bdb75aab2c7d
+      name: 'UPS: Nominal output VA'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.5.0
+      key: ups.config.output.va
+      delay: 1h
+      history: 90d
+      units: VA
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: ef571521c67e49e3a76fa882bd9ee147
+      name: 'UPS: Configured low battery time'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.9.7.0
+      key: ups.config.low.battery.time
+      delay: 1h
+      history: 90d
+      units: min
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: configuration
+    - uuid: ca219ab9f606480a873673ef895e0e36
+      name: 'UPS: Bypass frequency'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.5.1.0
+      key: ups.bypass.frequency
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: Hz
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: 78e963b5871b4b2ea282fbacc3c3ca4e
+      name: 'UPS: Vertiv SNMP traps (optional)'
+      type: SNMP_TRAP
+      key: snmptrap["1\.3\.6\.1\.4\.1\.476\.1\.42"]
+      delay: '0'
+      history: 30d
+      trends: '0'
+      value_type: LOG
+      status: DISABLED
+      description: Optional trap item for the Vertiv/Liebert enterprise branch. Enable only after SNMP trap reception is configured on the Zabbix
+        server/proxy. Individual event triggers are intentionally not predefined because the supplied event list identifies condition OIDs but
+        does not define the exact received trap payload/state encoding.
+      tags:
+      - tag: component
+        value: events
+    - uuid: 69afcf38850849bfaf2e1a5665ad4e44
+      name: 'UPS: Input number of lines'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.3.2.0
+      key: ups.input.num_lines
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: input
+      description: Number of lines/phases reported by RFC1628 UPS-MIB. Useful for validating phase discovery.
+    - uuid: f0d7fa9360cb435981c423ea52609e87
+      name: 'UPS: Output number of lines'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.4.3.0
+      key: ups.output.num_lines
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: output
+      description: Number of lines/phases reported by RFC1628 UPS-MIB. Useful for validating phase discovery.
+    - uuid: 137c6a6b9a034728bbd3d730557769db
+      name: 'UPS: Bypass number of lines'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.5.2.0
+      key: ups.bypass.num_lines
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: bypass
+      description: Number of lines/phases reported by RFC1628 UPS-MIB. Useful for validating phase discovery.
+    discovery_rules:
+    - uuid: 892ca15e79f943fca1a69373351353c9
+      name: UPS input lines discovery
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#UPSINPUTVOLTAGE},1.3.6.1.2.1.33.1.3.3.1.3]
+      key: ups.input.lines.discovery
+      delay: 1h
+      lifetime: 7d
+      enabled_lifetime_type: DISABLE_AFTER
+      item_prototypes:
+      - uuid: 3473e8fe048e4d729cacf9b2e01531a6
+        name: 'UPS: Input line {#SNMPINDEX}: Frequency'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.3.3.1.2.{#SNMPINDEX}
+        key: ups.input.frequency[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        value_type: FLOAT
+        units: Hz
+        preprocessing:
+        - type: MULTIPLIER
+          parameters:
+          - '0.1'
+        tags:
+        - tag: component
+          value: input
+      - uuid: 86b13312b27d4c969b5ddba890731f64
+        name: 'UPS: Input line {#SNMPINDEX}: Voltage'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.3.3.1.3.{#SNMPINDEX}
+        key: ups.input.voltage[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: V
+        tags:
+        - tag: component
+          value: input
+      - uuid: d02b734d419c49b0832f7c217ce71333
+        name: 'UPS: Input line {#SNMPINDEX}: Current'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.3.3.1.4.{#SNMPINDEX}
+        key: ups.input.current[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        value_type: FLOAT
+        units: A
+        preprocessing:
+        - type: MULTIPLIER
+          parameters:
+          - '0.1'
+        tags:
+        - tag: component
+          value: input
+      - uuid: ee3e9a74c6da4614b6c2255056d436c6
+        name: 'UPS: Input line {#SNMPINDEX}: True power'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.3.3.1.5.{#SNMPINDEX}
+        key: ups.input.power[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: W
+        tags:
+        - tag: component
+          value: input
+      lifetime_type: DELETE_AFTER
+      enabled_lifetime: 1d
+      description: Discovers UPS input lines/phases exposed by RFC1628 UPS-MIB.
+    - uuid: d31c34932938414ba1b078d32f0deeca
+      name: UPS output lines discovery
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#UPSOUTPUTVOLTAGE},1.3.6.1.2.1.33.1.4.4.1.2]
+      key: ups.output.lines.discovery
+      delay: 1h
+      lifetime: 7d
+      enabled_lifetime_type: DISABLE_AFTER
+      item_prototypes:
+      - uuid: 183e5b6c30524472a5de53980c14679b
+        name: 'UPS: Output line {#SNMPINDEX}: Voltage'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.4.4.1.2.{#SNMPINDEX}
+        key: ups.output.voltage[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: V
+        tags:
+        - tag: component
+          value: output
+      - uuid: af101cd684f544d2888d1d2cc90b37ef
+        name: 'UPS: Output line {#SNMPINDEX}: Current'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.4.4.1.3.{#SNMPINDEX}
+        key: ups.output.current[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        value_type: FLOAT
+        units: A
+        preprocessing:
+        - type: MULTIPLIER
+          parameters:
+          - '0.1'
+        tags:
+        - tag: component
+          value: output
+      - uuid: c47c0f80ce3449a18a1fd273619c259c
+        name: 'UPS: Output line {#SNMPINDEX}: Power'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.4.4.1.4.{#SNMPINDEX}
+        key: ups.output.power[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: W
+        tags:
+        - tag: component
+          value: output
+      - uuid: a1aae8428cc344b397c0944b6f79b948
+        name: 'UPS: Output line {#SNMPINDEX}: Load'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.4.4.1.5.{#SNMPINDEX}
+        key: ups.output.load[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: '%'
+        tags:
+        - tag: component
+          value: output
+        trigger_prototypes:
+        - uuid: 3ed3a4a8a4a840109e3445ab1b13b6cc
+          expression: last(/VERTIV by SNMP/ups.output.load[{#SNMPINDEX}])>={$UPS.LOAD.WARN} and last(/VERTIV by SNMP/ups.output.load[{#SNMPINDEX}])<{$UPS.LOAD.CRIT}
+          name: UPS output line {#SNMPINDEX} load is high on {HOST.NAME}
+          priority: WARNING
+          opdata: 'Line {#SNMPINDEX} load: {ITEM.LASTVALUE1} %'
+        - uuid: d450a36c1b9349a78f85bdf8af12e00b
+          expression: last(/VERTIV by SNMP/ups.output.load[{#SNMPINDEX}])>={$UPS.LOAD.CRIT}
+          name: UPS output line {#SNMPINDEX} load is critically high on {HOST.NAME}
+          priority: HIGH
+          opdata: 'Line {#SNMPINDEX} load: {ITEM.LASTVALUE1} %'
+      lifetime_type: DELETE_AFTER
+      enabled_lifetime: 1d
+      description: Discovers UPS output lines/phases exposed by RFC1628 UPS-MIB.
+    - uuid: 8c7176ea7cd74dcf9df4cb4dea616e81
+      name: UPS bypass lines discovery
+      type: SNMP_AGENT
+      snmp_oid: discovery[{#UPSBYPASSVOLTAGE},1.3.6.1.2.1.33.1.5.3.1.2]
+      key: ups.bypass.lines.discovery
+      delay: 1h
+      lifetime: 7d
+      enabled_lifetime_type: DISABLE_AFTER
+      item_prototypes:
+      - uuid: a3fc8a5532284ced9cdceacdca4c7a72
+        name: 'UPS: Bypass line {#SNMPINDEX}: Voltage'
+        type: SNMP_AGENT
+        snmp_oid: 1.3.6.1.2.1.33.1.5.3.1.2.{#SNMPINDEX}
+        key: ups.bypass.voltage[{#SNMPINDEX}]
+        delay: 1m
+        history: 90d
+        units: V
+        tags:
+        - tag: component
+          value: bypass
+      lifetime_type: DELETE_AFTER
+      enabled_lifetime: 1d
+      description: Discovers UPS bypass lines/phases exposed by RFC1628 UPS-MIB.
+    macros:
+    - macro: '{$UPS.RUNTIME.WARN}'
+      value: '10'
+      description: Battery runtime warning threshold, minutes.
+    - macro: '{$UPS.RUNTIME.CRIT}'
+      value: '5'
+      description: Battery runtime critical threshold, minutes.
+    - macro: '{$UPS.BATTERY.CHARGE.WARN}'
+      value: '40'
+      description: Battery charge warning threshold, percent. Applied while UPS is on battery.
+    - macro: '{$UPS.BATTERY.CHARGE.CRIT}'
+      value: '20'
+      description: Battery charge critical threshold, percent. Applied while UPS is on battery.
+    - macro: '{$UPS.LOAD.WARN}'
+      value: '80'
+      description: UPS load warning threshold, percent.
+    - macro: '{$UPS.LOAD.CRIT}'
+      value: '95'
+      description: UPS load critical threshold, percent.
+    - macro: '{$UPS.BATTERY.TEMP.WARN}'
+      value: '35'
+      description: Battery temperature warning threshold, degrees Celsius.
+    - macro: '{$UPS.BATTERY.TEMP.CRIT}'
+      value: '40'
+      description: Battery temperature critical threshold, degrees Celsius.
+    - macro: '{$UPS.INLET.TEMP.WARN}'
+      value: '30'
+      description: UPS inlet air temperature warning threshold, degrees Celsius.
+    - macro: '{$UPS.INLET.TEMP.CRIT}'
+      value: '35'
+      description: UPS inlet air temperature critical threshold, degrees Celsius.
+    valuemaps:
+    - uuid: 3f4211167dd440bf964185476ff6d994
+      name: UPS battery status
+      mappings:
+      - value: '1'
+        newvalue: Unknown
+      - value: '2'
+        newvalue: Normal
+      - value: '3'
+        newvalue: Low
+      - value: '4'
+        newvalue: Depleted
+    - uuid: f9b5233bbdd743dbb8e91ffca09159b4
+      name: UPS output source
+      mappings:
+      - value: '1'
+        newvalue: Other
+      - value: '2'
+        newvalue: Off / none
+      - value: '3'
+        newvalue: Normal
+      - value: '4'
+        newvalue: Bypass
+      - value: '5'
+        newvalue: Battery
+      - value: '6'
+        newvalue: Booster
+      - value: '7'
+        newvalue: Reducer
+    - uuid: bc7be24137d94d27a7fa68e6071e2f80
+      name: Vertiv system status
+      mappings:
+      - value: '1'
+        newvalue: Normal operation
+      - value: '2'
+        newvalue: Startup
+      - value: '8'
+        newvalue: Normal with warning
+      - value: '16'
+        newvalue: Normal with alarm
+      - value: '32'
+        newvalue: Abnormal operation
+    - uuid: 5b2c3064919449eba1bcfd70cb6b6633
+      name: Vertiv battery charge status
+      mappings:
+      - value: '0'
+        newvalue: Fully charged
+      - value: '1'
+        newvalue: Charging
+      - value: '2'
+        newvalue: Discharging
+      - value: '3'
+        newvalue: Not charging (charger off)
+    - uuid: 77c39b9bdcbd47dda776e5b5a4752df3
+      name: Vertiv battery test result
+      mappings:
+      - value: '0'
+        newvalue: Unknown
+      - value: '1'
+        newvalue: Passed
+      - value: '2'
+        newvalue: Failed
+      - value: '3'
+        newvalue: In progress
+      - value: '4'
+        newvalue: System failure
+      - value: '5'
+        newvalue: Inhibited
+    - uuid: fe6ea6ff24ef4d809c54c905976a013b
+      name: Vertiv on/off
+      mappings:
+      - value: '0'
+        newvalue: 'Off'
+      - value: '1'
+        newvalue: 'On'
+    - uuid: 4b16dec1d1514752a0b84ba83517d516
+      name: Vertiv enabled/disabled
+      mappings:
+      - value: '0'
+        newvalue: Disabled
+      - value: '1'
+        newvalue: Enabled
+    - uuid: be96e83912134d83adc4ab4edfa4b484
+      name: Vertiv UPS topology
+      mappings:
+      - value: '0'
+        newvalue: Unknown
+      - value: '1'
+        newvalue: Offline
+      - value: '2'
+        newvalue: Line interactive
+      - value: '3'
+        newvalue: Online
+    - uuid: 1e4a3685ae3c41feb5357ee0dcccb299
+      name: Vertiv shutdown reason
+      mappings:
+      - value: '0'
+        newvalue: None
+      - value: '1'
+        newvalue: Over temperature
+      - value: '2'
+        newvalue: Overload
+      - value: '3'
+        newvalue: DC bus overload
+      - value: '4'
+        newvalue: Output short
+      - value: '5'
+        newvalue: Line swap
+      - value: '6'
+        newvalue: Low battery
+      - value: '7'
+        newvalue: Remote command
+      - value: '8'
+        newvalue: Input under voltage
+      - value: '9'
+        newvalue: Power factor correction fail
+      - value: '10'
+        newvalue: External signal command
+    vendor:
+      name: Net Tech
+      version: 1.0.0
+    tags:
+    - tag: class
+      value: power
+    - tag: target
+      value: ups
+    - tag: vendor
+      value: vertiv
+  graphs:
+  - uuid: 5ba6adbff3c74aa1b32a8eefef68c5d4
+    name: 'UPS: Battery charge and runtime'
+    graph_items:
+    - sortorder: '0'
+      color: 199C0D
+      item:
+        host: VERTIV by SNMP
+        key: ups.battery.charge
+    - sortorder: '1'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: ups.battery.runtime
+      yaxisside: RIGHT
+    show_work_period: 'NO'
+  - uuid: 6d7b9f0cd3e1470db1be3946e75eb348
+    name: 'UPS: Temperatures'
+    graph_items:
+    - sortorder: '0'
+      color: 199C0D
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.battery.temperature
+    - sortorder: '1'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.inlet.temperature
+    show_work_period: 'NO'
+  - uuid: 10644ca3eae74b2c9f3161741a6e4f42
+    name: 'UPS: Output power'
+    graph_items:
+    - sortorder: '0'
+      color: 2774A4
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.output.power
+    - sortorder: '1'
+      color: A54F10
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.output.apparent.power
+    show_work_period: 'NO'
+  - uuid: 064f4d061660455896cdce49203ad34f
+    name: 'UPS: Power quality counters'
+    graph_items:
+    - sortorder: '0'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.input.blackout.count
+    - sortorder: '1'
+      color: 6C59DC
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.input.brownout.count
+    - sortorder: '2'
+      color: B0AF07
+      item:
+        host: VERTIV by SNMP
+        key: ups.input.line.bads
+    show_work_period: 'NO'

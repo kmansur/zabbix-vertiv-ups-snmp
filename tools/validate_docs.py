@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Validate bilingual documentation parity and local Markdown links."""
 
 from __future__ import annotations
@@ -32,8 +31,10 @@ DOC_BASENAMES = [
     "license-attribution.md",
 ]
 
+
 class ValidationError(Exception):
     pass
+
 
 def validate_pairs() -> list[str]:
     errors: list[str] = []
@@ -50,6 +51,7 @@ def validate_pairs() -> list[str]:
             errors.append(f"missing pt-BR document: docs/pt-BR/{name}")
     return errors
 
+
 def validate_local_links() -> list[str]:
     errors: list[str] = []
     markdown_files = sorted(ROOT.rglob("*.md"))
@@ -57,10 +59,7 @@ def validate_local_links() -> list[str]:
         text = path.read_text(encoding="utf-8")
         for target in LINK_RE.findall(text):
             target = target.strip()
-            if (
-                not target
-                or target.startswith(("http://", "https://", "mailto:", "#"))
-            ):
+            if not target or target.startswith(("http://", "https://", "mailto:", "#")):
                 continue
             target_path = target.split("#", 1)[0]
             if not target_path:
@@ -78,6 +77,7 @@ def validate_local_links() -> list[str]:
                     f"{path.relative_to(ROOT)} has broken local link: {target}"
                 )
     return errors
+
 
 def validate_version_mentions() -> list[str]:
     errors: list[str] = []
@@ -100,6 +100,7 @@ def validate_version_mentions() -> list[str]:
             )
     return errors
 
+
 def run() -> None:
     errors = []
     errors.extend(validate_pairs())
@@ -108,6 +109,7 @@ def run() -> None:
     if errors:
         raise ValidationError("\n  - ".join([""] + errors))
     print("OK: bilingual documentation parity and local links validated")
+
 
 if __name__ == "__main__":
     try:
