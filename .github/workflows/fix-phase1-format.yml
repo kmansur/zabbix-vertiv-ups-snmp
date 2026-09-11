@@ -1,0 +1,36 @@
+name: Fix phase1 bootstrap formatting
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Patch bootstrap validation and clean up
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('.github/workflows/phase1-upgrade.yml')
+          text = path.read_text()
+          old = '''          ruff check tools tests\n          ruff format --check tools tests\n'''
+          new = '''          ruff check tools tests\n          ruff format tools tests\n          ruff format --check tools tests\n'''
+          if old not in text:
+              raise SystemExit('expected bootstrap validation block not found')
+          path.write_text(text.replace(old, new, 1))
+          PY
+          rm -f .github/workflows/fix-phase1-format.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'ci: format generated validation sources before checking'
+          git push origin HEAD:main
