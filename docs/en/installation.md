@@ -52,7 +52,7 @@ Configure the SNMP version and credentials in the host/interface settings accord
 Link:
 
 ```text
-VERTIV by SNMP
+Vertiv by SNMP
 ```
 
 Wait for the first polling cycles.

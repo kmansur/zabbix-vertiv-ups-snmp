@@ -68,3 +68,7 @@ The supplied Vertiv files identify useful condition objects under the private `.
 However, the supplied files do not define the numeric state encoding returned when those objects are polled. Version 1.1.0 therefore does **not** fabricate `0/1`, `3/6` or any other event-state interpretation and does not create event-specific polling triggers for them.
 
 For the next validation step, query a representative UPS while normal and, where safely possible, while a known condition is active. Once the returned states are confirmed, those event OIDs can be promoted to supported items and triggers.
+
+## Known scale limitation
+
+The private Vertiv input-power OIDs (`6318`-`6320`) are retained for troubleshooting, but their numeric scale is not defined by the supplied SNMP parameter list. On the currently tested device, the calculated total did not match the expected magnitude from the UPS web interface. For that reason the input-power card/graph is not featured in the native dashboard and no trigger should rely on these values until the scale is confirmed on the target firmware.

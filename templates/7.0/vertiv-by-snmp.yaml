@@ -9,8 +9,8 @@ zabbix_export:
   templates:
   - uuid: eb9851170d614754903e231093437956
     template: VERTIV by SNMP
-    name: VERTIV by SNMP
-    description: 'VERTIV by SNMP
+    name: Vertiv by SNMP
+    description: 'Vertiv by SNMP
 
 
       Read-only Zabbix template for monitoring Vertiv/Liebert UPS systems by SNMP.
@@ -52,7 +52,7 @@ zabbix_export:
       The supplied event/condition OID lists identify alarms but do not define the return-state encoding of the pollable .2.100.* objects. Event-specific polling triggers are intentionally not fabricated until live values are validated.
 
 
-      Version 1.2.0 adds the native VERTIV UPS Overview dashboard with status, battery, electrical, bypass, environmental and trend views.
+      Version 1.2.0 adds the native Vertiv UPS Overview dashboard with status, battery, electrical, bypass, environmental and trend views.
 
 
       Version 1.3.0 adds an optional generator for an importable Zabbix network-map synoptic view of a monitored Vertiv UPS host.
@@ -64,13 +64,13 @@ zabbix_export:
       Version 1.3.3 refines dashboard typography for compact item-value cards, reducing value/unit font sizes and removing change indicators to avoid truncation.
 
 
-      Export target: Zabbix 7.0.
+      Version 1.4.0 finalizes severity-colored dashboard cards, keeps native value-map rendering for reliable status text, changes the visible template name to Vertiv by SNMP while preserving the technical identifier for in-place upgrades, and removes unvalidated private input-power values from prominent dashboard views.
 
 
-      Preview branch: status cards render the value-map-aware {ITEM.LASTVALUE} as the widget description, suppressing raw numeric suffixes, while numeric thresholds drive pastel green/yellow/orange/red backgrounds.'
+      Export target: Zabbix 7.0.'
     vendor:
       name: Net Tech
-      version: 1.3-3
+      version: 1.4-0
     groups:
     - name: Templates/Power
     items:
@@ -2071,7 +2071,7 @@ zabbix_export:
       value: vertiv
     dashboards:
     - uuid: 7b4b8a2ec3d44e718af11b4d5f6e7c9a
-      name: VERTIV UPS Overview
+      name: Vertiv UPS Overview
       pages:
       - name: Overview
         widgets:
@@ -2499,21 +2499,6 @@ zabbix_export:
             name: reference
             value: B0000
         - type: graph
-          name: Input phase power
-          x: '24'
-          y: '7'
-          width: '24'
-          height: '5'
-          fields:
-          - type: GRAPH
-            name: graphid.0
-            value:
-              host: VERTIV by SNMP
-              name: 'UPS: Input phase power'
-          - type: STRING
-            name: reference
-            value: B0001
-        - type: graph
           name: Output phase load
           x: '48'
           y: '7'
@@ -2711,36 +2696,6 @@ zabbix_export:
             name: value_v_pos
             value: '1'
         - type: item
-          name: Input total power
-          x: '0'
-          y: '2'
-          width: '12'
-          height: '2'
-          fields:
-          - type: ITEM
-            name: itemid.0
-            value:
-              host: VERTIV by SNMP
-              key: vertiv.input.power.total
-          - type: INTEGER
-            name: show.0
-            value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '27'
-          - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
-        - type: item
           name: Output power
           x: '12'
           y: '2'
@@ -2896,21 +2851,6 @@ zabbix_export:
           - type: INTEGER
             name: decimal_places
             value: '0'
-        - type: graph
-          name: Input phase power
-          x: '0'
-          y: '4'
-          width: '36'
-          height: '6'
-          fields:
-          - type: GRAPH
-            name: graphid.0
-            value:
-              host: VERTIV by SNMP
-              name: 'UPS: Input phase power'
-          - type: STRING
-            name: reference
-            value: C0000
         - type: graph
           name: Output phase load
           x: '36'

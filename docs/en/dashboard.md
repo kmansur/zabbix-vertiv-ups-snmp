@@ -2,7 +2,7 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-Version 1.2.0 adds the **VERTIV UPS Overview** template dashboard. It is imported together with the template and automatically follows the monitored host.
+Version 1.2.0 adds the **Vertiv UPS Overview** template dashboard. It is imported together with the template and automatically follows the monitored host.
 
 ## Pages
 
@@ -24,3 +24,11 @@ Version 1.3.3 refines **Item value** widgets for better readability in compact c
 
 The widget title continues to identify each metric, so the card only needs to display the value and preserves more usable space. Graphs, items, triggers and SNMP collection are unchanged by this adjustment.
 
+
+## Version 1.4.0 status-card behavior
+
+The finalized dashboard uses the native mapped **Item value** rendering for status cards. This keeps Zabbix value maps reliable across frontends while dynamic thresholds color the card background. Enum/status cards use zero decimal places, so mapped values render with compact raw suffixes such as `Normal (3)` instead of `Normal (3.00)`.
+
+Severity colors use soft backgrounds: green for normal, yellow for attention, orange for degraded/alarm states and red for critical states. Static informational/configuration cards use a neutral or light-blue background.
+
+The private calculated input-power card and input-phase-power graph are intentionally not featured on the dashboard because the supplied Vertiv SNMP documentation does not define the scale of those private OIDs. The underlying items remain available for field validation and troubleshooting.

@@ -20,7 +20,7 @@ The referenced GitHub repository was inspected on 2026-09-10. Its root exposed t
 
 Because there is no explicit permission to redistribute or relicense that original file, this repository does not include a copy of it.
 
-The maintained `VERTIV by SNMP` template was substantially rewritten around RFC 1628 UPS-MIB and Vertiv/Liebert enterprise OIDs, and includes new monitoring logic, naming, keys, thresholds, LLD, value maps, documentation and tooling.
+The maintained `Vertiv by SNMP` template was substantially rewritten around RFC 1628 UPS-MIB and Vertiv/Liebert enterprise OIDs, and includes new monitoring logic, naming, keys, thresholds, LLD, value maps, documentation and tooling.
 
 ## Why MIT
 

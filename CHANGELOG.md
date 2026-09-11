@@ -14,6 +14,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.4.0] - 2026-09-11
+
+### Added
+
+- Project maturity/status documentation with an explicit **85%** engineering-maturity score and remaining validation work.
+- Dependency monitoring for Python packages in addition to GitHub Actions.
+- Repository hygiene tests for release packaging and workflow baselines.
+
+### Changed
+
+- Visible template name changed to **Vertiv by SNMP**. The technical template identifier remains `VERTIV by SNMP` intentionally so existing installations can update in place without creating a duplicate template.
+- Native dashboard renamed to **Vertiv UPS Overview**.
+- Finalized severity-colored status cards using native value-map rendering and zero decimal places for compact mapped enum values.
+- Updated GitHub Actions checkout/setup-python actions to v7.
+- Private input-power values remain available for troubleshooting but are no longer featured in the dashboard until their vendor-specific scale is validated.
+
+### Fixed
+
+- Aligned the template validator with the finalized dashboard typography/color configuration.
+- Removed stale preview-only macro-rendering text from template metadata.
+- Release packaging now uses unique Zabbix 7.0/8.0 asset filenames, includes the synoptic-map generator/tools, and publishes SHA-256 checksums.
+- Removed preview-only dashboard documentation from the finalized project.
+
 ## [1.3.3] - 2026-09-11
 
 ### Changed
@@ -61,7 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
-- Native **VERTIV UPS Overview** template dashboard.
+- Native **Vertiv UPS Overview** template dashboard.
 - Overview, Electrical and Battery & Environment pages.
 - Status cards for UPS state, output source, alarms, battery charge/runtime and key electrical values.
 - Dashboard integration with all six built-in template graphs.
@@ -90,7 +113,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ### Added
 
-- Initial maintained release of **VERTIV by SNMP**.
+- Initial maintained release of **Vertiv by SNMP**.
 - Zabbix 7.0 versioned template export.
 - Zabbix 8.0 compatibility export.
 - Standard RFC 1628 UPS-MIB monitoring for battery, input, output, bypass and nominal configuration.
