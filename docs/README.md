@@ -15,6 +15,8 @@
 
 Root project page: [README.md](../README.md)
 
+Repository CI validates YAML parsing, version consistency, Zabbix 7.0/8.0 template semantic parity, the read-only OID policy, automated tests, local documentation links, and the presence of the English and Brazilian Portuguese documentation sets.
+
 ## Português (Brasil)
 
 - [Visão geral](pt-BR/README.md)
@@ -29,3 +31,5 @@ Root project page: [README.md](../README.md)
 - [Licença e atribuição](pt-BR/license-attribution.md)
 
 Página principal em português: [README.pt-BR.md](../README.pt-BR.md)
+
+O CI do repositório valida a leitura dos arquivos YAML, a consistência das versões, a paridade semântica dos templates Zabbix 7.0/8.0, a política de OIDs somente leitura, os testes automatizados, os links locais da documentação e a presença dos conjuntos de documentação em inglês e português do Brasil.
