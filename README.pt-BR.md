@@ -8,6 +8,37 @@
 
 Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert via SNMP**. Ele combina a UPS-MIB padrão da RFC 1628 com OIDs privados Vertiv/Liebert para monitorar fonte de alimentação, bateria, entrada/saída elétrica, bypass, ambiente, contadores de qualidade de energia, autoteste e identificação do equipamento.
 
+## Preview do dashboard
+
+<p align="center">
+  <a href="docs/pt-BR/dashboard.md">
+    <img src="docs/images/dashboard-overview.png" alt="Dashboard Vertiv UPS Overview" width="100%">
+  </a>
+</p>
+
+<p align="center"><strong>Overview</strong> — saúde operacional, bateria, potência de saída e carga por fase em uma única visão.</p>
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="docs/pt-BR/dashboard.md#electrical">
+        <img src="docs/images/dashboard-electrical.png" alt="Dashboard elétrico do Vertiv UPS" width="100%">
+      </a>
+      <br>
+      <sub><strong>Electrical</strong> — medições de entrada, saída e bypass, frequência, topologia e contadores de qualidade de energia.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="docs/pt-BR/dashboard.md#battery--environment">
+        <img src="docs/images/dashboard-battery-environment.png" alt="Dashboard de bateria e ambiente do Vertiv UPS" width="100%">
+      </a>
+      <br>
+      <sub><strong>Battery &amp; Environment</strong> — carga, autonomia, estado da bateria, teste/configuração e temperatura de entrada.</sub>
+    </td>
+  </tr>
+</table>
+
+<p align="center">📖 <a href="docs/pt-BR/dashboard.md"><strong>Leia o guia de interpretação do dashboard</strong></a> — o que cada gráfico significa, como é o comportamento normal e o que investigar durante um incidente.</p>
+
 ## Compatibilidade
 
 | Zabbix | Template | Status |
@@ -20,7 +51,6 @@ O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimen
 ## Status do projeto
 
 Versão atual: **1.4.1**
-
 
 **Maturidade de engenharia: 85%** — consulte o [status e os trabalhos restantes](docs/pt-BR/project-status.md).
 
@@ -52,10 +82,11 @@ O template é intencionalmente **somente leitura**. Operações de reboot, shutd
 .github/                 GitHub Actions, modelos de issue e PR
 docs/
 ├── en/                  Documentação em inglês
+├── images/              Screenshots do dashboard usados na documentação
 └── pt-BR/               Documentação em português do Brasil
 templates/
-├── 7.0/          Export para Zabbix 7.0
-└── 8.0/          Export para Zabbix 8.0
+├── 7.0/                 Export para Zabbix 7.0
+└── 8.0/                 Export para Zabbix 8.0
 tests/                   Testes dos validadores
 tools/                   Validadores dos templates e documentação
 ```
@@ -129,9 +160,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.4.0**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.4.1**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.4.0` do projeto é exportada como `vendor.version: 1.4-0`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.4.1` do projeto é exportada como `vendor.version: 1.4-1`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z
