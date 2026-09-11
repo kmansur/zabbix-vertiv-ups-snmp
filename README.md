@@ -19,6 +19,9 @@ Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs
 
 ## Project status
 
+Current release: **1.4.1**
+
+
 **Engineering maturity: 85%** — see [project status and remaining work](docs/en/project-status.md).
 
 ## What the template monitors

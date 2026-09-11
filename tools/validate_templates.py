@@ -63,6 +63,7 @@ REQUIRED_PHASE1_KEYS = {
     "vertiv.output.apparent.power.l1",
     "vertiv.battery.cabinet.type",
     "vertiv.battery.test.interval",
+    "ups.battery.runtime.hours",
 }
 UNVALIDATED_EVENT_BRANCH = "1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.100."
 
@@ -283,7 +284,7 @@ def validate_one(
                     else:
                         expected_size = {
                             "ups.battery.charge": "26",
-                            "ups.battery.runtime": "24",
+                            "ups.battery.runtime.hours": "24",
                         }.get(item_key, "27")
                         actual_size = str(
                             fields_by_name.get("value_size", {}).get("value", "")
@@ -303,7 +304,7 @@ def validate_one(
                                     f"{field_name}={actual!r}; expected '16'"
                                 )
                         if (
-                            item_key in {"ups.alarms.present", "ups.battery.runtime"}
+                            item_key == "ups.alarms.present"
                             and str(
                                 fields_by_name.get("decimal_places", {}).get(
                                     "value", ""
@@ -361,6 +362,59 @@ def validate_one(
         if sample.lower() not in script.lower():
             errors.append(
                 f"Vertiv enum item {enum_key!r} normalizer does not include live sample {sample!r}"
+            )
+
+    runtime_hours = item_by_key.get("ups.battery.runtime.hours")
+    if runtime_hours is None:
+        errors.append("missing calculated runtime-hours display item")
+    else:
+        if runtime_hours.get("type") != "CALCULATED":
+            errors.append("ups.battery.runtime.hours must be CALCULATED")
+        if str(runtime_hours.get("params")) != "last(//ups.battery.runtime)/60":
+            errors.append(
+                "ups.battery.runtime.hours must derive from raw RFC1628 minutes / 60"
+            )
+        if str(runtime_hours.get("units")) != "h":
+            errors.append("ups.battery.runtime.hours must use h units")
+
+    main_dashboard = next(
+        (d for d in dashboards if d.get("name") == REQUIRED_DASHBOARD_NAME), None
+    )
+    if main_dashboard:
+        pages = {str(p.get("name")): p for p in main_dashboard.get("pages", [])}
+        overview_graphs = {
+            str(w.get("name"))
+            for w in pages.get("Overview", {}).get("widgets", [])
+            if w.get("type") == "graph"
+        }
+        if overview_graphs != {
+            "Battery charge and runtime",
+            "Output power",
+            "Output phase load",
+        }:
+            errors.append(f"unexpected Overview graph set: {sorted(overview_graphs)}")
+        electrical_keys = {
+            str(field.get("value", {}).get("key"))
+            for w in pages.get("Electrical", {}).get("widgets", [])
+            if w.get("type") == "item"
+            for field in w.get("fields", [])
+            if field.get("type") == "ITEM" and isinstance(field.get("value"), dict)
+        }
+        for required in (
+            "vertiv.input.blackout.count",
+            "vertiv.input.brownout.count",
+            "ups.input.line.bads",
+        ):
+            if required not in electrical_keys:
+                errors.append(f"Electrical page is missing counter card {required}")
+        battery_graphs = {
+            str(w.get("name"))
+            for w in pages.get("Battery & Environment", {}).get("widgets", [])
+            if w.get("type") == "graph"
+        }
+        if battery_graphs != {"Battery charge and runtime", "Inlet temperature"}:
+            errors.append(
+                f"unexpected Battery & Environment graph set: {sorted(battery_graphs)}"
             )
 
     fixed_keys, prototype_keys = collect_item_keys(template)

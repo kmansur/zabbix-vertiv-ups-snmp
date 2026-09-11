@@ -19,6 +19,9 @@ O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimen
 
 ## Status do projeto
 
+Versão atual: **1.4.1**
+
+
 **Maturidade de engenharia: 85%** — consulte o [status e os trabalhos restantes](docs/pt-BR/project-status.md).
 
 ## O que o template monitora

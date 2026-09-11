@@ -67,10 +67,14 @@ zabbix_export:
       Version 1.4.0 finalizes severity-colored dashboard cards, keeps native value-map rendering for reliable status text, changes the visible template name to Vertiv by SNMP while preserving the technical identifier for in-place upgrades, and removes unvalidated private input-power values from prominent dashboard views.
 
 
+      Version 1.4.1 fixes the field dashboard layout, displays runtime in hours while preserving raw RFC1628 minutes for triggers, replaces cumulative-counter graphs with readable counter cards, and separates inlet temperature from the raw battery-temperature trend.
+
+
+
       Export target: Zabbix 8.0.'
     vendor:
       name: Net Tech
-      version: 1.4-0
+      version: 1.4-1
     groups:
     - name: Templates/Power
     items:
@@ -505,6 +509,19 @@ zabbix_export:
         name: UPS battery runtime is critically low on {HOST.NAME}
         priority: DISASTER
         opdata: 'Runtime: {ITEM.LASTVALUE1} min'
+    - uuid: 77cb62fff87e4a5e99f9a3b178d1db91
+      name: 'UPS: Estimated runtime remaining (hours)'
+      type: CALCULATED
+      key: ups.battery.runtime.hours
+      delay: 30s
+      history: 90d
+      value_type: FLOAT
+      units: h
+      params: last(//ups.battery.runtime)/60
+      description: Display-oriented conversion of RFC1628 upsEstimatedMinutesRemaining from minutes to hours. The raw minutes item remains authoritative for triggers.
+      tags:
+      - tag: component
+        value: battery
     - uuid: acfc956817c34926b6f6036fddadbff0
       name: 'UPS: Estimated battery charge'
       type: SNMP_AGENT
@@ -2395,7 +2412,7 @@ zabbix_export:
             name: itemid.0
             value:
               host: VERTIV by SNMP
-              key: ups.battery.runtime
+              key: ups.battery.runtime.hours
           - type: INTEGER
             name: show.0
             value: '2'
@@ -2411,6 +2428,12 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '1'
+          - type: INTEGER
+            name: value_size
+            value: '24'
           - type: STRING
             name: bg_color
             value: FFCDD2
@@ -2419,31 +2442,25 @@ zabbix_export:
             value: FFE0B2
           - type: STRING
             name: thresholds.0.threshold
-            value: '5'
+            value: '0.083333'
           - type: STRING
             name: thresholds.1.color
             value: FFF3CD
           - type: STRING
             name: thresholds.1.threshold
-            value: '10'
+            value: '0.166667'
           - type: STRING
             name: thresholds.2.color
             value: C8E6C9
           - type: STRING
             name: thresholds.2.threshold
-            value: '30'
-          - type: INTEGER
-            name: decimal_places
-            value: '0'
-          - type: INTEGER
-            name: value_size
-            value: '24'
+            value: '0.5'
         - type: graph
           name: Battery charge and runtime
           x: '0'
           y: '2'
           width: '24'
-          height: '5'
+          height: '6'
           fields:
           - type: GRAPH
             name: graphid.0
@@ -2458,7 +2475,7 @@ zabbix_export:
           x: '24'
           y: '2'
           width: '24'
-          height: '5'
+          height: '6'
           fields:
           - type: GRAPH
             name: graphid.0
@@ -2469,41 +2486,11 @@ zabbix_export:
             name: reference
             value: A0001
         - type: graph
-          name: Temperatures
+          name: Output phase load
           x: '48'
           y: '2'
           width: '24'
-          height: '5'
-          fields:
-          - type: GRAPH
-            name: graphid.0
-            value:
-              host: VERTIV by SNMP
-              name: 'UPS: Temperatures'
-          - type: STRING
-            name: reference
-            value: A0002
-        - type: graph
-          name: Power quality counters
-          x: '0'
-          y: '7'
-          width: '24'
-          height: '5'
-          fields:
-          - type: GRAPH
-            name: graphid.0
-            value:
-              host: VERTIV by SNMP
-              name: 'UPS: Power quality counters'
-          - type: STRING
-            name: reference
-            value: B0000
-        - type: graph
-          name: Output phase load
-          x: '48'
-          y: '7'
-          width: '24'
-          height: '5'
+          height: '6'
           fields:
           - type: GRAPH
             name: graphid.0
@@ -2512,7 +2499,7 @@ zabbix_export:
               name: 'UPS: Output phase load'
           - type: STRING
             name: reference
-            value: B0002
+            value: A0002
       - name: Electrical
         widgets:
         - type: item
@@ -2697,7 +2684,7 @@ zabbix_export:
             value: '1'
         - type: item
           name: Output power
-          x: '12'
+          x: '0'
           y: '2'
           width: '12'
           height: '2'
@@ -2727,7 +2714,7 @@ zabbix_export:
             value: '1'
         - type: item
           name: Output apparent power
-          x: '24'
+          x: '12'
           y: '2'
           width: '12'
           height: '2'
@@ -2757,7 +2744,7 @@ zabbix_export:
             value: '1'
         - type: item
           name: Output frequency
-          x: '36'
+          x: '24'
           y: '2'
           width: '12'
           height: '2'
@@ -2787,7 +2774,7 @@ zabbix_export:
             value: '1'
         - type: item
           name: Input frequency
-          x: '48'
+          x: '36'
           y: '2'
           width: '12'
           height: '2'
@@ -2851,11 +2838,140 @@ zabbix_export:
           - type: INTEGER
             name: decimal_places
             value: '0'
+        - type: item
+          name: Bypass frequency
+          x: '48'
+          y: '2'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.bypass.frequency
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+        - type: item
+          name: Input blackouts
+          x: '0'
+          y: '4'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.blackout.count
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
+        - type: item
+          name: Input brownouts
+          x: '12'
+          y: '4'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: vertiv.input.brownout.count
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
+        - type: item
+          name: Bad input lines
+          x: '24'
+          y: '4'
+          width: '12'
+          height: '2'
+          fields:
+          - type: ITEM
+            name: itemid.0
+            value:
+              host: VERTIV by SNMP
+              key: ups.input.line.bads
+          - type: INTEGER
+            name: show.0
+            value: '2'
+          - type: INTEGER
+            name: value_size
+            value: '27'
+          - type: INTEGER
+            name: decimal_size
+            value: '16'
+          - type: INTEGER
+            name: units_size
+            value: '16'
+          - type: INTEGER
+            name: value_h_pos
+            value: '1'
+          - type: INTEGER
+            name: value_v_pos
+            value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: graph
           name: Output phase load
-          x: '36'
-          y: '4'
-          width: '36'
+          x: '0'
+          y: '6'
+          width: '72'
           height: '6'
           fields:
           - type: GRAPH
@@ -2930,7 +3046,7 @@ zabbix_export:
             name: itemid.0
             value:
               host: VERTIV by SNMP
-              key: ups.battery.runtime
+              key: ups.battery.runtime.hours
           - type: INTEGER
             name: show.0
             value: '2'
@@ -2946,6 +3062,12 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '1'
+          - type: INTEGER
+            name: value_size
+            value: '24'
           - type: STRING
             name: bg_color
             value: FFCDD2
@@ -2954,25 +3076,19 @@ zabbix_export:
             value: FFE0B2
           - type: STRING
             name: thresholds.0.threshold
-            value: '5'
+            value: '0.083333'
           - type: STRING
             name: thresholds.1.color
             value: FFF3CD
           - type: STRING
             name: thresholds.1.threshold
-            value: '10'
+            value: '0.166667'
           - type: STRING
             name: thresholds.2.color
             value: C8E6C9
           - type: STRING
             name: thresholds.2.threshold
-            value: '30'
-          - type: INTEGER
-            name: decimal_places
-            value: '0'
-          - type: INTEGER
-            name: value_size
-            value: '24'
+            value: '0.5'
         - type: item
           name: Battery current
           x: '24'
@@ -3387,6 +3503,9 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: INTEGER
+            name: decimal_places
+            value: '0'
         - type: graph
           name: Battery charge and runtime
           x: '0'
@@ -3403,7 +3522,7 @@ zabbix_export:
             name: reference
             value: D0000
         - type: graph
-          name: Temperatures
+          name: Inlet temperature
           x: '36'
           y: '4'
           width: '36'
@@ -3413,7 +3532,7 @@ zabbix_export:
             name: graphid.0
             value:
               host: VERTIV by SNMP
-              name: 'UPS: Temperatures'
+              name: 'UPS: Inlet temperature'
           - type: STRING
             name: reference
             value: D0001
@@ -3430,7 +3549,7 @@ zabbix_export:
       color: F63100
       item:
         host: VERTIV by SNMP
-        key: ups.battery.runtime
+        key: ups.battery.runtime.hours
       yaxisside: RIGHT
     show_work_period: 'NO'
   - uuid: 6d7b9f0cd3e1470db1be3946e75eb348
@@ -3517,4 +3636,13 @@ zabbix_export:
       item:
         host: VERTIV by SNMP
         key: vertiv.output.load.l3
+    show_work_period: 'NO'
+  - uuid: f5ede3274cfa45d18dd0ffd571f93725
+    name: 'UPS: Inlet temperature'
+    graph_items:
+    - sortorder: '0'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.inlet.temperature
     show_work_period: 'NO'
