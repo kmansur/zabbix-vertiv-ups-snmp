@@ -57,8 +57,9 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git reset .github/finalize_140.py .github/patch_validator_140.py .github/workflows/finalize-140-preview.yml
-          git add -u .github/finalize_140.py .github/patch_validator_140.py .github/workflows/finalize-140-preview.yml || true
+          # Workflow files are validated above but published separately because GITHUB_TOKEN
+          # cannot update workflow definitions in this repository.
+          git reset .github/finalize_140.py .github/patch_validator_140.py .github/workflows
           if git diff --cached --quiet; then
             echo 'No release candidate changes to commit.'
             exit 0
