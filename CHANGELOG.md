@@ -14,6 +14,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.3.1] - 2026-09-11
+
+### Fixed
+
+- Fixed the native template dashboard UUID to a valid RFC 4122 UUID version 4, as required by Zabbix 7.0 template import validation.
+- Strengthened repository validation so every exported `uuid` must be a UUIDv4, preventing recurrence of the import error `UUIDv4 is expected`.
+
 ## [1.3.0] - 2026-09-11
 
 ### Added

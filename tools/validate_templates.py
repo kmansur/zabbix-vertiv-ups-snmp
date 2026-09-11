@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import re
 import sys
+import uuid as uuidlib
 from pathlib import Path
 from typing import Any
 
@@ -208,6 +209,15 @@ def validate_one(
     invalid_uuids = [uuid for uuid in uuids if not UUID_RE.fullmatch(uuid)]
     if invalid_uuids:
         errors.append(f"invalid UUIDs: {invalid_uuids[:5]}")
+    non_v4_uuids = []
+    for value in uuids:
+        if not UUID_RE.fullmatch(value):
+            continue
+        parsed = uuidlib.UUID(hex=value)
+        if parsed.version != 4 or parsed.variant != uuidlib.RFC_4122:
+            non_v4_uuids.append(value)
+    if non_v4_uuids:
+        errors.append(f"UUIDs must be RFC 4122 version 4: {non_v4_uuids[:5]}")
     duplicates = sorted({uuid for uuid in uuids if uuids.count(uuid) > 1})
     if duplicates:
         errors.append(f"duplicate UUIDs inside export: {duplicates[:5]}")

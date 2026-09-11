@@ -122,9 +122,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-Current project version: **1.3.0**. The project follows Semantic Versioning.
+Current project version: **1.3.1**. The project follows Semantic Versioning.
 
-Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.3.0` is exported as `vendor.version: 1.3-0`.
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.3.1` is exported as `vendor.version: 1.3-1`.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z
