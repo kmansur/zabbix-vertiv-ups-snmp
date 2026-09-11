@@ -8,6 +8,37 @@
 
 Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNMP**. It combines the standard RFC 1628 UPS-MIB with Vertiv/Liebert enterprise OIDs to monitor power source, battery, electrical input/output, bypass, environmental data, power-quality counters, self-test status, and device identification.
 
+## Dashboard preview
+
+<p align="center">
+  <a href="docs/en/dashboard.md">
+    <img src="docs/images/dashboard-overview.png" alt="Vertiv UPS Overview dashboard" width="100%">
+  </a>
+</p>
+
+<p align="center"><strong>Overview</strong> — operational health, battery, output power and per-phase load at a glance.</p>
+
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="docs/en/dashboard.md#electrical">
+        <img src="docs/images/dashboard-electrical.png" alt="Vertiv UPS Electrical dashboard" width="100%">
+      </a>
+      <br>
+      <sub><strong>Electrical</strong> — input, output and bypass measurements, frequency, topology and power-quality counters.</sub>
+    </td>
+    <td width="50%" valign="top">
+      <a href="docs/en/dashboard.md#battery--environment">
+        <img src="docs/images/dashboard-battery-environment.png" alt="Vertiv UPS Battery and Environment dashboard" width="100%">
+      </a>
+      <br>
+      <sub><strong>Battery &amp; Environment</strong> — charge, runtime, battery state, test/configuration data and inlet temperature.</sub>
+    </td>
+  </tr>
+</table>
+
+<p align="center">📖 <a href="docs/en/dashboard.md"><strong>Read the dashboard interpretation guide</strong></a> — what each graph means, what normal behavior looks like, and what to investigate during an incident.</p>
+
 ## Compatibility
 
 | Zabbix | Template | Status |
@@ -20,7 +51,6 @@ Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs
 ## Project status
 
 Current release: **1.4.1**
-
 
 **Engineering maturity: 85%** — see [project status and remaining work](docs/en/project-status.md).
 
@@ -52,10 +82,11 @@ The template is intentionally **read-only**. Reboot, shutdown, outlet control an
 .github/                 GitHub Actions, issue templates and PR template
 docs/
 ├── en/                  English documentation
+├── images/              Dashboard screenshots used by the documentation
 └── pt-BR/               Brazilian Portuguese documentation
 templates/
-├── 7.0/          Zabbix 7.0 export
-└── 8.0/          Zabbix 8.0 export
+├── 7.0/                 Zabbix 7.0 export
+└── 8.0/                 Zabbix 8.0 export
 tests/                   Validator tests
 tools/                   Template and documentation validation tools
 ```
@@ -129,9 +160,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-Current project version: **1.4.0**. The project follows Semantic Versioning.
+Current project version: **1.4.1**. The project follows Semantic Versioning.
 
-Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.4.0` is exported as `vendor.version: 1.4-0`.
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.4.1` is exported as `vendor.version: 1.4-1`.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z
