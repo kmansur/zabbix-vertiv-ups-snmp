@@ -14,6 +14,22 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.4.1] - 2026-09-11
+
+### Corrigido
+
+- Reorganizado o dashboard após a remoção das métricas privadas de potência de entrada não validadas, eliminando grandes áreas vazias.
+- Autonomia exibida em horas por um item calculado de apresentação, mantendo o item RFC1628 original em minutos para triggers e diagnóstico.
+- O gráfico de bateria passa a usar horas, evitando a apresentação `Kmin` do frontend.
+- Contadores cumulativos de blackout, brownout e linha inválida deixam de ocupar um gráfico de tendência no dashboard e passam a cards numéricos na página Electrical.
+- O gráfico padrão de ambiente passa a mostrar somente a temperatura de entrada; a temperatura privada da bateria continua coletada e disponível, mas não distorce mais a escala do gráfico quando a própria placa informa valores sentinela como `-0.1 °C`.
+- O gráfico de carga por fase ocupa a largura da página Electrical e os cards elétricos foram redistribuídos.
+- Contadores de descargas e eventos são exibidos sem casas decimais.
+
+### Observação de campo
+
+No equipamento Vertiv ITA-20kVA validado, a própria interface web do nobreak informa `4320 min` de autonomia e `-0.1 °C` de temperatura de bateria. A 1.4.1 não altera esses dados de origem: apenas apresenta a autonomia como horas e evita tratar a temperatura privada da bateria como referência ambiental padrão.
+
 ## [1.4.0] - 2026-09-11
 
 ### Adicionado

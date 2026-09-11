@@ -32,3 +32,12 @@ The finalized dashboard uses the native mapped **Item value** rendering for stat
 Severity colors use soft backgrounds: green for normal, yellow for attention, orange for degraded/alarm states and red for critical states. Static informational/configuration cards use a neutral or light-blue background.
 
 The private calculated input-power card and input-phase-power graph are intentionally not featured on the dashboard because the supplied Vertiv SNMP documentation does not define the scale of those private OIDs. The underlying items remain available for field validation and troubleshooting.
+
+
+## Field refinements in version 1.4.1
+
+The **Overview** page uses three primary graphs in one row: battery charge/runtime, output power and output phase load. The cumulative-counter graph was removed from the dashboard because cumulative lines are not a useful operational event visualization.
+
+The **Electrical** page shows blackout, brownout and bad-line values as counter cards and gives the output phase-load graph the full page width. **Battery & Environment** displays runtime in hours and uses a dedicated inlet-temperature graph.
+
+The raw `ups.battery.runtime` item remains in minutes to preserve RFC1628 semantics and trigger behavior. The calculated `ups.battery.runtime.hours` item is presentation-only. Private battery temperature remains available in Latest data and in the legacy `UPS: Temperatures` graph, but is not used by the default environmental graph because some firmware can expose non-physical/sentinel-like values when no useful battery-temperature sensor is present.

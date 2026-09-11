@@ -32,3 +32,12 @@ O dashboard final utiliza a renderização nativa mapeada do **Item value** nos 
 As cores de criticidade usam fundos suaves: verde para normal, amarelo para atenção, laranja para estados degradados/alarme e vermelho para estados críticos. Cards informativos/de configuração usam fundo neutro ou azul-claro.
 
 O card calculado de potência de entrada e o gráfico de potência de entrada por fase não são mais destacados no dashboard porque a documentação SNMP Vertiv fornecida não define a escala desses OIDs privados. Os itens continuam disponíveis para validação em campo e troubleshooting.
+
+
+## Ajustes de campo na versão 1.4.1
+
+A página **Overview** usa três gráficos principais em uma única linha: carga/autonomia da bateria, potência de saída e carga de saída por fase. O antigo gráfico de contadores cumulativos foi retirado do dashboard porque uma linha crescente/cumulativa não representa bem eventos operacionais.
+
+A página **Electrical** apresenta blackout, brownout e linhas inválidas como cards de contadores e usa o gráfico de carga por fase em largura total. A página **Battery & Environment** exibe autonomia em horas e usa um gráfico dedicado de temperatura de entrada.
+
+O item bruto `ups.battery.runtime` permanece em minutos para preservar a semântica RFC1628 e as triggers. O item calculado `ups.battery.runtime.hours` existe apenas para apresentação. A temperatura privada de bateria continua disponível em Latest data e no gráfico legado `UPS: Temperatures`, mas não é usada no gráfico ambiental padrão porque alguns firmwares podem expor valores não físicos/sentinela quando não há sensor útil.

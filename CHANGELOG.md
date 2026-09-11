@@ -14,6 +14,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.4.1] - 2026-09-11
+
+### Fixed
+
+- Reflowed the dashboard after removing unvalidated private input-power metrics, eliminating large empty regions.
+- Runtime is displayed in hours through a presentation calculated item while the original RFC1628 minutes item remains authoritative for triggers and troubleshooting.
+- The battery graph now uses hours, avoiding the frontend `Kmin` representation.
+- Cumulative blackout, brownout and bad-line counters are no longer used as a dashboard trend graph and are shown as numeric cards on the Electrical page.
+- The default environment graph now shows inlet temperature only; private battery temperature remains collected and available without distorting the default graph when the management card reports sentinel-like values such as `-0.1 °C`.
+- Output phase load now spans the Electrical page and electrical cards were reflowed.
+- Discharge/event counters are displayed without decimal places.
+
+### Field note
+
+On the validated Vertiv ITA-20kVA device, the UPS web interface itself reports `4320 min` runtime and `-0.1 °C` battery temperature. Version 1.4.1 does not rewrite those source values; it converts runtime to hours for presentation and keeps the private battery-temperature value out of the default environmental trend.
+
 ## [1.4.0] - 2026-09-11
 
 ### Added
