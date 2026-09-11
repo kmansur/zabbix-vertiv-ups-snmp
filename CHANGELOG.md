@@ -14,6 +14,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
+## [1.3.0] - 2026-09-11
+
+### Added
+
+- Optional Zabbix network-map synoptic generator for one Vertiv UPS host.
+- Embedded normal/problem UPS icons in the generated YAML.
+- Input, bypass, output and battery schematic blocks with dynamic highlighting of the central host element.
+- Automated tests for map format, host references and embedded PNG images.
+- Bilingual map generation/import documentation.
+
+### Safety / compatibility
+
+- The map adds no SNMP write/control OIDs.
+- The referenced host must already exist before map import.
+- Peripheral blocks remain static to avoid fabricating unsupported dynamic item-to-shape bindings.
+
 ## [1.2.0] - 2026-09-11
 
 ### Added

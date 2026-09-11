@@ -14,6 +14,22 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.3.0] - 2026-09-11
+
+### Adicionado
+
+- Gerador opcional de mapa sinótico de rede do Zabbix para um host Vertiv UPS.
+- Ícones próprios de estado normal/problema incorporados ao YAML gerado.
+- Blocos esquemáticos de entrada, bypass, saída e bateria com destaque dinâmico do elemento central do host.
+- Testes automatizados do formato do mapa, referências de host e imagens PNG incorporadas.
+- Documentação bilíngue de geração e importação do mapa.
+
+### Segurança / compatibilidade
+
+- O mapa não adiciona OIDs SNMP de escrita ou controle.
+- O host referenciado precisa existir antes da importação do mapa.
+- Os blocos periféricos permanecem estáticos para evitar a criação de vínculos dinâmicos não suportados pelo formato genérico de importação.
+
 ## [1.2.0] - 2026-09-11
 
 ### Adicionado

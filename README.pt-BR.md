@@ -35,6 +35,8 @@ O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimen
 - potência total de entrada calculada e metadados de gabinete/intervalo de teste da bateria;
 - coleta opcional de traps SNMP da árvore privada Vertiv.
 
+Um mapa sinótico de rede do Zabbix pode ser gerado opcionalmente para cada host de nobreak com `tools/generate_synoptic_map.py`.
+
 O template é intencionalmente **somente leitura**. Operações de reboot, shutdown, controle de tomadas e outras escritas SNMP não estão incluídas.
 
 ## Estrutura do repositório
@@ -87,6 +89,7 @@ Português (Brasil):
 - [Métricas e OIDs](docs/pt-BR/metrics.md)
 - [Resumo elétrico](docs/pt-BR/electrical-summary.md)
 - [Dashboard nativo](docs/pt-BR/dashboard.md)
+- [Mapa sinótico opcional](docs/pt-BR/synoptic-map.md)
 - [Triggers](docs/pt-BR/triggers.md)
 - [Arquitetura SNMP](docs/pt-BR/snmp.md)
 - [Troubleshooting](docs/pt-BR/troubleshooting.md)
@@ -119,9 +122,9 @@ Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
 
 ## Versionamento
 
-Versão atual do projeto: **1.2.0**. O projeto utiliza Versionamento Semântico.
+Versão atual do projeto: **1.3.0**. O projeto utiliza Versionamento Semântico.
 
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.2.0` do projeto é exportada como `vendor.version: 1.2-0`.
+As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a versão `1.3.0` do projeto é exportada como `vendor.version: 1.3-0`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z

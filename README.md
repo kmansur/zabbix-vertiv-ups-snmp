@@ -35,6 +35,8 @@ Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs
 - calculated total input power and battery cabinet/test-interval metadata;
 - optional Vertiv enterprise SNMP trap collection.
 
+An optional Zabbix network-map synoptic can be generated per UPS host with `tools/generate_synoptic_map.py`.
+
 The template is intentionally **read-only**. Reboot, shutdown, outlet control and other SNMP write operations are not included.
 
 ## Repository layout
@@ -87,6 +89,7 @@ English:
 - [Metrics and OIDs](docs/en/metrics.md)
 - [Electrical summary metrics](docs/en/electrical-summary.md)
 - [Native dashboard](docs/en/dashboard.md)
+- [Optional synoptic map](docs/en/synoptic-map.md)
 - [Triggers](docs/en/triggers.md)
 - [SNMP architecture](docs/en/snmp.md)
 - [Troubleshooting](docs/en/troubleshooting.md)
@@ -119,9 +122,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-Current project version: **1.2.0**. The project follows Semantic Versioning.
+Current project version: **1.3.0**. The project follows Semantic Versioning.
 
-Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.2.0` is exported as `vendor.version: 1.2-0`.
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.3.0` is exported as `vendor.version: 1.3-0`.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z
