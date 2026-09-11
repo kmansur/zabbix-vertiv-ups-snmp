@@ -30,6 +30,28 @@ ALLOWED_PRIORITIES = {
     "DISASTER",
 }
 
+REQUIRED_PHASE1_KEYS = {
+    "ups.output.frequency",
+    "vertiv.input.voltage.l1n",
+    "vertiv.input.voltage.l12",
+    "vertiv.input.power.l1",
+    "vertiv.input.power.l2",
+    "vertiv.input.power.l3",
+    "vertiv.input.power.total",
+    "vertiv.bypass.voltage.l1n",
+    "vertiv.bypass.voltage.l12",
+    "vertiv.output.voltage.l1n",
+    "vertiv.output.voltage.l12",
+    "vertiv.output.current.l1",
+    "vertiv.output.pf.l1",
+    "vertiv.output.load.l1",
+    "vertiv.output.power.l1",
+    "vertiv.output.apparent.power.l1",
+    "vertiv.battery.cabinet.type",
+    "vertiv.battery.test.interval",
+}
+UNVALIDATED_EVENT_BRANCH = "1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.100."
+
 # Consequential control branches/OIDs intentionally excluded from this project.
 FORBIDDEN_OID_PREFIXES = (
     "1.3.6.1.2.1.33.1.8",  # UPS-MIB shutdown/control group
@@ -150,6 +172,10 @@ def validate_one(
         errors.append(f"duplicate UUIDs inside export: {duplicates[:5]}")
 
     fixed_keys, prototype_keys = collect_item_keys(template)
+    missing_phase1 = sorted(REQUIRED_PHASE1_KEYS - set(fixed_keys))
+    if missing_phase1:
+        errors.append(f"missing required phase-1 item keys: {missing_phase1}")
+
     for label, keys in (("item", fixed_keys), ("item prototype", prototype_keys)):
         dup = sorted({key for key in keys if keys.count(key) > 1})
         if dup:
@@ -184,6 +210,10 @@ def validate_one(
         if "snmp_oid" not in obj:
             continue
         oid = str(obj["snmp_oid"])
+        if UNVALIDATED_EVENT_BRANCH in oid:
+            errors.append(
+                f"unvalidated Vertiv event-state OID is not allowed yet: {oid}"
+            )
         if "1.3.6.1.4.1.6302" in oid:
             errors.append(
                 f"legacy rectifier OID tree is not allowed in UPS template: {oid}"

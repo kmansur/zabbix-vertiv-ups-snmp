@@ -14,6 +14,25 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
+## [1.1.0] - 2026-09-11
+
+### Adicionado
+
+- Item de frequência de saída pela RFC 1628 com escala padronizada de `0,1 Hz`.
+- Itens fixos Vertiv de tensão L-N/L-L para entrada, saída e bypass, preparados para dashboards.
+- Itens fixos por fase de corrente, fator de potência e potência real de entrada.
+- Itens fixos por fase de corrente, fator de potência, percentual de carga, potência real e potência aparente de saída.
+- Potência total de entrada calculada a partir das três potências de fase Vertiv.
+- Itens/value maps para tipo de gabinete de bateria e intervalo do teste automático de bateria.
+- Gráficos de potência de entrada por fase e carga de saída por fase.
+- Documentação bilíngue do resumo elétrico.
+
+### Segurança / validação
+
+- Nenhum multiplicador foi presumido para os novos OIDs elétricos privados Vertiv porque a lista de parâmetros SNMP fornecida não define a escala numérica desses objetos.
+- Os OIDs de condição Vertiv `.2.100.*` continuam intencionalmente fora do polling/triggers ativos até validarmos a codificação dos estados em equipamento real.
+- Nenhum OID SNMP de escrita/controle foi adicionado.
+
 ## [1.0.0] - 2026-09-10
 
 ### Adicionado

@@ -7,7 +7,7 @@ Este projeto utiliza **Versionamento Semântico** (`MAJOR.MINOR.PATCH`).
 Versão atual:
 
 ```text
-1.0.0
+1.1.0
 ```
 
 ## Regras
@@ -15,6 +15,8 @@ Versão atual:
 - **PATCH** — correções compatíveis, correções de documentação e ajustes de triggers que não alterem chaves/macros públicas;
 - **MINOR** — novas métricas compatíveis, triggers, gráficos, compatibilidade com equipamentos ou funcionalidades opcionais;
 - **MAJOR** — alterações incompatíveis em chaves de itens, nomes de macros, identidade do template, instalação obrigatória ou comportamento do monitoramento.
+
+A versão **1.1.0** é uma release MINOR porque adiciona itens elétricos de resumo, value maps, gráficos e documentação de forma retrocompatível, sem alterar chaves ou macros públicas existentes.
 
 ## Consistência da release
 
@@ -34,4 +36,4 @@ O workflow de release valida a tag contra `VERSION` e valida os dois exports ant
 
 A versão do projeto descreve este repositório. A versão do export Zabbix (`7.0` ou `8.0`) descreve o formato de configuração de destino.
 
-Portanto a versão de projeto `1.0.0` pode existir simultaneamente nos exports Zabbix 7.0 e Zabbix 8.0.
+Portanto a versão de projeto `1.1.0` pode existir simultaneamente nos exports Zabbix 7.0 e Zabbix 8.0.

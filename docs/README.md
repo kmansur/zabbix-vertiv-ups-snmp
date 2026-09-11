@@ -6,6 +6,7 @@
 - [Installation](en/installation.md)
 - [Configuration and macros](en/configuration.md)
 - [Metrics and OIDs](en/metrics.md)
+- [Electrical summary metrics](en/electrical-summary.md)
 - [Triggers](en/triggers.md)
 - [SNMP architecture](en/snmp.md)
 - [Troubleshooting](en/troubleshooting.md)
@@ -15,14 +16,13 @@
 
 Root project page: [README.md](../README.md)
 
-Repository CI validates YAML parsing, version consistency, Zabbix 7.0/8.0 template semantic parity, the read-only OID policy, automated tests, local documentation links, and the presence of the English and Brazilian Portuguese documentation sets.
-
 ## Português (Brasil)
 
 - [Visão geral](pt-BR/README.md)
 - [Instalação](pt-BR/installation.md)
 - [Configuração e macros](pt-BR/configuration.md)
 - [Métricas e OIDs](pt-BR/metrics.md)
+- [Resumo elétrico](pt-BR/electrical-summary.md)
 - [Triggers](pt-BR/triggers.md)
 - [Arquitetura SNMP](pt-BR/snmp.md)
 - [Troubleshooting](pt-BR/troubleshooting.md)
@@ -32,4 +32,8 @@ Repository CI validates YAML parsing, version consistency, Zabbix 7.0/8.0 templa
 
 Página principal em português: [README.pt-BR.md](../README.pt-BR.md)
 
-O CI do repositório valida a leitura dos arquivos YAML, a consistência das versões, a paridade semântica dos templates Zabbix 7.0/8.0, a política de OIDs somente leitura, os testes automatizados, os links locais da documentação e a presença dos conjuntos de documentação em inglês e português do Brasil.
+## Automated checks / Verificações automatizadas
+
+The repository CI validates both Zabbix 7.0 and 8.0 template exports, Semantic Versioning metadata, UUID/key integrity, trigger severities/macros, value-map references, graph references, read-only OID policy, semantic parity between exports, bilingual documentation parity, local Markdown links, Python tests, lint and formatting.
+
+O CI do repositório valida os exports para Zabbix 7.0 e 8.0, metadados de Versionamento Semântico, integridade de UUIDs/chaves, severidades/macros de triggers, referências de value maps e gráficos, política de OIDs somente leitura, equivalência semântica entre os exports, paridade da documentação bilíngue, links Markdown locais, testes Python, lint e formatação.

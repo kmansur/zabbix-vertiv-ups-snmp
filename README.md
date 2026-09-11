@@ -30,6 +30,9 @@ Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs
 - inlet air temperature and total operating time;
 - nominal electrical configuration;
 - input, output and bypass lines/phases through low-level discovery (LLD);
+- fixed L-N/L-L input, output and bypass summary metrics for deterministic dashboards;
+- fixed per-phase current, power factor, load and power metrics;
+- calculated total input power and battery cabinet/test-interval metadata;
 - optional Vertiv enterprise SNMP trap collection.
 
 The template is intentionally **read-only**. Reboot, shutdown, outlet control and other SNMP write operations are not included.
@@ -82,6 +85,7 @@ English:
 - [Installation](docs/en/installation.md)
 - [Configuration and macros](docs/en/configuration.md)
 - [Metrics and OIDs](docs/en/metrics.md)
+- [Electrical summary metrics](docs/en/electrical-summary.md)
 - [Triggers](docs/en/triggers.md)
 - [SNMP architecture](docs/en/snmp.md)
 - [Troubleshooting](docs/en/troubleshooting.md)
@@ -114,7 +118,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-The project starts at **1.0.0** and follows Semantic Versioning.
+Current project version: **1.1.0**. The project follows Semantic Versioning.
 
 For a release, these values must agree:
 

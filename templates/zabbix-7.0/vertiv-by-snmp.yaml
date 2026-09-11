@@ -24,9 +24,14 @@ zabbix_export:
 
       - Dynamic discovery of input, output and bypass lines/phases.
 
+      - Fixed electrical summary items for deterministic dashboards and troubleshooting.
+
       - Configurable trigger thresholds through user macros.
 
       - No reboot, shutdown, outlet-control or other write OIDs are included.
+
+
+      Version 1.1.0 adds dashboard-ready fixed phase metrics for input, output and bypass, output frequency, per-phase power/current/power-factor metrics, battery cabinet/test-interval metadata, and calculated total input power.
 
 
       Project: https://github.com/kmansur/zabbix-vertiv-ups-snmp
@@ -38,12 +43,13 @@ zabbix_export:
       Maintained and substantially rewritten by Karim Mansur / Net Tech.
 
 
-      License: MIT for the original work in this repository. See LICENSE and NOTICE.md for attribution
-      and third-party licensing notes.
+      License: MIT for the original work in this repository. See LICENSE and NOTICE.md for attribution and third-party licensing notes.
 
 
-      Important: Vertiv enterprise OID scaling and availability can vary by UPS model/management card. Validate values against the UPS LCD/web
-      interface after import.
+      Important: the supplied Vertiv SNMP parameter list identifies enterprise metrics but does not define scaling for every private OID. Private electrical summary items therefore do not apply guessed multipliers. Validate values against the UPS LCD/web interface before relying on them for thresholds or dashboards.
+
+
+      The supplied event/condition OID lists identify alarms but do not define the return-state encoding of the pollable .2.100.* objects. Event-specific polling triggers are intentionally not fabricated until live values are validated.
 
 
       Export target: Zabbix 7.0.'
@@ -377,8 +383,7 @@ zabbix_export:
         value: battery
       triggers:
       - uuid: 2a10a41a0f634267ad1627b8c6aedd1e
-        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.runtime)<{$UPS.RUNTIME.WARN} and last(/VERTIV
-          by SNMP/ups.battery.runtime)>={$UPS.RUNTIME.CRIT}
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.runtime)<{$UPS.RUNTIME.WARN} and last(/VERTIV by SNMP/ups.battery.runtime)>={$UPS.RUNTIME.CRIT}
         name: UPS battery runtime is low on {HOST.NAME}
         priority: HIGH
         opdata: 'Runtime: {ITEM.LASTVALUE1} min'
@@ -400,8 +405,7 @@ zabbix_export:
         value: battery
       triggers:
       - uuid: 09e7758063c248d696b656cadc9c11c4
-        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.charge)<{$UPS.BATTERY.CHARGE.WARN} and last(/VERTIV
-          by SNMP/ups.battery.charge)>={$UPS.BATTERY.CHARGE.CRIT}
+        expression: last(/VERTIV by SNMP/ups.output.source)=5 and last(/VERTIV by SNMP/ups.battery.charge)<{$UPS.BATTERY.CHARGE.WARN} and last(/VERTIV by SNMP/ups.battery.charge)>={$UPS.BATTERY.CHARGE.CRIT}
         name: UPS battery charge is low on {HOST.NAME}
         priority: HIGH
         opdata: 'Charge: {ITEM.LASTVALUE1} %'
@@ -851,9 +855,7 @@ zabbix_export:
       trends: '0'
       value_type: LOG
       status: DISABLED
-      description: Optional trap item for the Vertiv/Liebert enterprise branch. Enable only after SNMP trap reception is configured on the Zabbix
-        server/proxy. Individual event triggers are intentionally not predefined because the supplied event list identifies condition OIDs but
-        does not define the exact received trap payload/state encoding.
+      description: Optional trap item for the Vertiv/Liebert enterprise branch. Enable only after SNMP trap reception is configured on the Zabbix server/proxy. Individual event triggers are intentionally not predefined because the supplied event list identifies condition OIDs but does not define the exact received trap payload/state encoding.
       tags:
       - tag: component
         value: events
@@ -902,6 +904,623 @@ zabbix_export:
       - tag: component
         value: bypass
       description: Number of lines/phases reported by RFC1628 UPS-MIB. Useful for validating phase discovery.
+    - uuid: 9251f696bd4a47cf9f9ccbcb355f7dc8
+      name: 'UPS: Output frequency'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.33.1.4.2.0
+      key: ups.output.frequency
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: Hz
+      preprocessing:
+      - type: MULTIPLIER
+        parameters:
+        - '0.1'
+      description: RFC 1628 upsOutputFrequency. Raw units are 0.1 Hz.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 83ec11033a9142e2b5cd6105e89feb83
+      name: 'UPS: Input voltage L1-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4096
+      key: vertiv.input.voltage.l1n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 09cd0d4c9dc64ae0af521478ac7f349c
+      name: 'UPS: Input voltage L1-L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4097
+      key: vertiv.input.voltage.l12
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: d9933212896c40f0a8ba271db875441a
+      name: 'UPS: Input voltage L2-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4098
+      key: vertiv.input.voltage.l2n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: e59adcc62b114a5d98e9387c7c58701e
+      name: 'UPS: Input voltage L2-L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4099
+      key: vertiv.input.voltage.l23
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 5b998fd6f0b84b9e9cfa291939268ed0
+      name: 'UPS: Input voltage L3-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4100
+      key: vertiv.input.voltage.l3n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: d922389201334094b190a1207b07cbd8
+      name: 'UPS: Input voltage L3-L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4101
+      key: vertiv.input.voltage.l31
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 15c6f4ae02834a9a89df22ac1ef52008
+      name: 'UPS: Input frequency (Vertiv)'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4105
+      key: vertiv.input.frequency
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: Hz
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: a6590aa0d50f494f993b9e8693ffe8e4
+      name: 'UPS: Input current L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4113
+      key: vertiv.input.current.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 975bfa39fb104f4eb29b1f629890f8fc
+      name: 'UPS: Input current L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4114
+      key: vertiv.input.current.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 431acc5822e1403fb172d84ae30037e5
+      name: 'UPS: Input current L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4115
+      key: vertiv.input.current.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: c86d5fa2ae954345886fb2e2db53177c
+      name: 'UPS: Input power factor L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4116
+      key: vertiv.input.pf.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 5712953931334916a6563b1d15464d02
+      name: 'UPS: Input power factor L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4117
+      key: vertiv.input.pf.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 3abff93d3f6441aa9001f6e16091a8b4
+      name: 'UPS: Input power factor L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4118
+      key: vertiv.input.pf.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 9328b77822d84c388546d9e123c2b8f1
+      name: 'UPS: Input power L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6318
+      key: vertiv.input.power.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 251263aa26ff415aaac2607ce1357c48
+      name: 'UPS: Input power L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6319
+      key: vertiv.input.power.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 1e37d562acb54ef2bf994966588e81f3
+      name: 'UPS: Input power L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6320
+      key: vertiv.input.power.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: input
+    - uuid: 2c5a536783e04badb6b7449177e85288
+      name: 'UPS: Bypass voltage L1-L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4125
+      key: vertiv.bypass.voltage.l12
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: dea6a2aa80d045468a4ee66f5d85d972
+      name: 'UPS: Bypass voltage L2-L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4126
+      key: vertiv.bypass.voltage.l23
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: 626f83f159ef43b7a23963ac3006deb8
+      name: 'UPS: Bypass voltage L3-L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4127
+      key: vertiv.bypass.voltage.l31
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: 3de267efb4844e4e86e79525331bd6fd
+      name: 'UPS: Bypass voltage L1-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4128
+      key: vertiv.bypass.voltage.l1n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: 3cf590c8a5f0478f99b719215a3f9f1d
+      name: 'UPS: Bypass voltage L2-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4129
+      key: vertiv.bypass.voltage.l2n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: d4a4aee445624f5dbd41e0fc3666117d
+      name: 'UPS: Bypass voltage L3-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4130
+      key: vertiv.bypass.voltage.l3n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: bypass
+    - uuid: d125fb1bed1b4fec8ceb9b2cbf1abb74
+      name: 'UPS: Output voltage L1-L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4201
+      key: vertiv.output.voltage.l12
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: bac94d0824c34f86a2a78cb6f75d7b99
+      name: 'UPS: Output voltage L2-L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4202
+      key: vertiv.output.voltage.l23
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: f58db29da2ac4a238004c561a92f1106
+      name: 'UPS: Output voltage L3-L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4203
+      key: vertiv.output.voltage.l31
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 73ec1d337ba141f6b5c0f37eb21d5cb6
+      name: 'UPS: Output voltage L1-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4385
+      key: vertiv.output.voltage.l1n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 8458ff2c84f34af7a76afc192c13c4df
+      name: 'UPS: Output voltage L2-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4386
+      key: vertiv.output.voltage.l2n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: af98637adb754daeb79bb7df449303b1
+      name: 'UPS: Output voltage L3-N'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4387
+      key: vertiv.output.voltage.l3n
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: V
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: f338f4c2ca6846978326df94ebb439db
+      name: 'UPS: Output current L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4204
+      key: vertiv.output.current.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: eba0719bbf1a442f842aeef7b97cedc9
+      name: 'UPS: Output current L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4205
+      key: vertiv.output.current.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 2f1a3523fd9b45068bfb6e1322234464
+      name: 'UPS: Output current L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4206
+      key: vertiv.output.current.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: A
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: de5eb8ce358c40ebbcd4fcbf6ed66170
+      name: 'UPS: Output power factor L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4210
+      key: vertiv.output.pf.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: a53af09d2f9d4d0fadd2a4d854d7137d
+      name: 'UPS: Output power factor L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4211
+      key: vertiv.output.pf.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: e831752b63e54e0694a6e39aa9448ff1
+      name: 'UPS: Output power factor L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4212
+      key: vertiv.output.pf.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: b3b1a529d6ed4cf2b57a2e55d776e0cf
+      name: 'UPS: Output load L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4223
+      key: vertiv.output.load.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: '%'
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 351a36b8ed6c4484b9bb4b22b0090711
+      name: 'UPS: Output load L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4224
+      key: vertiv.output.load.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: '%'
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 6dc392a79bb340fba3047c872c27f151
+      name: 'UPS: Output load L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.4225
+      key: vertiv.output.load.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: '%'
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 2667d09dadb642559b85ac8304d6d269
+      name: 'UPS: Output power L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5859
+      key: vertiv.output.power.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 3e9981bb4cbf46f0a61f890255f00e49
+      name: 'UPS: Output power L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5860
+      key: vertiv.output.power.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 6f9af0a2e7f3442cb47593846de8385c
+      name: 'UPS: Output power L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5959
+      key: vertiv.output.power.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 17e6ab8166244778acf9b3733686fa21
+      name: 'UPS: Output apparent power L1'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5868
+      key: vertiv.output.apparent.power.l1
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: VA
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 1ee26eab004f464abd937595003a04b1
+      name: 'UPS: Output apparent power L2'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5869
+      key: vertiv.output.apparent.power.l2
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: VA
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 4584b5dcd45a48b1b1b211a9c8e91439
+      name: 'UPS: Output apparent power L3'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5870
+      key: vertiv.output.apparent.power.l3
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: VA
+      description: Vertiv/Liebert enterprise OID. The supplied SNMP parameter list does not define the numeric scale for this private object; no multiplier is applied. Validate the displayed value against the UPS LCD/web interface.
+      tags:
+      - tag: component
+        value: output
+    - uuid: 3e4c174fdf6542feb69c14c27f9c12c1
+      name: 'UPS: Battery cabinet type'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.6183
+      key: vertiv.battery.cabinet.type
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      description: Vertiv battery cabinet type.
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: Vertiv battery cabinet type
+    - uuid: 24b17d016cf0432ca7444a02b981026b
+      name: 'UPS: Automatic battery test interval'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.4.1.476.1.42.3.9.20.1.20.1.2.1.5805
+      key: vertiv.battery.test.interval
+      delay: 1h
+      history: 90d
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      description: Configured automatic battery test interval as documented by the supplied Vertiv SNMP parameter list.
+      tags:
+      - tag: component
+        value: battery
+      valuemap:
+        name: Vertiv battery test interval
+    - uuid: 520c00cbf26840e5832a4283e3c2c542
+      name: 'UPS: Input power total (calculated)'
+      type: CALCULATED
+      key: vertiv.input.power.total
+      delay: 1m
+      history: 90d
+      value_type: FLOAT
+      units: W
+      params: last(//vertiv.input.power.l1)+last(//vertiv.input.power.l2)+last(//vertiv.input.power.l3)
+      description: Calculated as the sum of the three Vertiv input phase-power items. The result inherits any vendor-specific scaling behavior of those source items and must be validated against the UPS UI.
+      tags:
+      - tag: component
+        value: input
     discovery_rules:
     - uuid: 892ca15e79f943fca1a69373351353c9
       name: UPS input lines discovery
@@ -1213,9 +1832,31 @@ zabbix_export:
         newvalue: Power factor correction fail
       - value: '10'
         newvalue: External signal command
+    - uuid: ee2f5b922c9d4ecfb63a888947fd9a88
+      name: Vertiv battery cabinet type
+      mappings:
+      - value: '0'
+        newvalue: Internal
+      - value: '1'
+        newvalue: External
+      - value: '2'
+        newvalue: LRT
+    - uuid: c174356fd39b4f27a1c57cdca0fe273d
+      name: Vertiv battery test interval
+      mappings:
+      - value: '0'
+        newvalue: 8 weeks
+      - value: '1'
+        newvalue: 12 weeks
+      - value: '2'
+        newvalue: 16 weeks
+      - value: '3'
+        newvalue: 20 weeks
+      - value: '4'
+        newvalue: 26 weeks
     vendor:
       name: Net Tech
-      version: 1.0.0
+      version: 1.1.0
     tags:
     - tag: class
       value: power
@@ -1285,4 +1926,42 @@ zabbix_export:
       item:
         host: VERTIV by SNMP
         key: ups.input.line.bads
+    show_work_period: 'NO'
+  - uuid: feb3f825ea404920a196f0bb51b92daa
+    name: 'UPS: Input phase power'
+    graph_items:
+    - sortorder: '0'
+      color: 199C0D
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.input.power.l1
+    - sortorder: '1'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.input.power.l2
+    - sortorder: '2'
+      color: 2774A4
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.input.power.l3
+    show_work_period: 'NO'
+  - uuid: 515934afe52244218a5800fc1a35b393
+    name: 'UPS: Output phase load'
+    graph_items:
+    - sortorder: '0'
+      color: 199C0D
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.output.load.l1
+    - sortorder: '1'
+      color: F63100
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.output.load.l2
+    - sortorder: '2'
+      color: 2774A4
+      item:
+        host: VERTIV by SNMP
+        key: vertiv.output.load.l3
     show_work_period: 'NO'
