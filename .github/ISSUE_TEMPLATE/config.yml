@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation / Documentação
+    url: https://github.com/kmansur/zabbix-vertiv-ups-snmp/tree/main/docs
+    about: Read installation and troubleshooting guidance before opening an issue. / Consulte instalação e troubleshooting antes de abrir uma issue.

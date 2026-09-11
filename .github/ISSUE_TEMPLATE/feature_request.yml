@@ -1,0 +1,37 @@
+name: Feature request / Solicitação de melhoria
+description: Suggest a new metric, device compatibility improvement or documentation change. / Sugira nova métrica, compatibilidade ou melhoria de documentação.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: Request / Solicitação
+      description: Describe the desired change. / Descreva a alteração desejada.
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Motivação
+      description: Explain the operational value. / Explique o valor operacional.
+    validations:
+      required: true
+
+  - type: input
+    id: oid
+    attributes:
+      label: OID or MIB object / OID ou objeto MIB
+      placeholder: "Optional / Opcional"
+    validations:
+      required: false
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Device evidence / Evidência do equipamento
+      description: Sanitized raw SNMP output, model/card/firmware details, if applicable. / Saída SNMP sanitizada e modelo/placa/firmware, se aplicável.
+    validations:
+      required: false

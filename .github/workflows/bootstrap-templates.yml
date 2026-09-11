@@ -1,0 +1,54 @@
+name: Bootstrap template exports
+
+on:
+  push:
+    branches:
+      - bootstrap-template-import
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Restore exact template exports
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p templates/zabbix-7.0 templates/zabbix-8.0
+          base64 -d .bootstrap/zabbix-7.0.yaml.gz.b64 | gzip -dc > templates/zabbix-7.0/vertiv-by-snmp.yaml
+          base64 -d .bootstrap/zabbix-8.0.yaml.gz.b64 | gzip -dc > templates/zabbix-8.0/vertiv-by-snmp.yaml
+          echo "d4ec63581bd38f1b8d0afb8b0aaa6340c69c921d5b9965bac1a0442bbda37098  templates/zabbix-7.0/vertiv-by-snmp.yaml" | sha256sum -c -
+          echo "6b8efb1d192d5b7083adecb893ad765d91ab1e85ff04c0b59b5df82164407d3d  templates/zabbix-8.0/vertiv-by-snmp.yaml" | sha256sum -c -
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Validate repository
+        run: |
+          python -m compileall -q tools tests
+          ruff check tools tests
+          ruff format --check tools tests
+          pytest -q
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+
+      - name: Commit restored exports
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add templates/zabbix-7.0/vertiv-by-snmp.yaml templates/zabbix-8.0/vertiv-by-snmp.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m "feat: add VERTIV by SNMP 1.0.0 templates"
+          git push origin HEAD:bootstrap-template-import

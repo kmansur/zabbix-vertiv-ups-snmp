@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+
+      - name: Install validation dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Validate tag and project version
+        shell: bash
+        run: |
+          set -euo pipefail
+          project_version="$(tr -d '\r\n' < VERSION)"
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [[ "$project_version" != "$tag_version" ]]; then
+            echo "VERSION ($project_version) does not match tag ($tag_version)" >&2
+            exit 1
+          fi
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          pytest -q
+
+      - name: Build release archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(tr -d '\r\n' < VERSION)"
+          package="zabbix-vertiv-ups-snmp-${version}"
+          mkdir -p "dist/${package}"
+          cp -r templates docs "dist/${package}/"
+          cp README.md README.pt-BR.md \
+             CHANGELOG.md CHANGELOG.pt-BR.md \
+             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION \
+             "dist/${package}/"
+          cd dist
+          zip -r "${package}.zip" "${package}"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(tr -d '\r\n' < VERSION)"
+          gh release create "${GITHUB_REF_NAME}" \
+            "dist/zabbix-vertiv-ups-snmp-${version}.zip" \
+            "templates/zabbix-7.0/vertiv-by-snmp.yaml" \
+            "templates/zabbix-8.0/vertiv-by-snmp.yaml" \
+            --title "VERTIV by SNMP ${GITHUB_REF_NAME}" \
+            --generate-notes

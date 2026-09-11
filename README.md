@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **English** | [Português (Brasil)](README.pt-BR.md)
 
@@ -127,7 +127,7 @@ GitHub Release
 
 ## License and attribution
 
-Original work in this repository is distributed under **GPL-3.0-only**.
+Original work in this repository is distributed under the **MIT License**.
 
 This project credits the original **Template Vertiv** by **Mihguel da Silva Santos Tavares de Araujo** as a structural and historical reference:
 
