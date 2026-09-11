@@ -62,7 +62,7 @@ jobs:
       - name: Apply production hardening
         run: python tools/apply_production_hardening.py
 
-      - name: Normalize export-target descriptions
+      - name: Normalize generated template semantics
         shell: bash
         run: |
           python - <<'PY'
@@ -77,6 +77,9 @@ jobs:
               desc = str(template.get("description", ""))
               desc = re.sub(r"\n\nExport target: Zabbix (?:7\.0|8\.0)\.", "", desc).rstrip()
               template["description"] = desc + f"\n\nExport target: Zabbix {version}."
+              for rule in template.get("discovery_rules", []):
+                  if rule.get("key") == "ups.alarm.discovery":
+                      rule["enabled_lifetime"] = "1h"
               class Dumper(yaml.SafeDumper):
                   def ignore_aliases(self, data):
                       return True
