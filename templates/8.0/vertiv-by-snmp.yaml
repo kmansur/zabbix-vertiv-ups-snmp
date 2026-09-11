@@ -64,7 +64,10 @@ zabbix_export:
       Version 1.3.3 refines dashboard typography for compact item-value cards, reducing value/unit font sizes and removing change indicators to avoid truncation.
 
 
-      Export target: Zabbix 8.0.'
+      Export target: Zabbix 8.0.
+
+
+      Preview branch: status cards render the value-map-aware {ITEM.LASTVALUE} as the widget description, suppressing raw numeric suffixes, while numeric thresholds drive pastel green/yellow/orange/red backgrounds.'
     vendor:
       name: Net Tech
       version: 1.3-3
@@ -2076,7 +2079,7 @@ zabbix_export:
           name: System status
           x: '0'
           y: '0'
-          width: '12'
+          width: '16'
           height: '2'
           fields:
           - type: ITEM
@@ -2086,25 +2089,61 @@ zabbix_export:
               key: vertiv.system.status
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
+          - type: INTEGER
+            name: desc_size
+            value: '18'
+          - type: INTEGER
+            name: desc_h_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.1.threshold
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '24'
-          - type: INTEGER
-            name: decimal_size
+          - type: STRING
+            name: thresholds.2.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '8'
+          - type: STRING
+            name: thresholds.3.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.3.threshold
             value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
+          - type: STRING
+            name: thresholds.4.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.4.threshold
+            value: '32'
         - type: item
           name: Output source
-          x: '12'
+          x: '16'
           y: '0'
           width: '12'
           height: '2'
@@ -2116,27 +2155,75 @@ zabbix_export:
               key: ups.output.source
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
+          - type: INTEGER
+            name: desc_size
+            value: '18'
+          - type: INTEGER
+            name: desc_h_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.1.threshold
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '24'
-          - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
+          - type: STRING
+            name: thresholds.2.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '3'
+          - type: STRING
+            name: thresholds.3.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.3.threshold
+            value: '4'
+          - type: STRING
+            name: thresholds.4.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.4.threshold
+            value: '5'
+          - type: STRING
+            name: thresholds.5.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.5.threshold
+            value: '6'
+          - type: STRING
+            name: thresholds.6.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.6.threshold
+            value: '7'
         - type: item
           name: Active alarms
-          x: '24'
+          x: '28'
           y: '0'
-          width: '12'
+          width: '10'
           height: '2'
           fields:
           - type: ITEM
@@ -2162,9 +2249,30 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: STRING
+            name: bg_color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.0.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '2'
+          - type: STRING
+            name: thresholds.2.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '3'
         - type: item
           name: Battery status
-          x: '36'
+          x: '38'
           y: '0'
           width: '12'
           height: '2'
@@ -2176,27 +2284,57 @@ zabbix_export:
               key: ups.battery.status
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
+          - type: INTEGER
+            name: desc_size
+            value: '18'
+          - type: INTEGER
+            name: desc_h_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.1.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.1.threshold
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '24'
-          - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
+          - type: STRING
+            name: thresholds.2.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '3'
+          - type: STRING
+            name: thresholds.3.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.3.threshold
+            value: '4'
         - type: item
           name: Battery charge
-          x: '48'
+          x: '50'
           y: '0'
-          width: '12'
+          width: '11'
           height: '2'
           fields:
           - type: ITEM
@@ -2222,11 +2360,32 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: STRING
+            name: bg_color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.0.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '20'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '40'
+          - type: STRING
+            name: thresholds.2.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '80'
         - type: item
           name: Runtime remaining
-          x: '60'
+          x: '61'
           y: '0'
-          width: '12'
+          width: '11'
           height: '2'
           fields:
           - type: ITEM
@@ -2252,6 +2411,27 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: STRING
+            name: bg_color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.0.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '5'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '10'
+          - type: STRING
+            name: thresholds.2.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '30'
         - type: graph
           name: Battery charge and runtime
           x: '0'
@@ -2688,22 +2868,28 @@ zabbix_export:
               key: vertiv.topology
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
           - type: INTEGER
-            name: value_size
-            value: '24'
+            name: desc_size
+            value: '18'
           - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
+            name: desc_h_pos
             value: '1'
           - type: INTEGER
-            name: value_v_pos
+            name: desc_v_pos
             value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: E3F2FD
         - type: graph
           name: Input phase power
           x: '0'
@@ -2766,6 +2952,27 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: STRING
+            name: bg_color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.0.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '20'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '40'
+          - type: STRING
+            name: thresholds.2.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '80'
         - type: item
           name: Runtime remaining
           x: '12'
@@ -2796,6 +3003,27 @@ zabbix_export:
           - type: INTEGER
             name: value_v_pos
             value: '1'
+          - type: STRING
+            name: bg_color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.0.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '5'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '10'
+          - type: STRING
+            name: thresholds.2.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.2.threshold
+            value: '30'
         - type: item
           name: Battery current
           x: '24'
@@ -2900,22 +3128,64 @@ zabbix_export:
               key: vertiv.battery.test.result
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
+          - type: INTEGER
+            name: desc_size
+            value: '18'
+          - type: INTEGER
+            name: desc_h_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '0'
+          - type: STRING
+            name: thresholds.1.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.2.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.2.threshold
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '24'
-          - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
+          - type: STRING
+            name: thresholds.3.color
+            value: FFF3CD
+          - type: STRING
+            name: thresholds.3.threshold
+            value: '3'
+          - type: STRING
+            name: thresholds.4.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.4.threshold
+            value: '4'
+          - type: STRING
+            name: thresholds.5.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.5.threshold
+            value: '5'
         - type: item
           name: Shutdown reason
           x: '0'
@@ -2930,22 +3200,94 @@ zabbix_export:
               key: vertiv.shutdown.reason
           - type: INTEGER
             name: show.0
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
+          - type: INTEGER
+            name: desc_size
+            value: '18'
+          - type: INTEGER
+            name: desc_h_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '0'
+          - type: STRING
+            name: thresholds.1.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.1.threshold
+            value: '1'
+          - type: STRING
+            name: thresholds.2.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.2.threshold
             value: '2'
-          - type: INTEGER
-            name: value_size
-            value: '24'
-          - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
-            value: '1'
-          - type: INTEGER
-            name: value_v_pos
-            value: '1'
+          - type: STRING
+            name: thresholds.3.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.3.threshold
+            value: '3'
+          - type: STRING
+            name: thresholds.4.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.4.threshold
+            value: '4'
+          - type: STRING
+            name: thresholds.5.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.5.threshold
+            value: '5'
+          - type: STRING
+            name: thresholds.6.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.6.threshold
+            value: '6'
+          - type: STRING
+            name: thresholds.7.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.7.threshold
+            value: '7'
+          - type: STRING
+            name: thresholds.8.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.8.threshold
+            value: '8'
+          - type: STRING
+            name: thresholds.9.color
+            value: FFCDD2
+          - type: STRING
+            name: thresholds.9.threshold
+            value: '9'
+          - type: STRING
+            name: thresholds.10.color
+            value: FFE0B2
+          - type: STRING
+            name: thresholds.10.threshold
+            value: '10'
         - type: item
           name: ECO mode
           x: '12'
@@ -2960,21 +3302,39 @@ zabbix_export:
               key: vertiv.eco.status
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
           - type: INTEGER
-            name: value_size
-            value: '24'
+            name: desc_size
+            value: '18'
           - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
+            name: desc_h_pos
             value: '1'
           - type: INTEGER
-            name: value_v_pos
+            name: desc_v_pos
+            value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: ECEFF1
+          - type: STRING
+            name: thresholds.0.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.0.threshold
+            value: '0'
+          - type: STRING
+            name: thresholds.1.color
+            value: C8E6C9
+          - type: STRING
+            name: thresholds.1.threshold
             value: '1'
         - type: item
           name: Battery cabinet
@@ -2990,22 +3350,28 @@ zabbix_export:
               key: vertiv.battery.cabinet.type
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
           - type: INTEGER
-            name: value_size
-            value: '24'
+            name: desc_size
+            value: '18'
           - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
+            name: desc_h_pos
             value: '1'
           - type: INTEGER
-            name: value_v_pos
+            name: desc_v_pos
             value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: E3F2FD
         - type: item
           name: Battery test interval
           x: '36'
@@ -3020,22 +3386,28 @@ zabbix_export:
               key: vertiv.battery.test.interval
           - type: INTEGER
             name: show.0
-            value: '2'
+            value: '1'
+          - type: STRING
+            name: description
+            value: '{{ITEM.LASTVALUE}.regsub("^(.+?)(?:\\s+\\([^)]*\\))?$","\\1")}'
           - type: INTEGER
-            name: value_size
-            value: '24'
+            name: desc_size
+            value: '18'
           - type: INTEGER
-            name: decimal_size
-            value: '16'
-          - type: INTEGER
-            name: units_size
-            value: '16'
-          - type: INTEGER
-            name: value_h_pos
+            name: desc_h_pos
             value: '1'
           - type: INTEGER
-            name: value_v_pos
+            name: desc_v_pos
             value: '1'
+          - type: INTEGER
+            name: desc_bold
+            value: '1'
+          - type: STRING
+            name: desc_color
+            value: '263238'
+          - type: STRING
+            name: bg_color
+            value: E3F2FD
         - type: item
           name: Battery discharges
           x: '48'
