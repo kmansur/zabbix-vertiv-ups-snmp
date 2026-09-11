@@ -36,7 +36,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ruff check --fix tools tests
+          ruff check --fix --unsafe-fixes tools tests
           ruff format tools tests
           python -m compileall -q tools tests
           ruff check tools tests
