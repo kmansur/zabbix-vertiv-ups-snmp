@@ -62,6 +62,29 @@ jobs:
       - name: Apply production hardening
         run: python tools/apply_production_hardening.py
 
+      - name: Normalize export-target descriptions
+        shell: bash
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          import yaml
+
+          for version in ("7.0", "8.0"):
+              path = Path("templates") / version / "vertiv-by-snmp.yaml"
+              data = yaml.safe_load(path.read_text(encoding="utf-8"))
+              template = data["zabbix_export"]["templates"][0]
+              desc = str(template.get("description", ""))
+              desc = re.sub(r"\n\nExport target: Zabbix (?:7\.0|8\.0)\.", "", desc).rstrip()
+              template["description"] = desc + f"\n\nExport target: Zabbix {version}."
+              class Dumper(yaml.SafeDumper):
+                  def ignore_aliases(self, data):
+                      return True
+              rendered = yaml.dump(data, Dumper=Dumper, sort_keys=False, allow_unicode=True, width=1000)
+              header = "# SPDX-License-Identifier: MIT\n# Copyright (C) 2026 Karim Mansur / Net Tech\n# See NOTICE.md for attribution to the original Vertiv template reference.\n"
+              path.write_text(header + rendered, encoding="utf-8")
+          PY
+
       - name: Update versioning guides for candidate
         shell: bash
         run: |
