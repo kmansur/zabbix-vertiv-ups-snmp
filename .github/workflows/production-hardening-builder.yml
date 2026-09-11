@@ -80,6 +80,7 @@ jobs:
               for rule in template.get("discovery_rules", []):
                   if rule.get("key") == "ups.alarm.discovery":
                       rule["enabled_lifetime"] = "1h"
+                      rule["lifetime"] = "1d"
               class Dumper(yaml.SafeDumper):
                   def ignore_aliases(self, data):
                       return True
