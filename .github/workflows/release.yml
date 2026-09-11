@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -39,7 +41,14 @@ jobs:
           python tools/validate_production.py
           pytest -q
 
-      - name: Production Zabbix 7.0 import gate
+      - name: Prepare stable upgrade baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show v1.4.1:templates/7.0/vertiv-by-snmp.yaml > /tmp/vertiv-by-snmp-v1.4.1.yaml
+          test -s /tmp/vertiv-by-snmp-v1.4.1.yaml
+
+      - name: Start production validation Zabbix 7.0 stack
         shell: bash
         run: |
           set -euo pipefail
@@ -73,7 +82,11 @@ jobs:
             -e ZBX_SERVER_NAME="Vertiv release validation" \
             zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
 
-          python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 300
+      - name: Import stable v1.4.1 baseline
+        run: python tools/zabbix_api_import_test.py --template /tmp/vertiv-by-snmp-v1.4.1.yaml --wait 300
+
+      - name: Upgrade in place to release candidate
+        run: python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 60
 
       - name: Build release assets
         shell: bash
