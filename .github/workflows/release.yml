@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "3.14"
 
@@ -38,20 +38,27 @@ jobs:
           python tools/validate_docs.py
           pytest -q
 
-      - name: Build release archive
+      - name: Build release assets
         shell: bash
         run: |
           set -euo pipefail
           version="$(tr -d '\r\n' < VERSION)"
           package="zabbix-vertiv-ups-snmp-${version}"
           mkdir -p "dist/${package}"
-          cp -r templates docs "dist/${package}/"
+          cp -r templates docs tools "dist/${package}/"
           cp README.md README.pt-BR.md \
              CHANGELOG.md CHANGELOG.pt-BR.md \
-             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION \
+             CONTRIBUTING.md CONTRIBUTING.pt-BR.md \
+             SECURITY.md SECURITY.pt-BR.md \
+             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION requirements-dev.txt \
              "dist/${package}/"
-          cd dist
-          zip -r "${package}.zip" "${package}"
+          cp templates/7.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-7.0.yaml"
+          cp templates/8.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-8.0.yaml"
+          (cd dist && zip -r "${package}.zip" "${package}")
+          (cd dist && sha256sum \
+            vertiv-by-snmp-zabbix-7.0.yaml \
+            vertiv-by-snmp-zabbix-8.0.yaml \
+            "${package}.zip" > SHA256SUMS)
 
       - name: Create GitHub Release
         env:
@@ -59,8 +66,9 @@ jobs:
         run: |
           version="$(tr -d '\r\n' < VERSION)"
           gh release create "${GITHUB_REF_NAME}" \
+            "dist/vertiv-by-snmp-zabbix-7.0.yaml" \
+            "dist/vertiv-by-snmp-zabbix-8.0.yaml" \
             "dist/zabbix-vertiv-ups-snmp-${version}.zip" \
-            "templates/7.0/vertiv-by-snmp.yaml" \
-            "templates/8.0/vertiv-by-snmp.yaml" \
-            --title "VERTIV by SNMP ${GITHUB_REF_NAME}" \
+            "dist/SHA256SUMS" \
+            --title "Vertiv by SNMP ${GITHUB_REF_NAME}" \
             --generate-notes
