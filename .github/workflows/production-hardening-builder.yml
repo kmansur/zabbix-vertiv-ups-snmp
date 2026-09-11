@@ -39,9 +39,9 @@ jobs:
 
           path = Path("tools/apply_production_hardening.py")
           text = path.read_text(encoding="utf-8")
+          text = text.replace("import json\nimport re\nimport uuid\n", "import hashlib\nimport json\nimport re\nimport uuid\n")
           text = text.replace(
               "def new_uuid() -> str:\n    return uuid.uuid4().hex\n",
-              "_UUID_NAMESPACE = uuid.UUID('3ab60c73-4b8a-4e91-9e78-4457d6036945')\n"
               "_uuid_counter = 0\n\n"
               "def reset_uuid_counter() -> None:\n"
               "    global _uuid_counter\n"
@@ -49,7 +49,8 @@ jobs:
               "def new_uuid() -> str:\n"
               "    global _uuid_counter\n"
               "    _uuid_counter += 1\n"
-              "    return uuid.uuid5(_UUID_NAMESPACE, f'vertiv-1.5.0-{_uuid_counter}').hex\n",
+              "    seed = hashlib.sha256(f'vertiv-1.5.0-{_uuid_counter}'.encode()).digest()[:16]\n"
+              "    return uuid.UUID(bytes=seed, version=4).hex\n",
           )
           text = text.replace(
               "def transform_template(path: Path) -> None:\n    data = yaml.safe_load(path.read_text(encoding=\"utf-8\"))\n",
