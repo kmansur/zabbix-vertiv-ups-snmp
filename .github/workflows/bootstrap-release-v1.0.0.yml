@@ -39,7 +39,7 @@ jobs:
           python tools/validate_templates.py
           python tools/validate_docs.py
 
-      - name: Build release archive
+      - name: Build release archive and assets
         shell: bash
         run: |
           set -euo pipefail
@@ -52,6 +52,8 @@ jobs:
              SECURITY.md SECURITY.pt-BR.md \
              LICENSE NOTICE.md NOTICE.pt-BR.md VERSION \
              "dist/${package}/"
+          cp templates/zabbix-7.0/vertiv-by-snmp.yaml dist/vertiv-by-snmp-zabbix-7.0.yaml
+          cp templates/zabbix-8.0/vertiv-by-snmp.yaml dist/vertiv-by-snmp-zabbix-8.0.yaml
           cd dist
           zip -r "${package}.zip" "${package}"
 
@@ -100,8 +102,8 @@ jobs:
           fi
           gh release create "${RELEASE_TAG}" \
             "dist/zabbix-vertiv-ups-snmp-${RELEASE_VERSION}.zip" \
-            "templates/zabbix-7.0/vertiv-by-snmp.yaml#VERTIV by SNMP - Zabbix 7.0" \
-            "templates/zabbix-8.0/vertiv-by-snmp.yaml#VERTIV by SNMP - Zabbix 8.0 preview" \
+            "dist/vertiv-by-snmp-zabbix-7.0.yaml#VERTIV by SNMP - Zabbix 7.0" \
+            "dist/vertiv-by-snmp-zabbix-8.0.yaml#VERTIV by SNMP - Zabbix 8.0 preview" \
             --target "${RELEASE_TARGET}" \
             --title "VERTIV by SNMP ${RELEASE_TAG}" \
             --notes-file release-notes.md
