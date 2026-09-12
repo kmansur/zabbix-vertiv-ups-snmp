@@ -97,7 +97,9 @@ def validate(path: Path) -> None:
         if item.get("status") != "DISABLED":
             errors.append(f"optional unsupported RFC1628 item must be disabled: {key}")
         if item.get("triggers"):
-            errors.append(f"optional unsupported RFC1628 item must not have triggers: {key}")
+            errors.append(
+                f"optional unsupported RFC1628 item must not have triggers: {key}"
+            )
 
     if items.get("vertiv.output.load", {}).get("triggers"):
         errors.append("private aggregate output load must not drive triggers")
@@ -161,9 +163,7 @@ def validate(path: Path) -> None:
                     if str(f.get("name", "")).startswith("thresholds.")
                 ]
 
-    leaked_optional = sorted(
-        set(dashboard_item_keys) & DISABLED_OPTIONAL_STANDARD_KEYS
-    )
+    leaked_optional = sorted(set(dashboard_item_keys) & DISABLED_OPTIONAL_STANDARD_KEYS)
     if leaked_optional:
         errors.append(
             f"unsupported optional RFC1628 battery items referenced by dashboard: {leaked_optional}"
