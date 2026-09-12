@@ -2,21 +2,31 @@
 
 [Português (Brasil)](../pt-BR/production-readiness.md)
 
-Version 1.5.0 is designed to enter field homologation with all repository-side production hardening complete.
+Version 1.5.0 is designed to enter field homologation with all repository-side production hardening complete. Hardware homologation is still used to turn compatibility assumptions into proven safe defaults.
 
 ## Implemented gates
 
 - dedicated `sysUpTime.0` heartbeat and five-minute SNMP `nodata()` alert;
 - management-agent uptime reset notice;
 - standardized RFC1628 identification items plus automatic inventory links;
-- RFC1628 battery current/temperature and read-only diagnostic test results;
+- read-only RFC1628 diagnostic test results;
 - RFC1628 active alarm-table discovery with human-readable well-known alarm value map;
+- RFC1628 battery current/temperature retained as optional items **disabled by default** after the homologated card returned `noSuchObject` for both;
+- production battery current kept on the field-observed Vertiv private `4149` object;
+- private battery-temperature metric disabled by default and removed from production dashboard/alerting after returning approximately `-0.1 °C` on the validated device;
 - unvalidated private input-power metrics disabled by default;
-- private battery-temperature metric disabled by default and removed from production alerting;
 - load alarms based on standardized `upsOutputPercentLoad` discovery instead of private aggregate load;
 - misleading legacy graphs removed;
-- Zabbix 7 API import integration test in CI/release workflow;
+- real Zabbix 7 API fresh-import and in-place-upgrade tests in CI/release workflow;
 - MIB/OID source provenance and compatibility matrix.
+
+## Battery homologation result
+
+On the Vertiv ITA-20kVA used during development, the SNMP card implements only part of the UPS-MIB battery group. `upsBatteryStatus` works, while `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) and `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) return `No Such Object available on this agent at this OID`.
+
+The 1.5.0 candidate treats that as a card compatibility property rather than a Zabbix collection failure: both standard scalars remain available for other cards/firmwares but are disabled and trigger-free by default. No default dashboard widget depends on them.
+
+The Vertiv private battery-current item (`vertiv.battery.current`, OID ending `4149`) has been observed working on the device and remains on the dashboard. No default battery-temperature trigger is provided until a supported and validated battery-temperature sensor/OID is available for the device; the dashboard continues to use the field-confirmed inlet temperature for environmental monitoring.
 
 ## History and capacity planning
 
@@ -41,8 +51,8 @@ The dedicated `ups.snmp.uptime` heartbeat intentionally keeps only 7 days of his
 
 1. Import the 1.5.0 Zabbix 7 template with **Update existing** enabled.
 2. Confirm `ups.snmp.uptime` updates every minute and stop SNMP briefly in a controlled window to confirm the availability alert/recovery.
-3. Compare RFC1628 manufacturer/model/software/name with the UPS web UI.
-4. Compare `ups.battery.current` and `ups.battery.temperature` with the UPS UI; if unsupported, document it in the compatibility matrix rather than enabling the private experimental temperature item for alerting.
+3. Compare RFC1628 manufacturer/model/software/name with the UPS web UI and record any standard object not implemented by the card.
+4. Confirm `ups.battery.status`, `vertiv.battery.current`, charge and runtime. Optional `ups.battery.current` and `ups.battery.temperature` must remain disabled on this device because `noSuchObject` behavior is already confirmed.
 5. Confirm input/output/bypass discovery and per-phase `upsOutputPercentLoad`.
 6. If a safe alarm condition or battery test can be generated, confirm `upsAlarmTable` discovery and RFC1628 test-result items. Do not initiate tests through this template.
 7. Confirm the Overview, Electrical and Battery & Environment dashboards with normal and incident windows.
