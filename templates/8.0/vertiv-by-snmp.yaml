@@ -595,7 +595,7 @@ zabbix_export:
       - tag: component
         value: battery
       status: DISABLED
-      description: Vertiv private battery-temperature object. It returned a sentinel-like -0.1 °C on the field-validated ITA-20kVA and is disabled by default. Use RFC1628 ups.battery.temperature for production alerts; enable this private item only for model-specific troubleshooting.
+      description: Vertiv private battery-temperature object. It returned approximately -0.1 °C on the field-validated ITA-20kVA while inlet temperature was about 24-25 °C, so it is disabled by default and has no production trigger. The tested card also returns noSuchObject for RFC1628 upsBatteryTemperature; enable a battery-temperature item only after validating a supported sensor/OID against the target UPS UI.
     - uuid: 933b0e2ef1bb46ebb319fdd548fe0d73
       name: 'UPS: Battery charge state'
       type: SNMP_AGENT
