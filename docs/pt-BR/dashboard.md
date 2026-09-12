@@ -4,6 +4,8 @@
 
 O dashboard de template **Vertiv UPS Overview** é importado junto com o template e acompanha automaticamente o host monitorado. As imagens abaixo foram capturadas de um nobreak Vertiv real utilizando o dashboard da versão 1.4.1 enquanto o equipamento estava em operação normal/online. Os valores são apenas exemplos; tensão, carga, autonomia e temperatura variam conforme o modelo do nobreak, banco de baterias e carga conectada.
 
+> **Nota da candidata 1.5.0:** durante a homologação, a placa testada retornou `noSuchObject` para `upsBatteryCurrent` e `upsBatteryTemperature` da RFC1628. Por isso, esses dois itens padrão ficam desabilitados por default. O card de temperatura de bateria mostrado na captura 1.4.1 foi substituído por **Battery status** na candidata 1.5.0; a corrente continua usando o OID privado Vertiv já validado em campo.
+
 O dashboard é dividido propositalmente em três páginas:
 
 - **Overview** — saúde operacional, bateria, potência de saída e carga por fase em uma única visão.
@@ -34,7 +36,7 @@ A página Overview deve ser o primeiro ponto de consulta tanto em operação nor
 
 - **System status** deve normalmente permanecer verde e indicar `Normal operation`.
 - **Output source** deve normalmente indicar `Normal`. Uma mudança para Battery ou Bypass é operacionalmente importante mesmo que a carga continue alimentada.
-- **Active alarms** representa a quantidade de alarmes UPS-MIB atualmente informados. Zero é o estado esperado em condição saudável.
+- **Active alarms** representa a quantidade de alarmes UPS-MIB atualmente informados. Zero é o estado esperado em condição saudável. Na candidata 1.5.0, qualquer valor positivo recebe destaque crítico; a quantidade não é usada para inferir severidade.
 - **Battery status** deve normalmente indicar `Normal`.
 - **Battery charge** mostra a estimativa de carga da bateria.
 - **Runtime remaining** é uma conversão para horas, feita apenas para apresentação, do valor RFC1628 originalmente informado em minutos. O item bruto continua em minutos para a lógica das triggers.
@@ -130,14 +132,14 @@ O gráfico em largura total é a mesma visão L1/L2/L3 exibida em Overview, por�
 
 ![Dashboard de bateria e ambiente do Vertiv UPS](../images/dashboard-battery-environment.png)
 
-Essa página concentra saúde da bateria, configuração/teste e temperatura ambiente.
+Essa página concentra saúde da bateria, configuração/teste e temperatura ambiente. A captura acima é da 1.4.1; na candidata 1.5.0 o antigo card **Battery temperature** é substituído por **Battery status** após a constatação de campo de que a placa não implementa `upsBatteryTemperature`.
 
 ### Cards de bateria e status
 
 - **Battery charge** — percentual estimado de carga.
 - **Runtime remaining** — autonomia estimada em horas para apresentação.
-- **Battery current** — corrente entrando/saindo da bateria conforme exposta pela MIB privada Vertiv.
-- **Battery temperature** — temperatura padronizada RFC1628 (`upsBatteryTemperature`), usada para o card e alertas de produção.
+- **Battery current** — corrente entrando/saindo da bateria pelo OID privado Vertiv `...4149`, validado no equipamento de homologação.
+- **Battery status** — estado padronizado RFC1628 (`upsBatteryStatus`), suportado pela placa testada.
 - **Inlet temperature** — temperatura do ar de entrada/ambiente do nobreak.
 - **Battery test result** — resultado do teste de bateria mais recente.
 - **Shutdown reason** — motivo de shutdown informado pelo equipamento.
@@ -148,9 +150,19 @@ Essa página concentra saúde da bateria, configuração/teste e temperatura amb
 
 `Battery discharges` é um contador histórico. Ele não representa quantidade de baterias nem número de descargas acontecendo simultaneamente.
 
-### Temperatura da bateria: padrão x OID privado
+### Corrente e temperatura de bateria: compatibilidade real
 
-A partir da candidata 1.5.0, o card e os triggers de produção usam `upsBatteryTemperature` da RFC1628. O OID privado Vertiv validado anteriormente retornava aproximadamente `-0,1 °C` e passou a ficar **desabilitado por padrão** como métrica experimental. Ele pode ser habilitado manualmente apenas para troubleshooting/model-specific validation.
+A candidata 1.5.0 inicialmente adicionou os escalares RFC1628 `upsBatteryCurrent` e `upsBatteryTemperature` para ampliar portabilidade. A homologação mostrou que a placa do ITA-20kVA testado responde `No Such Object available on this agent at this OID` para ambos.
+
+A política final da candidata é:
+
+- `ups.battery.current` e `ups.battery.temperature` permanecem no template, mas **desabilitados por padrão**, sem triggers e fora do dashboard;
+- `vertiv.battery.current` (`...4149`) continua sendo a corrente apresentada, pois funciona no equipamento validado;
+- `vertiv.battery.temperature` (`...4156`) permanece desabilitada porque retornou aproximadamente `-0,1 °C`, valor incompatível com o ambiente observado;
+- não existe trigger padrão de temperatura de bateria até um OID/sensor de temperatura ser comprovadamente suportado e validado;
+- a monitoração ambiental padrão utiliza **Inlet temperature**.
+
+Isso evita tanto `Unsupported item` quanto alertas baseados em valor de sensor inválido, sem remover compatibilidade com outras placas que possam implementar os escalares RFC1628 opcionais.
 
 ### Inlet temperature
 
@@ -169,7 +181,7 @@ O mesmo gráfico de dois eixos exibido no Overview é repetido nesta página par
 
 ## Por que não há mais gráficos no dashboard padrão
 
-A versão 1.4.1 mantém propositalmente um conjunto pequeno de gráficos. Os gráficos atuais respondem às principais perguntas operacionais sem duplicar cada item numérico como tendência permanente.
+A versão 1.4.1 e a candidata 1.5.0 mantêm propositalmente um conjunto pequeno de gráficos. Os gráficos atuais respondem às principais perguntas operacionais sem duplicar cada item numérico como tendência permanente.
 
 Tensões e frequências de entrada/saída/bypass continuam armazenadas no histórico e podem ser abertas em gráfico pelo Latest data durante investigação de qualidade de energia. Elas permanecem como cards no dashboard padrão porque, em operação normal, tendem a ser estáveis e adicionar vários gráficos permanentes aumentaria a poluição visual.
 
@@ -183,11 +195,13 @@ Os OIDs privados Vertiv de potência de entrada por fase também não são desta
 4. Observe **Output phase load** procurando sobrecarga ou desbalanceamento.
 5. Abra **Electrical** e compare tensão/frequência de entrada, saída e bypass.
 6. Verifique se os contadores de blackout/brownout aumentaram.
-7. Abra **Battery & Environment** e confira temperatura de entrada, resultado do teste de bateria e motivo de shutdown.
+7. Abra **Battery & Environment** e confira corrente de bateria, temperatura de entrada, resultado do teste de bateria e motivo de shutdown.
 8. Amplie a janela de tempo do dashboard para incluir o período anterior e posterior ao incidente.
 
 ## Notas de validação em campo
 
 O dashboard foi validado em campo com uma placa/nobreak Vertiv que retorna enums privados como strings, incluindo `Normal Operation`, `Online`, `Passed` e `External`. O template normaliza essas respostas para valores numéricos canônicos, permitindo que value maps, triggers e cores dos cards permaneçam consistentes.
+
+A mesma homologação comprovou que o agente implementa a UPS-MIB de forma parcial: suportar `upsBatteryStatus`, autonomia e outros objetos RFC1628 não significa necessariamente suportar `upsBatteryCurrent` ou `upsBatteryTemperature`.
 
 O item RFC1628 bruto de autonomia continua sendo a fonte autoritativa para cálculos de trigger. O item `ups.battery.runtime.hours` existe somente para tornar a apresentação do dashboard mais didática.
