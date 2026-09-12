@@ -48,6 +48,13 @@ jobs:
                   'Vertiv ITA-20kVA management agent returns noSuchObject for this scalar. No production trigger '
                   'depends on it; enable only after confirming support on the target card/firmware.'
               ),
+              'vertiv.battery.temperature': (
+                  'Vertiv private battery-temperature object. It returned approximately -0.1 °C on the '
+                  'field-validated ITA-20kVA while inlet temperature was about 24-25 °C, so it is disabled '
+                  'by default and has no production trigger. The tested card also returns noSuchObject for '
+                  'RFC1628 upsBatteryTemperature; enable a battery-temperature item only after validating '
+                  'a supported sensor/OID against the target UPS UI.'
+              ),
           }
 
           for version in ('7.0', '8.0'):
@@ -117,5 +124,5 @@ jobs:
             echo 'No template changes required'
             exit 0
           fi
-          git commit -m 'fix: disable unsupported RFC1628 battery scalars [field-fix]'
+          git commit -m 'fix: align unsupported battery telemetry notes [field-fix]'
           git push origin HEAD:production/1.5.0-hardening
