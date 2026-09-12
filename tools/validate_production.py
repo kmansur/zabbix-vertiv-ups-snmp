@@ -35,6 +35,10 @@ DISABLED_EXPERIMENTAL_KEYS = {
     "vertiv.input.power.total",
     "vertiv.battery.temperature",
 }
+DISABLED_OPTIONAL_STANDARD_KEYS = {
+    "ups.battery.current",
+    "ups.battery.temperature",
+}
 OBSOLETE_GRAPHS = {
     "UPS: Input phase power",
     "UPS: Power quality counters",
@@ -59,7 +63,7 @@ def validate(path: Path) -> None:
 
     missing = sorted(REQUIRED_KEYS - set(items))
     if missing:
-        errors.append(f"missing production items: {missing}")
+        errors.append(f"missing production/compatibility items: {missing}")
 
     uptime = items.get("ups.snmp.uptime", {})
     if any(
@@ -81,18 +85,22 @@ def validate(path: Path) -> None:
         if item.get("triggers"):
             errors.append(f"experimental item must not have triggers: {key}")
 
+    # The field-validated ITA-20kVA management agent returns noSuchObject for
+    # RFC1628 upsBatteryCurrent and upsBatteryTemperature. Keep these standard
+    # objects available for other cards/firmwares, but never poll or alert on
+    # them by default.
+    for key in DISABLED_OPTIONAL_STANDARD_KEYS:
+        item = items.get(key)
+        if item is None:
+            errors.append(f"missing retained optional RFC1628 item {key}")
+            continue
+        if item.get("status") != "DISABLED":
+            errors.append(f"optional unsupported RFC1628 item must be disabled: {key}")
+        if item.get("triggers"):
+            errors.append(f"optional unsupported RFC1628 item must not have triggers: {key}")
+
     if items.get("vertiv.output.load", {}).get("triggers"):
         errors.append("private aggregate output load must not drive triggers")
-
-    temp = items.get("ups.battery.temperature", {})
-    temp_expr = " ".join(str(t.get("expression")) for t in temp.get("triggers", []))
-    if (
-        "{$UPS.BATTERY.TEMP.WARN}" not in temp_expr
-        or "{$UPS.BATTERY.TEMP.CRIT}" not in temp_expr
-    ):
-        errors.append(
-            "RFC1628 battery temperature must own production temperature triggers"
-        )
 
     rules = {str(rule.get("key")): rule for rule in template.get("discovery_rules", [])}
     alarm = rules.get("ups.alarm.discovery")
@@ -125,35 +133,46 @@ def validate(path: Path) -> None:
     if leaked:
         errors.append(f"obsolete graphs still exported: {leaked}")
 
-    # Dashboard must use standard battery temperature and count must not imply
-    # severity by multiple count thresholds.
+    # The default dashboard may only reference battery telemetry confirmed on
+    # the field device. Unsupported optional RFC1628 battery scalars must not
+    # leak into widgets. Active-alarm count must not imply severity by count.
     dashboard = next(
         d
         for d in template.get("dashboards", [])
         if d.get("name") == "Vertiv UPS Overview"
     )
-    battery_key = None
+    dashboard_item_keys: list[str] = []
     alarm_thresholds = []
     for page in dashboard.get("pages", []):
         for widget in page.get("widgets", []):
             if widget.get("type") != "item":
                 continue
             fields = widget.get("fields", [])
-            if widget.get("name") == "Battery temperature":
-                ref = next(
-                    f.get("value") for f in fields if f.get("name") == "itemid.0"
-                )
-                battery_key = ref.get("key")
+            for field in fields:
+                if field.get("name") == "itemid.0":
+                    ref = field.get("value") or {}
+                    key = ref.get("key")
+                    if key:
+                        dashboard_item_keys.append(str(key))
             if widget.get("name") == "Active alarms":
                 alarm_thresholds = [
                     f
                     for f in fields
                     if str(f.get("name", "")).startswith("thresholds.")
                 ]
-    if battery_key != "ups.battery.temperature":
+
+    leaked_optional = sorted(
+        set(dashboard_item_keys) & DISABLED_OPTIONAL_STANDARD_KEYS
+    )
+    if leaked_optional:
         errors.append(
-            f"dashboard battery temperature must use RFC1628 item, got {battery_key!r}"
+            f"unsupported optional RFC1628 battery items referenced by dashboard: {leaked_optional}"
         )
+    if "vertiv.battery.current" not in dashboard_item_keys:
+        errors.append("dashboard must retain field-validated Vertiv battery current")
+    if "ups.battery.status" not in dashboard_item_keys:
+        errors.append("dashboard must retain RFC1628 battery status")
+
     thresholds = {str(f.get("name")): str(f.get("value")) for f in alarm_thresholds}
     if thresholds != {"thresholds.0.color": "FFCDD2", "thresholds.0.threshold": "1"}:
         errors.append(
