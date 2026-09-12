@@ -38,3 +38,51 @@ def test_alarm_discovery_is_diagnostic_not_trigger_spam():
         assert not rule.get("trigger_prototypes")
         for proto in rule["item_prototypes"]:
             assert not proto.get("trigger_prototypes")
+
+
+def test_field_unsupported_rfc1628_battery_scalars_are_disabled():
+    optional_keys = {"ups.battery.current", "ups.battery.temperature"}
+    for version in ("7.0", "8.0"):
+        data = yaml.safe_load(
+            (ROOT / "templates" / version / "vertiv-by-snmp.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        template = data["zabbix_export"]["templates"][0]
+        items = {str(item.get("key")): item for item in template.get("items", [])}
+        for key in optional_keys:
+            assert items[key]["status"] == "DISABLED"
+            assert not items[key].get("triggers")
+            assert "noSuchObject" in items[key].get("description", "")
+
+
+def test_dashboard_does_not_use_unsupported_battery_scalars():
+    unsupported = {"ups.battery.current", "ups.battery.temperature"}
+    for version in ("7.0", "8.0"):
+        data = yaml.safe_load(
+            (ROOT / "templates" / version / "vertiv-by-snmp.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        template = data["zabbix_export"]["templates"][0]
+        dashboard = next(
+            dashboard
+            for dashboard in template.get("dashboards", [])
+            if dashboard.get("name") == "Vertiv UPS Overview"
+        )
+        item_keys = set()
+        widget_names = set()
+        for page in dashboard.get("pages", []):
+            for widget in page.get("widgets", []):
+                widget_names.add(str(widget.get("name", "")))
+                for field in widget.get("fields", []):
+                    if field.get("name") != "itemid.0":
+                        continue
+                    value = field.get("value") or {}
+                    if value.get("key"):
+                        item_keys.add(str(value["key"]))
+
+        assert not (item_keys & unsupported)
+        assert "vertiv.battery.current" in item_keys
+        assert "ups.battery.status" in item_keys
+        assert "Battery temperature" not in widget_names
