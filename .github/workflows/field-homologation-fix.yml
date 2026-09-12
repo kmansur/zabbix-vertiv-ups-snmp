@@ -1,0 +1,121 @@
+name: Field homologation battery fix
+
+on:
+  push:
+    branches:
+      - production/1.5.0-hardening
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[field-fix]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: production/1.5.0-hardening
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+
+      - name: Install YAML support
+        run: python -m pip install 'PyYAML>=6.0.3,<7'
+
+      - name: Patch optional RFC1628 battery telemetry
+        shell: bash
+        run: |
+          python - <<'PY'
+          from copy import deepcopy
+          from pathlib import Path
+          import yaml
+
+          class Dumper(yaml.SafeDumper):
+              def ignore_aliases(self, data):
+                  return True
+
+          descriptions = {
+              'ups.battery.current': (
+                  'Optional RFC1628 upsBatteryCurrent (0.1 A DC raw units). '
+                  'Disabled by default because the field-validated Vertiv ITA-20kVA management agent '
+                  'returns noSuchObject for this scalar. Enable only after confirming support on the target card/firmware.'
+              ),
+              'ups.battery.temperature': (
+                  'Optional RFC1628 upsBatteryTemperature. Disabled by default because the field-validated '
+                  'Vertiv ITA-20kVA management agent returns noSuchObject for this scalar. No production trigger '
+                  'depends on it; enable only after confirming support on the target card/firmware.'
+              ),
+          }
+
+          for version in ('7.0', '8.0'):
+              path = Path('templates') / version / 'vertiv-by-snmp.yaml'
+              data = yaml.safe_load(path.read_text(encoding='utf-8'))
+              template = data['zabbix_export']['templates'][0]
+              items = {str(item.get('key')): item for item in template.get('items', [])}
+
+              for key, description in descriptions.items():
+                  item = items[key]
+                  item['status'] = 'DISABLED'
+                  item.pop('triggers', None)
+                  item['description'] = description
+
+              dashboard = next(
+                  d for d in template.get('dashboards', [])
+                  if d.get('name') == 'Vertiv UPS Overview'
+              )
+              all_widgets = [
+                  widget
+                  for page in dashboard.get('pages', [])
+                  for widget in page.get('widgets', [])
+              ]
+              source = next(w for w in all_widgets if w.get('name') == 'Battery status')
+              target = next((w for w in all_widgets if w.get('name') == 'Battery temperature'), None)
+              if target is not None:
+                  position = {k: target.get(k) for k in ('x', 'y', 'width', 'height') if k in target}
+                  replacement = deepcopy(source)
+                  replacement.update(position)
+                  target.clear()
+                  target.update(replacement)
+
+              desc = str(template.get('description', ''))
+              note = (
+                  'Field homologation note: the tested ITA-20kVA management agent returns noSuchObject for '
+                  'RFC1628 upsBatteryCurrent and upsBatteryTemperature. These optional scalars are retained '
+                  'disabled by default and do not drive production dashboards or triggers.'
+              )
+              if note not in desc:
+                  marker = f'\n\nExport target: Zabbix {version}.'
+                  desc = desc.replace(marker, f'\n\n{note}{marker}')
+                  template['description'] = desc
+
+              rendered = yaml.dump(
+                  data,
+                  Dumper=Dumper,
+                  sort_keys=False,
+                  allow_unicode=True,
+                  width=1000,
+              )
+              header = (
+                  '# SPDX-License-Identifier: MIT\n'
+                  '# Copyright (C) 2026 Karim Mansur / Net Tech\n'
+                  '# See NOTICE.md for attribution to the original Vertiv template reference.\n'
+              )
+              path.write_text(header + rendered, encoding='utf-8')
+          PY
+
+      - name: Commit generated fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'Karim Mansur'
+          git config user.email 'karim.mansur@outlook.com'
+          git add templates/7.0/vertiv-by-snmp.yaml templates/8.0/vertiv-by-snmp.yaml
+          if git diff --cached --quiet; then
+            echo 'No template changes required'
+            exit 0
+          fi
+          git commit -m 'fix: disable unsupported RFC1628 battery scalars [field-fix]'
+          git push origin HEAD:production/1.5.0-hardening
