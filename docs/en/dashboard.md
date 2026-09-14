@@ -2,9 +2,9 @@
 
 [Português (Brasil)](../pt-BR/dashboard.md)
 
-The **Vertiv UPS Overview** template dashboard is imported together with the template and automatically follows the monitored host. The screenshots below were captured from a real Vertiv UPS running the v1.4.1 dashboard while the unit was in normal online operation. Values are examples only; voltage, load, runtime and temperature depend on the UPS model, battery system and connected load.
+The **Vertiv UPS Overview** template dashboard is imported together with the template and automatically follows the monitored host. The screenshots below were refreshed during homologation of the **1.5.0** candidate on a real Vertiv ITA-20kVA in normal online operation and already represent the current dashboard card set. Values are real examples from the tested unit only; voltage, load, runtime and temperature depend on the UPS model, battery system and connected load.
 
-> **1.5.0 candidate note:** during homologation, the tested management card returned `noSuchObject` for RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature`. Those two standard items are therefore disabled by default. The Battery temperature card visible in the 1.4.1 screenshot is replaced by **Battery status** in the 1.5.0 candidate; battery current continues to use the field-validated Vertiv private OID.
+Homologation confirmed that the tested management card returns `noSuchObject` for RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature`. Those two standard items therefore remain disabled by default. The current dashboard uses **Battery status** instead of the former battery-temperature card and keeps battery current on the field-validated Vertiv private OID.
 
 The dashboard is intentionally split into three pages:
 
@@ -117,9 +117,9 @@ The cards **Input blackouts**, **Input brownouts** and **Bad input lines** are c
 
 How to read them:
 
-- `68` blackouts means the UPS has accumulated 68 blackout events over the counter's lifetime/reset interval; it does **not** mean 68 outages are currently active.
-- Brownouts count input undervoltage/sag events as exposed by the device.
-- Bad input lines comes from the UPS-MIB input-line-bad counter/state and should normally remain at zero on a healthy source.
+- In the refreshed screenshot, **Input blackouts = 69**. This means the UPS has accumulated 69 events since the counter origin/reset; it does **not** mean 69 outages are currently active.
+- **Input brownouts** is likewise cumulative and records input undervoltage/sag events exposed by the device.
+- **Bad input lines** displays RFC1628 `upsInputLineBads`. Despite the compact label, it is **not the number of physical input lines currently bad**; it is a cumulative count of transitions into an input out-of-tolerance condition. The refreshed screenshot shows `0`.
 - The most useful signal is often an **increase** in the counter. Compare the current value with its previous value when investigating a recent event.
 
 These counters are shown as cards rather than trend graphs because plotting a cumulative counter often produces a mostly flat or stair-step line and can be misleading as an operational event view.
@@ -132,7 +132,7 @@ The full-width graph is the same L1/L2/L3 load view shown on Overview, but with 
 
 ![Vertiv UPS Battery and Environment dashboard](../images/dashboard-battery-environment.png)
 
-This page concentrates battery health, test/configuration state and environmental temperature. The screenshot above is from v1.4.1; in the 1.5.0 candidate the old **Battery temperature** card is replaced by **Battery status** after field testing confirmed that the management card does not implement `upsBatteryTemperature`.
+This page concentrates battery health, test/configuration state and environmental temperature. The refreshed screenshot already represents the 1.5.0 candidate layout: **Battery status** is present, current uses the validated Vertiv private OID, and no unsupported battery-temperature sensor is displayed.
 
 ### Battery and status cards
 
@@ -181,11 +181,11 @@ The same dual-axis graph from Overview is repeated here so battery investigation
 
 ## Why there are no additional default graphs
 
-Version 1.4.1 and the 1.5.0 candidate intentionally keep the default dashboard small. The current graphs answer the main operational questions without duplicating every numeric item as a trend.
+The 1.5.0 candidate intentionally keeps the default dashboard small. The current graphs answer the main operational questions without duplicating every numeric item as a trend.
 
 Items such as input/output/bypass voltage and frequency are still retained in history and can be graphed from Latest data when investigating power-quality incidents. They are kept as cards in the default dashboard because, under normal operation, those values are usually stable and adding permanent graphs would increase visual noise.
 
-The private Vertiv input-power phase OIDs are also not featured because their SNMP scaling has not yet been validated across devices/firmware. The project avoids presenting an apparently authoritative graph until that scale is confirmed in the field.
+The private Vertiv input-power phase OIDs are also not featured because their SNMP scaling has not been validated portably across models/firmware. The project avoids presenting an apparently authoritative graph until the scale is confirmed for the target equipment.
 
 ## Recommended reading order during an incident
 
