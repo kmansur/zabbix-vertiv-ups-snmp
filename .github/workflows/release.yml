@@ -26,16 +26,25 @@ jobs:
       - name: Install validation dependencies
         run: python -m pip install -r requirements-dev.txt
 
-      - name: Validate tag and project version
+      - name: Validate tag and release promotion state
         shell: bash
         run: |
           set -euo pipefail
           project_version="$(tr -d '\r\n' < VERSION)"
+          stable_version="$(tr -d '\r\n' < STABLE_VERSION)"
           tag_version="${GITHUB_REF_NAME#v}"
+
           if [[ "$project_version" != "$tag_version" ]]; then
             echo "VERSION ($project_version) does not match tag ($tag_version)" >&2
             exit 1
           fi
+
+          if [[ "$stable_version" != "$tag_version" ]]; then
+            echo "STABLE_VERSION ($stable_version) does not match tag ($tag_version)." >&2
+            echo "Do not publish a candidate until field homologation is complete and STABLE_VERSION is promoted." >&2
+            exit 1
+          fi
+
           python tools/validate_templates.py
           python tools/validate_docs.py
           python tools/validate_production.py
@@ -100,7 +109,7 @@ jobs:
              CHANGELOG.md CHANGELOG.pt-BR.md \
              CONTRIBUTING.md CONTRIBUTING.pt-BR.md \
              SECURITY.md SECURITY.pt-BR.md \
-             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION requirements-dev.txt \
+             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION STABLE_VERSION requirements-dev.txt \
              "dist/${package}/"
           cp templates/7.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-7.0.yaml"
           cp templates/8.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-8.0.yaml"
