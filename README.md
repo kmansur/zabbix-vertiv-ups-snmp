@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml/badge.svg)](https://github.com/kmansur/zabbix-vertiv-ups-snmp/actions/workflows/security.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
 **English** | [Português (Brasil)](README.pt-BR.md)
 
@@ -171,14 +171,16 @@ The current repository candidate is `1.5.1`, while the latest stable release and
 
 ## License and attribution
 
-Original work in this repository is distributed under the **MIT License**.
+This repository is distributed under the **GNU General Public License v3.0 only (`GPL-3.0-only`)**.
 
-This project credits the original **Template Vertiv** by **Mihguel da Silva Santos Tavares de Araujo** as a structural and historical reference:
+This project is based on the original **Template Vertiv** by **Mihguel da Silva Santos Tavares de Araujo**:
 
 https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
 
-No explicit license was found in the referenced repository at the time of review, therefore the original file is not redistributed here and is not relicensed by this project.
+The original repository did not contain an explicit license when it was reviewed on 2026-09-10. On 2026-09-14, the original author provided the maintainer with direct written authorization to use his template as the basis for this project and to publish the resulting community project under GPLv3.
+
+For clarity and to avoid implying broader permission than was actually granted, this repository uses the conservative SPDX identifier **`GPL-3.0-only`**. This project does not claim to change the licensing of the author's separate original repository.
 
 See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) and [docs/en/license-attribution.md](docs/en/license-attribution.md).
 
-Maintained by **Karim Mansur / Net Tech**.
+Maintained modifications and repository organization: **Karim Mansur / Net Tech**.
