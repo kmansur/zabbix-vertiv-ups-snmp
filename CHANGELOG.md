@@ -8,31 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
-### Changed
-
-- PDCA hardening aligns root/EN/PT-BR documentation with the actual 1.5.0 candidate behavior.
-- `VERSION` now identifies the repository candidate while `STABLE_VERSION` identifies the latest tagged stable release.
-- Documentation validation now checks bilingual document coverage, candidate/stable version references, trigger-table parity, macro parity, local links and branch/release policy against the Zabbix 7.0 export.
-- Project readiness reporting now uses explicit PASS/IN PROGRESS/BLOCKED gates instead of a percentage.
-- A formal bilingual field-homologation record now separates collected hardware evidence from mandatory pending release checks.
-
-### Fixed
-
-- Removed stale documentation claiming default battery-temperature triggers in 1.5.0.
-- Removed stale documentation claiming private aggregate `vertiv.output.load` drives load triggers.
-- Added the two RFC1628 diagnostic-result triggers and the SNMP heartbeat/restart triggers to the documented trigger set.
-- Corrected the obsolete `templates/zabbix-<major.minor>/` contribution path.
-- Clarified that battery-temperature macros are retained/reserved but do not enable default production alerting.
-
 ### Planned
 
-- Complete the mandatory 1.5.0 field-homologation checks and operator sign-off.
+- Complete the post-release controlled field-validation scenarios and operator sign-off for the reference ITA-20kVA / IS-UNITY-DP environment.
 - Protect `main` with an enforced GitHub ruleset requiring CI/import/security checks.
 - Validate additional Vertiv/Liebert UPS models and management-card firmware.
 - Add event-specific SNMP trap processing after real trap payloads are captured and documented.
 - Revalidate the Zabbix 8.0 export against RC/final builds.
 
-## [1.5.0] - Unreleased (homologation candidate)
+## [1.5.0] - 2026-09-14
 
 ### Added
 
@@ -40,21 +24,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 - RFC1628 identification, optional standardized battery current/temperature objects and read-only diagnostic-test result objects.
 - RFC1628 diagnostic-result warning/failure triggers; the template does not start or abort tests.
 - `upsAlarmTable` discovery with a value map for all 24 RFC1628 well-known alarms.
-- MIB/OID provenance, compatibility matrix and production homologation checklist/record.
+- MIB/OID provenance, compatibility matrix and a bilingual 1.5.0 field-validation record.
 - Production-specific validator and real Zabbix 7 API-import CI test.
+- `STABLE_VERSION` release marker, separate from the repository `VERSION` marker.
 
 ### Changed
 
-- RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature` are retained for compatible devices but remain disabled and trigger-free by default on the homologation profile because the reference card returns `noSuchObject`.
+- Documentation validation now checks bilingual document coverage, candidate/stable version references, trigger-table parity, macro parity, local links and branch/release policy against the Zabbix 7.0 export.
+- Project readiness reporting now uses explicit PASS / IN PROGRESS / BLOCKED-or-approved gates instead of a percentage.
+- Release workflow requires both `VERSION` and `STABLE_VERSION` to match the published tag.
+- RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature` are retained for compatible devices but remain disabled and trigger-free by default because the reference card returns `noSuchObject`.
 - No default battery-temperature trigger is active in 1.5.0; the private temperature object is also disabled after field-invalid/sentinel-like behavior.
 - Load alerting uses RFC1628 `upsOutputPercentLoad` prototypes; the private aggregate load no longer generates triggers.
 - The active-alarm card turns red for any positive count instead of implying severity from the number of alarms.
+- `main` is explicitly documented as the development branch; production consumers are directed to tagged GitHub Releases.
+
+### Fixed
+
+- Removed stale documentation claiming default battery-temperature triggers in 1.5.0.
+- Removed stale documentation claiming private aggregate `vertiv.output.load` drives load triggers.
+- Added the two RFC1628 diagnostic-result triggers and the SNMP heartbeat/restart triggers to the documented trigger set.
+- Corrected the obsolete `templates/zabbix-<major.minor>/` contribution path.
+- Corrected homologation-record links to the actual EN/PT-BR versioned files.
+- Clarified that battery-temperature macros are retained/reserved but do not enable default production alerting.
+- Removed wording that could incorrectly imply completed field homologation of the reference management card.
 
 ### Safety / reliability
 
 - Private input-power and private battery-temperature metrics are disabled by default.
 - Legacy graphs based on experimental metrics/cumulative counters were removed.
 - No control/write or test-start OIDs were added.
+- CodeQL, Python 3.9/3.13/3.14 tests, documentation/template/production validators and the Zabbix 7.0 import/upgrade path were required before release promotion.
+
+### Release decision
+
+- Maintainer approved `v1.5.0` for release on 2026-09-14 after repository validation, CodeQL, a real Zabbix 7.0 fresh import and an in-place `1.4.1 → 1.5.0` upgrade passed.
+- Controlled hardware alarm/availability/diagnostic-transition checks remain open as post-release field validation. Release 1.5.0 is not described as fully field-homologated for the reference hardware until those checks are complete.
 
 ## [1.4.1] - 2026-09-11
 

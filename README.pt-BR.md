@@ -10,11 +10,13 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 
 ## Status das versões
 
-- **Última versão estável:** `1.4.1`
-- **Candidata atual do repositório:** `1.5.0`
-- **Homologação em campo:** em andamento
+- **Última versão estável:** `1.5.0`
+- **Versão atual do repositório:** `1.5.0`
+- **Homologação estendida em campo:** em andamento após a release
 
-A branch `main` é a branch ativa de desenvolvimento/candidato. **Em produção, utilize uma GitHub Release com tag**, e não assuma que o conteúdo atual da `main` representa a última versão estável. A candidata 1.5.0 precisa passar pelo gate de homologação em campo documentado antes de receber uma tag estável.
+A versão `1.5.0` foi aprovada para release pelo mantenedor após aprovação da validação do repositório, CodeQL, importação nova no Zabbix 7.0 e upgrade in-place de `1.4.1` para `1.5.0`. Os cenários controlados restantes em hardware continuam sendo acompanhados separadamente e **não devem ser interpretados como certificação de campo concluída**.
+
+A branch `main` é a branch ativa de desenvolvimento. **Em produção, utilize uma GitHub Release com tag**, pois a `main` pode avançar além da última release estável quando um novo ciclo de desenvolvimento começar.
 
 Consulte [status do projeto](docs/pt-BR/project-status.md), [prontidão para produção](docs/pt-BR/production-readiness.md) e [versionamento](docs/pt-BR/versioning.md).
 
@@ -32,7 +34,7 @@ Guia detalhado de interpretação: [docs/pt-BR/dashboard.md](docs/pt-BR/dashboar
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | O export candidato é testado por importação no CI; OIDs específicos ainda precisam ser validados no nobreak alvo |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export da release 1.5.0; importação nova e upgrade in-place 1.4.1 → 1.5.0 testados no CI |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export preliminar de compatibilidade; a equivalência semântica é verificada, mas ainda falta validação real de importação/execução |
 
 Consulte a [matriz de compatibilidade](docs/pt-BR/compatibility.md).
@@ -61,7 +63,7 @@ O template é intencionalmente **somente leitura**. Operações de reboot, shutd
 
 A placa de referência/teste usada durante o desenvolvimento implementa apenas parte da RFC1628. `upsBatteryCurrent` e `upsBatteryTemperature` retornam `noSuchObject` nesse conjunto placa/firmware e, por isso, permanecem **desabilitados por padrão** para compatibilidade com outros equipamentos.
 
-O objeto privado Vertiv de temperatura da bateria também retornou valor não confiável/semelhante a sentinela no equipamento de teste. Portanto, **não existe trigger padrão de temperatura da bateria na candidata 1.5.0**. As macros de temperatura da bateria permanecem reservadas por compatibilidade/futuros perfis, mas não habilitam alertamento sozinhas.
+O objeto privado Vertiv de temperatura da bateria também retornou valor não confiável/semelhante a sentinela no equipamento de teste. Portanto, **não existe trigger padrão de temperatura da bateria na release 1.5.0**. As macros de temperatura da bateria permanecem reservadas por compatibilidade/futuros perfis, mas não habilitam alertamento sozinhas.
 
 Os alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o item privado agregado `vertiv.output.load` não gera triggers padrão de produção.
 
@@ -77,9 +79,9 @@ Os alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o item p
 6. Verifique **Monitoring → Latest data** e compare os valores com o LCD/interface web do nobreak.
 7. Ajuste os limites de autonomia, carga, carga por linha e temperatura de entrada para o local.
 
-### Teste da candidata/desenvolvimento
+### Teste de desenvolvimento
 
-Os arquivos em `templates/` na `main` representam a candidata atual do repositório e podem ser mais novos que a última release estável. Use-os somente quando a intenção for testar a candidata.
+Os arquivos em `templates/` na `main` representam o estado atual de desenvolvimento e podem ficar mais novos que a última release estável. Use uma GitHub Release com tag em produção e utilize a `main` apenas quando a intenção for testar alterações de desenvolvimento.
 
 Instruções detalhadas: [docs/pt-BR/installation.md](docs/pt-BR/installation.md).
 
@@ -158,7 +160,7 @@ VERSION / tag Git / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-A candidata `1.5.0` é exportada como `vendor.version: 1.5-0`.
+A release `1.5.0` é exportada como `vendor.version: 1.5-0`.
 
 ## Licença e atribuição
 

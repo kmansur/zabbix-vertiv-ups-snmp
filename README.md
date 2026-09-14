@@ -10,11 +10,13 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 
 ## Release status
 
-- **Latest stable release:** `1.4.1`
-- **Current repository candidate:** `1.5.0`
-- **Field homologation:** in progress
+- **Latest stable release:** `1.5.0`
+- **Current repository version:** `1.5.0`
+- **Extended field homologation:** in progress after release
 
-The `main` branch is the active development/candidate branch. **Production users should install a tagged GitHub Release**, not assume the current `main` tree is the latest stable release. Candidate 1.5.0 must pass the documented field-homologation gate before it is tagged stable.
+Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
+
+The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
 See [project status](docs/en/project-status.md), [production readiness](docs/en/production-readiness.md) and [versioning](docs/en/versioning.md).
 
@@ -32,7 +34,7 @@ Detailed dashboard interpretation: [docs/en/dashboard.md](docs/en/dashboard.md).
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Candidate export is CI import-tested; device-specific OIDs must still be validated on the target UPS |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.0 release export; CI fresh-import and 1.4.1 → 1.5.0 in-place upgrade tested |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export; semantic parity is checked, runtime/import validation is still required |
 
 See the [compatibility matrix](docs/en/compatibility.md).
@@ -61,7 +63,7 @@ The template is intentionally **read-only**. Reboot, shutdown, outlet control, t
 
 The reference/test card used during development implements only part of RFC1628. `upsBatteryCurrent` and `upsBatteryTemperature` return `noSuchObject` on that card/firmware and are therefore retained **disabled by default** for compatibility with other devices.
 
-The Vertiv private battery-temperature object also produced an unreliable/sentinel-like value on the test device, so **no default battery-temperature trigger is active in candidate 1.5.0**. Battery-temperature macros remain reserved for compatibility/future profiles but do not enable alerting by themselves.
+The Vertiv private battery-temperature object also produced an unreliable/sentinel-like value on the test device, so **no default battery-temperature trigger is active in release 1.5.0**. Battery-temperature macros remain reserved for compatibility/future profiles but do not enable alerting by themselves.
 
 Load alerts use standardized RFC1628 `upsOutputPercentLoad` discovery prototypes; the private aggregate `vertiv.output.load` item does not drive default production triggers.
 
@@ -77,9 +79,9 @@ Load alerts use standardized RFC1628 `upsOutputPercentLoad` discovery prototypes
 6. Review **Monitoring → Latest data** and compare values with the UPS LCD/web interface.
 7. Tune runtime, charge, load and inlet-temperature thresholds for the site.
 
-### Candidate/development testing
+### Development testing
 
-Files under `templates/` on `main` represent the current repository candidate and may be newer than the latest stable release. Use them only when intentionally testing the candidate.
+Files under `templates/` on `main` represent the current repository development state and may become newer than the latest stable release. Use a tagged GitHub Release for production and use `main` only when intentionally testing development changes.
 
 Detailed instructions: [docs/en/installation.md](docs/en/installation.md).
 
@@ -158,7 +160,7 @@ VERSION / Git tag / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-Candidate `1.5.0` is therefore exported as `vendor.version: 1.5-0`.
+Release `1.5.0` is exported as `vendor.version: 1.5-0`.
 
 ## License and attribution
 

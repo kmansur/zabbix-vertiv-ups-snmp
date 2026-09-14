@@ -2,9 +2,9 @@
 
 [English](../en/production-readiness.md)
 
-A versão 1.5.0 é a candidata atual endurecida para produção. Os gates de segurança/validação do lado do repositório estão implementados, mas a **release de produção permanece bloqueada até que o registro de homologação em campo esteja concluído**.
+A versão 1.5.0 é a release estável atual. Os gates de segurança, validação, CI e segurança de código do repositório foram aprovados e o mantenedor aprovou a release de software em 14/09/2026.
 
-A evidência atual e os bloqueadores restantes estão registrados em [Registro de homologação em campo — candidata 1.5.0](homologation-1.5.0.md).
+Checks controlados adicionais em hardware continuam em andamento e estão registrados em [Registro de validação em campo — 1.5.0](homologation-1.5.0.md). Esses testes refinam a evidência de compatibilidade específica do equipamento e não devem ser confundidos com o gate da release de software.
 
 ## Gates implementados no repositório
 
@@ -21,13 +21,14 @@ A evidência atual e os bloqueadores restantes estão registrados em [Registro d
 - gráficos legados enganosos removidos;
 - teste de importação nova e upgrade pela API de um Zabbix 7 real no CI/workflow de release;
 - proveniência das fontes MIB/OID e matriz de compatibilidade;
-- validação da documentação contra triggers, macros, versão e política de release atuais do template.
+- validação da documentação contra triggers, macros, versão e política de release atuais do template;
+- análise de segurança CodeQL no caminho de release.
 
-## Resultado de homologação de bateria
+## Resultado de campo da bateria
 
 No Vertiv ITA-20kVA usado no desenvolvimento, a placa SNMP implementa parcialmente o grupo de bateria da UPS-MIB. `upsBatteryStatus`, carga, autonomia e tensão funcionam, enquanto `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) e `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) retornam `No Such Object available on this agent at this OID`.
 
-A candidata trata esse comportamento como característica de compatibilidade da placa, não como falha de coleta do Zabbix: os dois escalares permanecem disponíveis para outras placas/firmwares, mas ficam desabilitados e sem triggers por padrão. Nenhum widget padrão depende deles.
+A release 1.5.0 trata esse comportamento como característica de compatibilidade da placa, não como falha de coleta do Zabbix: os dois escalares permanecem disponíveis para outras placas/firmwares, mas ficam desabilitados e sem triggers por padrão. Nenhum widget padrão depende deles.
 
 A corrente privada Vertiv (`vertiv.battery.current`, OID final `4149`) já foi observada funcionando no equipamento e permanece no dashboard. Não existe trigger padrão de temperatura da bateria até haver sensor/OID de temperatura suportado e validado para o equipamento alvo.
 
@@ -48,20 +49,21 @@ A quantidade aproximada de amostras brutas gerada por um único item continuamen
 
 O heartbeat dedicado `ups.snmp.uptime` mantém propositalmente apenas 7 dias de histórico e **não** usa descarte de valores inalterados, pois a trigger de disponibilidade `nodata()` de cinco minutos depende de receber uma amostra em cada ciclo de polling.
 
-## Procedimento de homologação em campo
+## Procedimento de validação em campo pós-release
 
-1. Importe/atualize a candidata Zabbix 7 no host designado para homologação.
-2. Confirme que `ups.snmp.uptime` atualiza a cada minuto e valide problema/recuperação de disponibilidade após interrupção SNMP controlada por cinco minutos.
-3. Compare fabricante/modelo/software/nome RFC1628 com a interface web e registre objetos padrão não implementados.
-4. Confirme status da bateria, corrente privada validada, carga e autonomia; mantenha os dois escalares RFC1628 não suportados desabilitados nessa placa/firmware.
-5. Confirme descoberta de entrada/saída/bypass e `upsOutputPercentLoad` por fase.
-6. Durante um alarme real seguro, confirme descoberta e recuperação de `upsAlarmTable`.
-7. Durante uma transição segura de resultado de teste diagnóstico/bateria, confirme itens/triggers somente leitura. Não inicie testes pelo template.
-8. Revise Overview, Electrical e Battery & Environment em janelas normal e representativa de incidente.
-9. Registre nível de segurança SNMP e versões exatas de nobreak/placa/firmware/Zabbix.
-10. Conclua e aprove [o registro de homologação](homologation-1.5.0.md).
+Os checks controlados abaixo continuam após a release de software e servem para fortalecer a alegação de compatibilidade do hardware de referência:
 
-Somente depois de concluir os checks obrigatórios o projeto poderá datar a entrada 1.5.0 do changelog, atualizar `STABLE_VERSION` e criar a tag/release `v1.5.0`.
+1. Confirmar que `ups.snmp.uptime` atualiza a cada minuto e validar problema/recuperação de disponibilidade após interrupção SNMP controlada por cinco minutos.
+2. Comparar fabricante/modelo/software/nome RFC1628 com a interface web e registrar objetos padrão não implementados.
+3. Confirmar status da bateria, corrente privada validada, carga e autonomia; manter os dois escalares RFC1628 não suportados desabilitados nessa placa/firmware.
+4. Confirmar descoberta de entrada/saída/bypass e `upsOutputPercentLoad` por fase.
+5. Durante um alarme real seguro, confirmar descoberta e recuperação de `upsAlarmTable`.
+6. Durante uma transição segura de resultado de teste diagnóstico/bateria, confirmar itens/triggers somente leitura. Não iniciar testes pelo template.
+7. Revisar Overview, Electrical e Battery & Environment em janelas normal e representativa de incidente.
+8. Registrar nível de segurança SNMP e versões exatas de nobreak/placa/firmware/Zabbix.
+9. Concluir e aprovar [o registro de validação em campo](homologation-1.5.0.md).
+
+A conclusão desses testes poderá elevar a redação de compatibilidade dessa combinação exata de hardware para **homologada em campo**. Até lá, a release permanece estável como software, com limitação explícita na alegação de certificação específica do equipamento.
 
 ## Recursos opcionais não bloqueantes
 

@@ -36,12 +36,19 @@ def test_release_assets_have_unique_names_checksums_and_stable_marker():
     assert 'stable_version" != "$tag_version' in text
 
 
-def test_candidate_and_stable_versions_are_explicit():
+def test_candidate_and_stable_versions_are_explicit_and_ordered():
     candidate = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
     stable = (ROOT / "STABLE_VERSION").read_text(encoding="utf-8").strip()
-    assert candidate == "1.5.0"
-    assert stable == "1.4.1"
-    assert candidate != stable
+
+    def semver_tuple(value: str) -> tuple[int, int, int]:
+        parts = value.split(".")
+        assert len(parts) == 3
+        assert all(part.isdigit() for part in parts)
+        return tuple(int(part) for part in parts)
+
+    candidate_version = semver_tuple(candidate)
+    stable_version = semver_tuple(stable)
+    assert stable_version <= candidate_version
 
 
 def test_workflows_use_current_action_major():

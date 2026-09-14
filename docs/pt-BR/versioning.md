@@ -4,7 +4,7 @@
 
 Este projeto utiliza **Versionamento Semântico** (`MAJOR.MINOR.PATCH`).
 
-Candidata atual do repositório:
+Versão atual do repositório:
 
 ```text
 1.5.0
@@ -13,16 +13,18 @@ Candidata atual do repositório:
 Última release estável:
 
 ```text
-1.4.1
+1.5.0
 ```
 
-`VERSION` é a fonte de verdade da candidata atual do repositório. `STABLE_VERSION` é a fonte de verdade da última release estável com tag.
+`VERSION` é a fonte de verdade da versão/candidata atual do repositório. `STABLE_VERSION` é a fonte de verdade da última release estável com tag.
 
 ## Modelo de branch/release
 
-A `main` é a branch ativa de desenvolvimento/candidato. Em produção, utilize GitHub Releases com tag. Portanto é válido que `VERSION` na `main` seja mais novo que `STABLE_VERSION` enquanto uma candidata estiver em validação/homologação.
+A `main` é a branch ativa de desenvolvimento. Em produção, utilize GitHub Releases com tag. É válido que `VERSION` na `main` fique mais novo que `STABLE_VERSION` quando uma nova candidata estiver em desenvolvimento.
 
-Uma candidata só se torna estável depois de concluir o gate de promoção definido em [Status do projeto](project-status.md) e [Prontidão para produção](production-readiness.md).
+Uma candidata se torna estável depois que o gate de release documentado é aceito pelo mantenedor e o workflow de release valida que `VERSION` e `STABLE_VERSION` correspondem à tag que será publicada.
+
+Para a release `1.5.0`, os dois arquivos contêm `1.5.0`.
 
 ## Regras
 
@@ -43,9 +45,7 @@ Tag Git: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-A candidata `1.5.0` é exportada como `vendor.version: 1.5-0`. O workflow de release valida a tag contra `VERSION` e valida os dois exports antes de publicar uma release.
-
-Quando `v1.5.0` for efetivamente promovida e publicada, a alteração de release também deverá atualizar `STABLE_VERSION` de `1.4.1` para `1.5.0`.
+A release `1.5.0` é exportada como `vendor.version: 1.5-0`. O workflow de release valida a tag contra os dois marcadores de versão, valida as regras de template/documentação/produção, executa os testes e realiza a validação de upgrade no Zabbix 7.0 antes de publicar os artefatos.
 
 ## Compatibilidade Zabbix não define a versão do projeto
 

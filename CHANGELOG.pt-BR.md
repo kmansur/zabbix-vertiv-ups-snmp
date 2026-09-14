@@ -8,31 +8,15 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ## [Não lançado]
 
-### Alterado
-
-- O endurecimento do PDCA alinha a documentação raiz/EN/PT-BR ao comportamento real da candidata 1.5.0.
-- `VERSION` passa a identificar a candidata do repositório e `STABLE_VERSION` a última release estável com tag.
-- A validação documental passa a verificar cobertura bilíngue, referências de versão candidata/estável, paridade da tabela de triggers, paridade de macros, links locais e política de branch/release contra o export Zabbix 7.0.
-- O status de prontidão passa a usar gates explícitos PASS/EM ANDAMENTO/BLOQUEADO em vez de percentual.
-- Um registro formal bilíngue de homologação em campo passa a separar evidência já coletada dos checks obrigatórios ainda pendentes para a release.
-
-### Corrigido
-
-- Removida documentação obsoleta que afirmava existir trigger padrão de temperatura da bateria na 1.5.0.
-- Removida documentação obsoleta que afirmava que o agregado privado `vertiv.output.load` gera triggers de carga.
-- Incluídas na documentação as duas triggers RFC1628 de resultado diagnóstico e as triggers de heartbeat/reset do agente SNMP.
-- Corrigido o caminho obsoleto `templates/zabbix-<major.minor>/` na documentação de contribuição.
-- Esclarecido que as macros de temperatura da bateria são mantidas/reservadas, mas não habilitam alertas padrão de produção.
-
 ### Planejado
 
-- Concluir os checks obrigatórios e a aprovação final da homologação em campo da 1.5.0.
+- Concluir os cenários controlados de validação em campo pós-release e a aprovação final do operador no ambiente de referência ITA-20kVA / IS-UNITY-DP.
 - Proteger a `main` com ruleset GitHub exigindo os checks de CI/importação/segurança.
 - Validar modelos adicionais de nobreaks Vertiv/Liebert e firmwares de placas de gerenciamento.
 - Adicionar processamento específico de traps SNMP após captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
-## [1.5.0] - Não lançado (candidata para homologação)
+## [1.5.0] - 2026-09-14
 
 ### Adicionado
 
@@ -40,21 +24,42 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 - Identificação RFC1628, objetos opcionais padronizados de corrente/temperatura da bateria e objetos somente leitura de resultado de testes diagnósticos.
 - Triggers RFC1628 de aviso/falha do resultado diagnóstico; o template não inicia nem interrompe testes.
 - Descoberta de `upsAlarmTable` com value map dos 24 alarmes conhecidos da RFC1628.
-- Proveniência MIB/OID, matriz de compatibilidade e checklist/registro de homologação de produção.
+- Proveniência MIB/OID, matriz de compatibilidade e registro bilíngue de validação em campo da 1.5.0.
 - Validador específico de produção e teste CI de importação via API em Zabbix 7 real.
+- Marcador de release `STABLE_VERSION`, separado do marcador `VERSION` do repositório.
 
 ### Alterado
 
-- `upsBatteryCurrent` e `upsBatteryTemperature` RFC1628 permanecem disponíveis para equipamentos compatíveis, mas ficam desabilitados e sem triggers por padrão no perfil homologado porque a placa de referência retorna `noSuchObject`.
+- A validação documental passa a verificar cobertura bilíngue, referências de versão candidata/estável, paridade da tabela de triggers, paridade de macros, links locais e política de branch/release contra o export Zabbix 7.0.
+- O status de prontidão passa a usar gates explícitos PASS / EM ANDAMENTO / BLOQUEADO-ou-aprovado em vez de percentual.
+- O workflow de release exige que `VERSION` e `STABLE_VERSION` correspondam à tag publicada.
+- `upsBatteryCurrent` e `upsBatteryTemperature` RFC1628 permanecem disponíveis para equipamentos compatíveis, mas ficam desabilitados e sem triggers por padrão porque a placa de referência retorna `noSuchObject`.
 - Não existe trigger padrão de temperatura da bateria na 1.5.0; o objeto privado de temperatura também fica desabilitado após comportamento inválido/semelhante a sentinela em campo.
 - Alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o agregado privado deixa de gerar triggers.
 - O card de alarmes fica vermelho para qualquer quantidade positiva, evitando sugerir severidade pela contagem.
+- A `main` fica explicitamente documentada como branch de desenvolvimento; consumidores de produção são direcionados a GitHub Releases com tag.
+
+### Corrigido
+
+- Removida documentação obsoleta que afirmava existir trigger padrão de temperatura da bateria na 1.5.0.
+- Removida documentação obsoleta que afirmava que o agregado privado `vertiv.output.load` gera triggers de carga.
+- Incluídas na documentação as duas triggers RFC1628 de resultado diagnóstico e as triggers de heartbeat/reset do agente SNMP.
+- Corrigido o caminho obsoleto `templates/zabbix-<major.minor>/` na documentação de contribuição.
+- Corrigidos os links do registro de homologação para os arquivos versionados EN/PT-BR reais.
+- Esclarecido que as macros de temperatura da bateria são mantidas/reservadas, mas não habilitam alertas padrão de produção.
+- Removida redação que poderia sugerir incorretamente homologação em campo concluída da placa de gerenciamento de referência.
 
 ### Segurança / confiabilidade
 
 - Potência privada de entrada e temperatura privada de bateria ficam desabilitadas por padrão.
 - Gráficos legados baseados em métricas experimentais/contadores cumulativos foram removidos.
 - Nenhum OID de controle/escrita ou de início de teste foi adicionado.
+- CodeQL, testes com Python 3.9/3.13/3.14, validadores de documentação/template/produção e o caminho de importação/upgrade no Zabbix 7.0 foram exigidos antes da promoção da release.
+
+### Decisão de release
+
+- O mantenedor aprovou `v1.5.0` para release em 14/09/2026 depois que passaram a validação do repositório, o CodeQL, a importação nova em Zabbix 7.0 real e o upgrade in-place `1.4.1 → 1.5.0`.
+- Checks controlados de alarme/disponibilidade/transição de diagnóstico em hardware permanecem abertos como validação de campo pós-release. A release 1.5.0 não é descrita como totalmente homologada em campo para o hardware de referência até a conclusão desses checks.
 
 ## [1.4.1] - 2026-09-11
 
