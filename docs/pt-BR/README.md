@@ -27,15 +27,17 @@ Após a primeira importação, compare os valores do Zabbix com o LCD/interface 
 
 ## Versão do projeto
 
-Versão atual do repositório: **1.5.0**.
+Versão atual do repositório: **1.5.1**.
 
 Última versão estável: **1.5.0**.
+
+A candidata 1.5.1 adiciona o gerador opcional de dashboard global, documentação bilíngue e testes sem alterar a semântica de monitoramento da 1.5.0. O mantenedor validou com sucesso o fluxo `--dry-run` em um ambiente Zabbix 7.0 real.
 
 A branch `main` é a branch ativa de desenvolvimento. Para produção, utilize uma GitHub Release com tag em vez de tratar o conteúdo atual da `main` como um artefato imutável de release.
 
 A versão 1.5.0 passou pela validação do repositório, CodeQL, importação nova no Zabbix 7.0 e teste de upgrade in-place 1.4.1 → 1.5.0. Cenários controlados adicionais em hardware continuam sendo acompanhados separadamente e não são apresentados como certificação de campo concluída.
 
-Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
+Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md), [Dashboard global](global-dashboard.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
 
 - [Fontes MIB/OID e proveniência](mib-sources.md)
 - [Matriz de compatibilidade](compatibility.md)
