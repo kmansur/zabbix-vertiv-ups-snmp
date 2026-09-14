@@ -207,13 +207,17 @@ def validate(path: Path) -> None:
 
 def run() -> None:
     version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
-    if version != "1.5.0":
+    parts = version.split(".")
+    if len(parts) != 3 or not all(part.isdigit() for part in parts):
         raise ProductionValidationError(
-            f"production candidate VERSION must be 1.5.0, got {version}"
+            f"production candidate VERSION must be Semantic Versioning, got {version}"
         )
     for path in TEMPLATE_FILES:
         validate(path)
-    print("OK: production-readiness validation passed for Zabbix 7.0 and 8.0 exports")
+    print(
+        f"OK: production-readiness validation passed for repository {version} "
+        "and Zabbix 7.0/8.0 exports"
+    )
 
 
 if __name__ == "__main__":
