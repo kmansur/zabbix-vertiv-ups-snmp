@@ -2,9 +2,14 @@
 
 [Português (Brasil)](../pt-BR/global-dashboard.md)
 
+**Introduced in repository candidate:** `1.5.1`  
+**Latest stable release while this candidate is under review:** `1.5.0`
+
 The template already ships with the native **Vertiv UPS Overview** template dashboard. That dashboard follows the host context automatically when the template is linked to a UPS.
 
 A Zabbix **global dashboard** is a different object. Template exports do not promote a template dashboard into **Monitoring → Dashboards**. For that reason this project provides `tools/create_global_dashboard.py`, which uses the native template dashboard as the source of truth and recreates it through the Zabbix API for a real monitored host.
+
+The maintainer successfully validated the generator in `--dry-run` mode against a real Zabbix 7.0 environment before the 1.5.1 candidate documentation was finalized. This confirms API version detection, target-host discovery, item/graph resolution and payload generation in the reference workflow; actual dashboard creation remains an explicit operator action.
 
 ## Why use the generator
 
@@ -42,7 +47,11 @@ python3 tools/create_global_dashboard.py \
 
 The command resolves all references and prints the exact `dashboard.create` payload without creating anything.
 
+For an internal lab or management endpoint that deliberately uses an untrusted certificate, append `--insecure`. Do not use that option as the normal production default.
+
 ## Create the dashboard
+
+After reviewing the dry-run output:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -119,9 +128,14 @@ A server version without a matching `templates/<major.minor>/vertiv-by-snmp.yaml
 
 The generated global dashboard intentionally binds its item and graph widgets to one host. For multiple UPS devices, create one global dashboard per host or build a separate fleet/NOC dashboard using host-pattern or navigator widgets.
 
+## Versioning note
+
+Candidate `1.5.1` introduces this helper tool and documentation without changing the imported monitoring semantics of stable template `1.5.0`. `VERSION` can therefore be `1.5.1` while `STABLE_VERSION` and the unchanged template `vendor.version` remain at `1.5.0` / `1.5-0` until an explicit release promotion. See [Versioning](versioning.md).
+
 ## Security notes
 
 - Use an API token with the minimum practical privileges.
 - Do not commit API tokens to this repository.
+- Revoke/rotate a token immediately if it is exposed in shell history, chat, logs or another uncontrolled location.
 - The tool performs read operations for host/item/graph discovery and creates a dashboard. It only deletes a dashboard when `--replace` is explicitly supplied.
 - No SNMP write operation is introduced by this feature.
