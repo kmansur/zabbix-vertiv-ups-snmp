@@ -31,6 +31,7 @@ DOC_BASENAMES = [
     "compatibility.md",
     "configuration.md",
     "dashboard.md",
+    "global-dashboard.md",
     "electrical-summary.md",
     "homologation-1.5.0.md",
     "installation.md",
