@@ -61,7 +61,7 @@ jobs:
               start = text.index('      key: vertiv.system.name\n')
               end = text.index('\n    - uuid:', start)
               block = text[start:end]
-              block = block.replace('      inventory_link: NAME\n', '')
+              block = block.replace('      inventory_link: NAME', '')
               text = text[:start] + block + text[end:]
 
               if '      key: ups.snmp.sysname\n' not in text:
