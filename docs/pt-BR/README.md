@@ -29,9 +29,9 @@ Após a primeira importação, compare os valores do Zabbix com o LCD/interface 
 
 Versão atual do repositório: **1.5.1**.
 
-Última versão estável: **1.5.0**.
+Última versão estável: **1.5.1**.
 
-A candidata 1.5.1 adiciona o gerador opcional de dashboard global, documentação bilíngue e testes sem alterar a semântica de monitoramento da 1.5.0. O mantenedor validou com sucesso o fluxo `--dry-run` em um ambiente Zabbix 7.0 real. O caminho de substituição foi endurecido para atualizar in-place um único dashboard editável de mesmo nome e falhar de forma segura em caso de ambiguidade.
+A release 1.5.1 adiciona o gerador opcional de dashboard global, documentação bilíngue e testes sem alterar a semântica de monitoramento da 1.5.0. O mantenedor validou com sucesso o fluxo `--dry-run` em um ambiente Zabbix 7.0 real. O caminho de substituição foi endurecido para atualizar in-place um único dashboard editável de mesmo nome e falhar de forma segura em caso de ambiguidade.
 
 A branch `main` é a branch ativa de desenvolvimento. Para produção, utilize uma GitHub Release com tag em vez de tratar o conteúdo atual da `main` como um artefato imutável de release.
 

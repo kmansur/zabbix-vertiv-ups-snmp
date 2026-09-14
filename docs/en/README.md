@@ -29,9 +29,9 @@ After the first import, compare Zabbix values with the UPS LCD/web interface and
 
 Current repository version: **1.5.1**.
 
-Latest stable release: **1.5.0**.
+Latest stable release: **1.5.1**.
 
-Candidate 1.5.1 adds the optional global-dashboard generator, bilingual documentation and tests without changing the 1.5.0 monitoring semantics. The maintainer successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. The replacement path has been hardened to update one editable same-name dashboard in place and fail closed on ambiguity.
+Release 1.5.1 adds the optional global-dashboard generator, bilingual documentation and tests without changing the 1.5.0 monitoring semantics. The maintainer successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. The replacement path has been hardened to update one editable same-name dashboard in place and fail closed on ambiguity.
 
 The `main` branch is the active development branch. Production users should install a tagged GitHub Release rather than treating the current `main` tree as an immutable release artifact.
 

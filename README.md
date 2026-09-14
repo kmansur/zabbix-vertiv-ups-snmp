@@ -10,14 +10,14 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 
 ## Release status
 
-- **Latest stable release:** `1.5.0`
+- **Latest stable release:** `1.5.1`
 - **Current repository version:** `1.5.1`
 - **1.5.1 candidate scope:** global-dashboard tooling/documentation; template monitoring behavior remains unchanged from 1.5.0
 - **Extended field homologation:** in progress after release
 
 Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
 
-Repository candidate `1.5.1` adds the optional global-dashboard generator and its bilingual documentation/tests. The maintainer has successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. `STABLE_VERSION` intentionally remains `1.5.0` until 1.5.1 is explicitly promoted and tagged.
+Release `1.5.1` adds the optional global-dashboard generator and its bilingual documentation/tests. The maintainer has successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. `STABLE_VERSION` is `1.5.1` for the promoted stable release.
 
 The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
@@ -167,7 +167,7 @@ VERSION / Git tag / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-The current repository candidate is `1.5.1`, while the latest stable release and unchanged template monitoring artifact remain `1.5.0` / `vendor.version: 1.5-0`. Before a candidate that changes the template is promoted, release validation requires the template vendor metadata to match the promoted version.
+The current repository candidate is `1.5.1`, while the latest stable release and template release metadata are `1.5.1` / `vendor.version: 1.5-1`. Before a candidate that changes the template is promoted, release validation requires the template vendor metadata to match the promoted version.
 
 ## License and attribution
 

@@ -32,7 +32,7 @@ Estado atual:
 
 ```text
 VERSION:        1.5.1
-STABLE_VERSION: 1.5.0
+STABLE_VERSION: 1.5.1
 ```
 
 ## Regras

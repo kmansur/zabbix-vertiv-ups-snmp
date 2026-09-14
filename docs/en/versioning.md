@@ -13,7 +13,7 @@ Current repository version:
 Latest stable release:
 
 ```text
-1.5.0
+1.5.1
 ```
 
 `VERSION` is the source of truth for the current repository version/candidate. `STABLE_VERSION` is the source of truth for the latest tagged stable release.
@@ -32,7 +32,7 @@ Current state:
 
 ```text
 VERSION:        1.5.1
-STABLE_VERSION: 1.5.0
+STABLE_VERSION: 1.5.1
 ```
 
 ## Rules
@@ -56,7 +56,7 @@ Git tag: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-Release `1.5.0` is exported as `vendor.version: 1.5-0`. Candidate `1.5.1` currently keeps that stable template metadata because the candidate changes only repository tooling/documentation. If `v1.5.1` is promoted as a release artifact that requires the template metadata to move to `1.5-1`, release validation will require that promotion before the tag can be published.
+Release `1.5.1` is promoted with `vendor.version: 1.5-1` in both Zabbix exports. The monitoring semantics remain unchanged from 1.5.0; the metadata bump keeps the tagged release internally consistent.
 
 The release workflow validates the tag against both version markers, validates the template/documentation/production rules, runs tests and performs the Zabbix 7.0 upgrade validation before publishing assets.
 

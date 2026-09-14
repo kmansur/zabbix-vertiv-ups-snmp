@@ -8,7 +8,9 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ## [Não lançado]
 
-Versão alvo do repositório: **1.5.1**.
+## [1.5.1] - 2026-09-14
+
+Versão publicada do repositório: **1.5.1**.
 
 ### Adicionado
 

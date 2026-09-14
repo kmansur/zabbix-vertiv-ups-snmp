@@ -10,14 +10,14 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 
 ## Status das versões
 
-- **Última versão estável:** `1.5.0`
+- **Última versão estável:** `1.5.1`
 - **Versão atual do repositório:** `1.5.1`
 - **Escopo da candidata 1.5.1:** ferramenta/documentação do dashboard global; o comportamento de monitoramento do template permanece igual ao da 1.5.0
 - **Homologação estendida em campo:** em andamento após a release
 
 A versão `1.5.0` foi aprovada para release pelo mantenedor após aprovação da validação do repositório, CodeQL, importação nova no Zabbix 7.0 e upgrade in-place de `1.4.1` para `1.5.0`. Os cenários controlados restantes em hardware continuam sendo acompanhados separadamente e **não devem ser interpretados como certificação de campo concluída**.
 
-A candidata de repositório `1.5.1` adiciona o gerador opcional de dashboard global e sua documentação/testes bilíngues. O mantenedor validou com sucesso o fluxo `--dry-run` contra um ambiente Zabbix 7.0 real. O `STABLE_VERSION` permanece intencionalmente em `1.5.0` até que a 1.5.1 seja promovida e publicada com tag.
+A release `1.5.1` adiciona o gerador opcional de dashboard global e sua documentação/testes bilíngues. O mantenedor validou com sucesso o fluxo `--dry-run` contra um ambiente Zabbix 7.0 real. O `STABLE_VERSION` é `1.5.1` para a release estável promovida.
 
 A branch `main` é a branch ativa de desenvolvimento. **Em produção, utilize uma GitHub Release com tag**, pois a `main` pode avançar além da última release estável quando um novo ciclo de desenvolvimento começar.
 
