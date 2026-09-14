@@ -12,7 +12,7 @@ A `main` é a branch ativa de desenvolvimento/candidato. Uma GitHub Release com 
 - `STABLE_VERSION` identifica a última release estável com tag.
 - A documentação de produção deve distinguir os dois estados sempre que forem diferentes.
 - Mudanças candidatas devem passar por pull request e pela suíte de validação antes do merge.
-- Uma candidata só recebe tag estável depois de concluir o gate de homologação em campo.
+- Uma candidata recebe tag estável somente depois que o gate de release documentado para aquela versão for aceito pelo mantenedor.
 
 ## Fluxo de desenvolvimento
 
@@ -76,7 +76,7 @@ Ao alterar um template:
 6. importe no build Zabbix alvo sempre que possível;
 7. valide Latest data contra o LCD/interface web do nobreak;
 8. documente modelo do nobreak, placa de gerenciamento, firmware e build Zabbix utilizados na validação em execução;
-9. registre a evidência da homologação em campo em `docs/homologation/` antes de promover uma candidata para estável.
+9. registre as evidências de validação em campo nos registros versionados, atualmente `docs/en/homologation-1.5.0.md` e `docs/pt-BR/homologation-1.5.0.md`, antes das decisões de promoção.
 
 ## Relatos de compatibilidade
 
