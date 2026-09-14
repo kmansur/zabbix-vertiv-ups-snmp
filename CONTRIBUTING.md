@@ -4,6 +4,16 @@
 
 Contributions, device compatibility reports, bug reports, documentation improvements and Zabbix compatibility updates are welcome.
 
+## Branch and release policy
+
+`main` is the active development/candidate branch. A tagged GitHub Release is the production distribution point.
+
+- `VERSION` identifies the current repository candidate.
+- `STABLE_VERSION` identifies the latest tagged stable release.
+- Production documentation must distinguish those two states whenever they differ.
+- Candidate changes must go through a pull request and pass the repository validation suite before merge.
+- A candidate is tagged stable only after the field-homologation gate is complete.
+
 ## Development workflow
 
 1. Create a branch from `main`.
@@ -44,25 +54,29 @@ ruff format --check tools tests
 pytest -q
 python tools/validate_templates.py
 python tools/validate_docs.py
+python tools/validate_production.py
 ```
 
 ## Zabbix template workflow
 
-Version-specific exports belong under:
+Version-specific exports are stored at:
 
 ```text
-templates/zabbix-<major.minor>/
+templates/7.0/vertiv-by-snmp.yaml
+templates/8.0/vertiv-by-snmp.yaml
 ```
 
 When changing a template:
 
 1. preserve the template UUID unless intentionally creating a new template;
 2. preserve item keys and UUIDs for backward-compatible changes;
-3. keep Zabbix 7.0 and 8.0 semantics aligned;
-4. update `VERSION` and every `vendor.version` for a release;
-5. import into the target Zabbix build whenever possible;
-6. validate Latest data against the UPS LCD/web interface;
-7. document the exact UPS model, management card, firmware and Zabbix build used for runtime validation.
+3. keep Zabbix 7.0 and 8.0 semantics aligned while 8.0 remains a preview export;
+4. update `VERSION` and every `vendor.version` for a new candidate/release;
+5. update `STABLE_VERSION` only when that version has actually been tagged/released stable;
+6. import into the target Zabbix build whenever possible;
+7. validate Latest data against the UPS LCD/web interface;
+8. document the exact UPS model, management card, firmware and Zabbix build used for runtime validation;
+9. record field-homologation evidence under `docs/homologation/` before promoting a candidate to stable.
 
 ## Device compatibility reports
 
