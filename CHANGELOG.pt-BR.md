@@ -8,6 +8,26 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ## [Não lançado]
 
+Versão alvo do repositório: **1.5.1**.
+
+### Adicionado
+
+- Gerador de dashboard global `tools/create_global_dashboard.py`, que recria o dashboard nativo de template `Vertiv UPS Overview` como dashboard global do Zabbix associado a um host pela API.
+- Detecção automática da versão major/minor do Zabbix e seleção da fonte correspondente em `templates/<major.minor>/vertiv-by-snmp.yaml`.
+- Resolução de referências de itens/gráficos do host, `--dry-run`, criação privada/pública, nomes personalizados, comportamento explícito de `--replace` e modo TLS controlado `--insecure`.
+- Documentação bilíngue EN/PT-BR para implantação do dashboard global.
+- Testes automatizados cobrindo os exports de origem Zabbix 7.0/8.0, conversão de itens/gráficos e preservação de layout/campos escalares.
+
+### Alterado
+
+- A versão candidata do repositório avançou de `1.5.0` para `1.5.1` para o patch de ferramenta/documentação do dashboard global.
+- `STABLE_VERSION` permanece em `1.5.0` até que a 1.5.1 seja promovida e publicada explicitamente com tag.
+- O dashboard de template continua sendo a única fonte de verdade; o projeto não mantém uma segunda definição manual independente do dashboard global.
+
+### Validado
+
+- O mantenedor executou com sucesso o gerador em modo `--dry-run` contra um ambiente Zabbix 7.0 real, confirmando a descoberta do host/template e a geração do payload.
+
 ### Planejado
 
 - Concluir os cenários controlados de validação em campo pós-release e a aprovação final do operador no ambiente de referência ITA-20kVA / IS-UNITY-DP.
