@@ -4,7 +4,9 @@
 
 ## Versões suportadas
 
-Correções de segurança são aplicadas à versão mais recente do projeto na branch `main`.
+A última release estável com tag identificada por `STABLE_VERSION` é a baseline suportada em produção. Correções de segurança são desenvolvidas na `main`, que é a branch ativa de desenvolvimento/candidato, e são publicadas por uma GitHub Release com tag após validação.
+
+Quando um problema de segurança exigir correção urgente, o projeto pode publicar uma release patch a partir da baseline estável apropriada, em vez de tratar uma candidata ainda não lançada na `main` como suportada em produção.
 
 ## Relatando uma vulnerabilidade
 

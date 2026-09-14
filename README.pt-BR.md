@@ -6,7 +6,17 @@
 
 [English](README.md) | **Português (Brasil)**
 
-Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert via SNMP**. Ele combina a UPS-MIB padrão da RFC 1628 com OIDs privados Vertiv/Liebert para monitorar fonte de alimentação, bateria, entrada/saída elétrica, bypass, ambiente, contadores de qualidade de energia, autoteste e identificação do equipamento.
+Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert via SNMP**. Ele combina a UPS-MIB padrão da RFC 1628 com OIDs privados Vertiv/Liebert para monitorar fonte de alimentação, bateria, entrada/saída elétrica, bypass, alarmes, ambiente, contadores de qualidade de energia, teste diagnóstico/autoteste e identificação do equipamento.
+
+## Status das versões
+
+- **Última versão estável:** `1.4.1`
+- **Candidata atual do repositório:** `1.5.0`
+- **Homologação em campo:** em andamento
+
+A branch `main` é a branch ativa de desenvolvimento/candidato. **Em produção, utilize uma GitHub Release com tag**, e não assuma que o conteúdo atual da `main` representa a última versão estável. A candidata 1.5.0 precisa passar pelo gate de homologação em campo documentado antes de receber uma tag estável.
+
+Consulte [status do projeto](docs/pt-BR/project-status.md), [prontidão para produção](docs/pt-BR/production-readiness.md) e [versionamento](docs/pt-BR/versioning.md).
 
 ## Preview do dashboard
 
@@ -16,65 +26,79 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
   </a>
 </p>
 
-<p align="center"><strong>Overview</strong> — saúde operacional, bateria, potência de saída e carga por fase em uma única visão.</p>
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="docs/pt-BR/dashboard.md#electrical">
-        <img src="docs/images/dashboard-electrical.png" alt="Dashboard elétrico do Vertiv UPS" width="100%">
-      </a>
-      <br>
-      <sub><strong>Electrical</strong> — medições de entrada, saída e bypass, frequência, topologia e contadores de qualidade de energia.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="docs/pt-BR/dashboard.md#battery--environment">
-        <img src="docs/images/dashboard-battery-environment.png" alt="Dashboard de bateria e ambiente do Vertiv UPS" width="100%">
-      </a>
-      <br>
-      <sub><strong>Battery &amp; Environment</strong> — carga, autonomia, estado da bateria, teste/configuração e temperatura de entrada.</sub>
-    </td>
-  </tr>
-</table>
-
-<p align="center">📖 <a href="docs/pt-BR/dashboard.md"><strong>Leia o guia de interpretação do dashboard</strong></a> — o que cada gráfico significa, como é o comportamento normal e o que investigar durante um incidente.</p>
+Guia detalhado de interpretação: [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
 
 ## Compatibilidade
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export suportado; valide os OIDs específicos no nobreak utilizado |
-| 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export de compatibilidade preliminar para builds de desenvolvimento do Zabbix 8.0; ainda requer validação em execução |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | O export candidato é testado por importação no CI; OIDs específicos ainda precisam ser validados no nobreak alvo |
+| 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export preliminar de compatibilidade; a equivalência semântica é verificada, mas ainda falta validação real de importação/execução |
 
-O Zabbix 8.0 é atualmente documentado pela Zabbix como versão em desenvolvimento. Consulte [docs/pt-BR/zabbix-8.0.md](docs/pt-BR/zabbix-8.0.md).
+Consulte a [matriz de compatibilidade](docs/pt-BR/compatibility.md).
 
-## Status do projeto
-
-Versão estável atual: **1.4.1**
-
-Candidato para homologação: **1.5.0** — **100% da implementação de produção concluída**; homologação em hardware real pendente. Veja [status do projeto](docs/pt-BR/project-status.md).
-
-## O que o template monitora
+## Cobertura de monitoramento
 
 - identificação do nobreak e da placa/agente de gerenciamento;
+- heartbeat SNMP dedicado e aviso de reinicialização do agente de gerenciamento;
 - estado global do nobreak e fonte da saída;
-- quantidade de alarmes ativos;
-- estado, carga, autonomia, tensão, corrente e temperatura da bateria;
-- resultado do teste da bateria, quantidade de descargas e tempo de aviso de bateria baixa;
+- quantidade de alarmes ativos e descoberta da tabela RFC1628 de alarmes ativos;
+- estado, carga, autonomia, tensão e corrente privada validada da bateria;
+- observação de resultado de teste diagnóstico RFC1628, somente leitura;
+- metadados de teste da bateria, número de descargas e tempo de bateria baixa;
+- descoberta de entrada/saída/bypass via LLD RFC1628;
+- valores elétricos fixos para dashboards determinísticos;
+- alertas padronizados de carga por linha de saída;
 - contadores de qualidade da entrada, incluindo linha inválida, blackout e brownout;
-- carga, potência real e potência aparente da saída;
-- energia de entrada e saída;
-- temperatura do ar de entrada e tempo total de operação;
+- potência real/aparente de saída e contadores de energia;
+- temperatura do ar de entrada e tempo de operação;
 - configuração elétrica nominal;
-- linhas/fases de entrada, saída e bypass por descoberta de baixo nível (LLD);
-- métricas fixas L-N/L-L de entrada, saída e bypass para dashboards determinísticos;
-- corrente, fator de potência, carga e potência fixos por fase;
-- potência total de entrada calculada e metadados de gabinete/intervalo de teste da bateria;
-- coleta opcional de traps SNMP da árvore privada Vertiv.
+- coleta opcional de traps SNMP Vertiv, desabilitada por padrão.
 
-Um mapa sinótico de rede do Zabbix pode ser gerado opcionalmente para cada host de nobreak com `tools/generate_synoptic_map.py`.
+O template é intencionalmente **somente leitura**. Operações de reboot, shutdown, controle de tomadas, início de testes e outras escritas/controles SNMP não estão incluídas.
 
-O template é intencionalmente **somente leitura**. Operações de reboot, shutdown, controle de tomadas e outras escritas SNMP não estão incluídas.
+## Comportamento importante em produção
+
+A placa de referência/teste usada durante o desenvolvimento implementa apenas parte da RFC1628. `upsBatteryCurrent` e `upsBatteryTemperature` retornam `noSuchObject` nesse conjunto placa/firmware e, por isso, permanecem **desabilitados por padrão** para compatibilidade com outros equipamentos.
+
+O objeto privado Vertiv de temperatura da bateria também retornou valor não confiável/semelhante a sentinela no equipamento de teste. Portanto, **não existe trigger padrão de temperatura da bateria na candidata 1.5.0**. As macros de temperatura da bateria permanecem reservadas por compatibilidade/futuros perfis, mas não habilitam alertamento sozinhas.
+
+Os alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o item privado agregado `vertiv.output.load` não gera triggers padrão de produção.
+
+## Início rápido
+
+### Produção
+
+1. Abra a página **Releases** do repositório e baixe a última versão estável com tag.
+2. Configure SNMP na placa de gerenciamento Vertiv/Liebert; prefira SNMPv3 quando suportado.
+3. No Zabbix, crie/selecione o host do nobreak e configure a interface SNMP.
+4. Importe o YAML da release correspondente à versão do Zabbix.
+5. Vincule **Vertiv by SNMP** ao host.
+6. Verifique **Monitoring → Latest data** e compare os valores com o LCD/interface web do nobreak.
+7. Ajuste os limites de autonomia, carga, carga por linha e temperatura de entrada para o local.
+
+### Teste da candidata/desenvolvimento
+
+Os arquivos em `templates/` na `main` representam a candidata atual do repositório e podem ser mais novos que a última release estável. Use-os somente quando a intenção for testar a candidata.
+
+Instruções detalhadas: [docs/pt-BR/installation.md](docs/pt-BR/installation.md).
+
+## Limites padrão e reservados
+
+| Macro | Padrão | Finalidade |
+| --- | ---: | --- |
+| `{$UPS.RUNTIME.WARN}` | 10 min | Aviso de autonomia baixa |
+| `{$UPS.RUNTIME.CRIT}` | 5 min | Autonomia crítica |
+| `{$UPS.BATTERY.CHARGE.WARN}` | 40% | Carga baixa enquanto em bateria |
+| `{$UPS.BATTERY.CHARGE.CRIT}` | 20% | Carga crítica enquanto em bateria |
+| `{$UPS.LOAD.WARN}` | 80% | Aviso de carga da linha de saída RFC1628 |
+| `{$UPS.LOAD.CRIT}` | 95% | Carga crítica da linha de saída RFC1628 |
+| `{$UPS.INLET.TEMP.WARN}` | 30 °C | Temperatura elevada do ar de entrada |
+| `{$UPS.INLET.TEMP.CRIT}` | 35 °C | Temperatura crítica do ar de entrada |
+| `{$UPS.BATTERY.TEMP.WARN}` | 35 °C | Reservada; não usada por trigger padrão de produção na 1.5.0 |
+| `{$UPS.BATTERY.TEMP.CRIT}` | 40 °C | Reservada; não usada por trigger padrão de produção na 1.5.0 |
+
+Consulte [configuração e macros](docs/pt-BR/configuration.md).
 
 ## Estrutura do repositório
 
@@ -82,95 +106,59 @@ O template é intencionalmente **somente leitura**. Operações de reboot, shutd
 .github/                 GitHub Actions, modelos de issue e PR
 docs/
 ├── en/                  Documentação em inglês
-├── images/              Screenshots do dashboard usados na documentação
+├── images/              Screenshots do dashboard
 └── pt-BR/               Documentação em português do Brasil
 templates/
 ├── 7.0/                 Export para Zabbix 7.0
-└── 8.0/                 Export para Zabbix 8.0
+└── 8.0/                 Export preliminar para Zabbix 8.0
 tests/                   Testes dos validadores
-tools/                   Validadores dos templates e documentação
+tools/                   Validadores e ferramentas auxiliares
 ```
-
-## Início rápido
-
-1. Configure SNMP na placa de gerenciamento do nobreak Vertiv/Liebert. Prefira SNMPv3 quando suportado.
-2. No Zabbix, crie ou selecione o host do nobreak e configure sua interface SNMP.
-3. Importe o YAML correspondente à sua versão do Zabbix.
-4. Vincule **Vertiv by SNMP** ao host.
-5. Verifique **Monitoring → Latest data** e compare os valores com o LCD/interface web do nobreak.
-6. Ajuste as macros do template conforme a autonomia, carga e temperatura esperadas.
-
-Instruções detalhadas: [docs/pt-BR/installation.md](docs/pt-BR/installation.md).
-
-## Limites padrão
-
-| Macro | Padrão | Finalidade |
-| --- | ---: | --- |
-| `{$UPS.RUNTIME.WARN}` | 10 min | Aviso de autonomia baixa |
-| `{$UPS.RUNTIME.CRIT}` | 5 min | Autonomia crítica |
-| `{$UPS.BATTERY.CHARGE.WARN}` | 40% | Carga baixa da bateria enquanto em bateria |
-| `{$UPS.BATTERY.CHARGE.CRIT}` | 20% | Carga crítica da bateria enquanto em bateria |
-| `{$UPS.LOAD.WARN}` | 80% | Carga elevada do nobreak |
-| `{$UPS.LOAD.CRIT}` | 95% | Carga crítica do nobreak |
-| `{$UPS.BATTERY.TEMP.WARN}` | 35 °C | Temperatura elevada da bateria |
-| `{$UPS.BATTERY.TEMP.CRIT}` | 40 °C | Temperatura crítica da bateria |
-| `{$UPS.INLET.TEMP.WARN}` | 30 °C | Temperatura elevada do ar de entrada |
-| `{$UPS.INLET.TEMP.CRIT}` | 35 °C | Temperatura crítica do ar de entrada |
-
-## Documentação
-
-Português (Brasil):
-
-- [Visão geral](docs/pt-BR/README.md)
-- [Instalação](docs/pt-BR/installation.md)
-- [Configuração e macros](docs/pt-BR/configuration.md)
-- [Métricas e OIDs](docs/pt-BR/metrics.md)
-- [Resumo elétrico](docs/pt-BR/electrical-summary.md)
-- [Dashboard nativo](docs/pt-BR/dashboard.md)
-- [Mapa sinótico opcional](docs/pt-BR/synoptic-map.md)
-- [Triggers](docs/pt-BR/triggers.md)
-- [Arquitetura SNMP](docs/pt-BR/snmp.md)
-- [Troubleshooting](docs/pt-BR/troubleshooting.md)
-- [Compatibilidade com Zabbix 8.0](docs/pt-BR/zabbix-8.0.md)
-- [Versionamento](docs/pt-BR/versioning.md)
-- [Licença e atribuição](docs/pt-BR/license-attribution.md)
-- [Fontes MIB/OID e proveniência](docs/pt-BR/mib-sources.md)
-- [Matriz de compatibilidade](docs/pt-BR/compatibility.md)
-- [Prontidão para produção e homologação](docs/pt-BR/production-readiness.md)
-
-A documentação em inglês está disponível em [docs/en/](docs/en/README.md).
 
 ## Desenvolvimento e validação
 
-Instale as dependências de desenvolvimento:
-
 ```sh
 python -m pip install -r requirements-dev.txt
-```
-
-Execute:
-
-```sh
 python -m compileall -q tools tests
 ruff check tools tests
 ruff format --check tools tests
 pytest -q
 python tools/validate_templates.py
 python tools/validate_docs.py
+python tools/validate_production.py
 ```
 
-Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
+O CI também executa teste real de importação/upgrade pela API do Zabbix 7.0. Consulte [CONTRIBUTING.pt-BR.md](CONTRIBUTING.pt-BR.md).
+
+## Documentação
+
+- [Visão geral](docs/pt-BR/README.md)
+- [Instalação](docs/pt-BR/installation.md)
+- [Configuração e macros](docs/pt-BR/configuration.md)
+- [Métricas e OIDs](docs/pt-BR/metrics.md)
+- [Resumo elétrico](docs/pt-BR/electrical-summary.md)
+- [Dashboard](docs/pt-BR/dashboard.md)
+- [Triggers](docs/pt-BR/triggers.md)
+- [Arquitetura SNMP](docs/pt-BR/snmp.md)
+- [Troubleshooting](docs/pt-BR/troubleshooting.md)
+- [Matriz de compatibilidade](docs/pt-BR/compatibility.md)
+- [Prontidão para produção/homologação](docs/pt-BR/production-readiness.md)
+- [Fontes MIB/OID e proveniência](docs/pt-BR/mib-sources.md)
+- [Versionamento](docs/pt-BR/versioning.md)
+- [Licença e atribuição](docs/pt-BR/license-attribution.md)
+
+A documentação em inglês está disponível em [docs/en/](docs/en/README.md).
 
 ## Versionamento
 
-Versão candidata do projeto: **1.5.0**. A versão estável permanece 1.4.1 até a homologação em campo. O projeto utiliza Versionamento Semântico.
-
-As releases do projeto usam `X.Y.Z`, enquanto o `vendor.version` do template Zabbix segue a convenção `X.Y-Z`. Portanto a candidata `1.5.0` é exportada como `vendor.version: 1.5-0`.
+As releases usam Versionamento Semântico `X.Y.Z`. O `vendor.version` do Zabbix usa a representação equivalente `X.Y-Z`.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
+
+A candidata `1.5.0` é exportada como `vendor.version: 1.5-0`.
 
 ## Licença e atribuição
 

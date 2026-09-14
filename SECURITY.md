@@ -4,7 +4,9 @@
 
 ## Supported versions
 
-Security fixes are applied to the latest released project version on `main`.
+The latest tagged stable release identified by `STABLE_VERSION` is the production-supported baseline. Security fixes are developed on `main`, which is the active development/candidate branch, and are released through a tagged GitHub Release after validation.
+
+When a security issue requires an urgent fix, the project may publish a patch release from the appropriate stable baseline rather than treating an unreleased candidate on `main` as production-supported.
 
 ## Reporting a vulnerability
 

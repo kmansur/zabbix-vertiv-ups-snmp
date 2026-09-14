@@ -2,26 +2,40 @@
 
 [Português (Brasil)](../pt-BR/project-status.md)
 
-**Production implementation readiness: 100%**
+**Repository readiness: PASS**
 
-**Field homologation: pending**
+**Zabbix 7.0 import/upgrade validation: PASS**
 
-Version **1.5.0** is the production-hardening candidate. The 100% score means that all repository-side work identified by the production review is implemented, guarded by automated validation, and has no known software/documentation blocker. It does **not** claim that every Vertiv UPS model/firmware has been field-certified.
+**Field homologation: IN PROGRESS**
 
-| Area | Score | Status |
-| --- | ---: | --- |
-| Zabbix 7.0 template structure and field-derived behavior | 25/25 | Complete |
-| Operator dashboard and documentation | 15/15 | Complete |
-| Read-only safety and experimental-metric isolation | 15/15 | Complete |
-| RFC1628 availability, identification, test and active-alarm coverage | 15/15 | Complete |
-| CI, validators, real Zabbix 7 import test and release gating | 15/15 | Complete |
-| MIB/OID provenance, compatibility and homologation procedure | 10/10 | Complete |
-| Zabbix 8 export parity without claiming production support | 5/5 | Complete |
+**Production release gate: BLOCKED until homologation is completed**
 
-## Meaning of 100%
+Version **1.5.0** is the current production-hardening candidate. Repository-side structural, safety, documentation and CI controls are implemented and validated automatically, but this status is deliberately not expressed as a percentage because repository completeness is not the same as hardware certification.
 
-The candidate is ready to enter homologation. Unknown vendor-private scaling/state encodings are not treated as supported production data: they are disabled, isolated or documented instead of guessed. Optional event-specific Vertiv trap parsing remains outside the production path until real payloads are captured; active-alarm diagnostics are provided by the standardized RFC1628 alarm table.
+| Area | Status | Notes |
+| --- | --- | --- |
+| Zabbix 7.0 template structure | PASS | Structural/template validators pass |
+| Zabbix 7.0 API fresh import and upgrade | PASS | CI imports stable baseline and upgrades to candidate |
+| Read-only safety | PASS | Known control/write OID families are forbidden by validation/tests |
+| Experimental/private metric isolation | PASS | Unvalidated values cannot drive default production alerting |
+| Documentation/template semantic checks | PASS | Versions, trigger tables, macros, bilingual file pairs and release policy are validated |
+| RFC1628 identification, heartbeat, tests and alarm diagnostics | PASS | Implemented in the candidate |
+| Field compatibility record | IN PROGRESS | One Vertiv ITA-20kVA / IS-UNITY-DP environment is the current homologation reference |
+| Zabbix 8.0 | PREVIEW | Export parity only; no production support claim |
+| Production release `v1.5.0` | BLOCKED | Requires completed field-homologation record |
+
+## Branch/release model
+
+`main` is the active development/candidate branch. `VERSION` identifies the current repository candidate and `STABLE_VERSION` identifies the latest tagged stable release. Production users should install a tagged GitHub Release.
 
 ## Promotion gate
 
-After real-hardware homologation succeeds, merge the candidate to `main`, record the exact UPS/card/firmware/Zabbix versions in the compatibility matrix, date the 1.5.0 changelog entry and create tag/release `v1.5.0`.
+Candidate `1.5.0` may be promoted only when the field-homologation record is complete and all mandatory checks are PASS. At that point:
+
+1. update the compatibility matrix with the exact UPS/card/firmware/Zabbix versions and final result;
+2. close all mandatory pending items in the homologation record;
+3. date the `1.5.0` changelog entry;
+4. update `STABLE_VERSION` to `1.5.0` in the release change;
+5. create tag/release `v1.5.0` only after CI/release validation succeeds.
+
+The candidate is already developed on `main`; there is no separate candidate-to-main merge step in this repository model.

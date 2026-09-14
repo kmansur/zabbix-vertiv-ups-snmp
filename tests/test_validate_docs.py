@@ -17,3 +17,15 @@ def test_local_markdown_links():
 
 def test_version_mentions():
     assert validate_docs.validate_version_mentions() == []
+
+
+def test_trigger_documentation_matches_template():
+    assert validate_docs.validate_trigger_docs() == []
+
+
+def test_macro_documentation_matches_template():
+    assert validate_docs.validate_macro_docs() == []
+
+
+def test_branch_and_release_policy_is_documented():
+    assert validate_docs.validate_branch_policy_docs() == []

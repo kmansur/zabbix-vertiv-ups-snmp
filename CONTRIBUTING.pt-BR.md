@@ -4,6 +4,16 @@
 
 Contribuições, relatos de compatibilidade de equipamentos, bugs, melhorias de documentação e atualizações de compatibilidade com Zabbix são bem-vindos.
 
+## Política de branch e release
+
+A `main` é a branch ativa de desenvolvimento/candidato. Uma GitHub Release com tag é o ponto de distribuição para produção.
+
+- `VERSION` identifica a candidata atual do repositório.
+- `STABLE_VERSION` identifica a última release estável com tag.
+- A documentação de produção deve distinguir os dois estados sempre que forem diferentes.
+- Mudanças candidatas devem passar por pull request e pela suíte de validação antes do merge.
+- Uma candidata recebe tag estável somente depois que o gate de release documentado para aquela versão for aceito pelo mantenedor.
+
 ## Fluxo de desenvolvimento
 
 1. Crie uma branch a partir de `main`.
@@ -44,25 +54,29 @@ ruff format --check tools tests
 pytest -q
 python tools/validate_templates.py
 python tools/validate_docs.py
+python tools/validate_production.py
 ```
 
 ## Fluxo dos templates Zabbix
 
-Exports específicos por versão ficam em:
+Os exports específicos por versão ficam em:
 
 ```text
-templates/zabbix-<major.minor>/
+templates/7.0/vertiv-by-snmp.yaml
+templates/8.0/vertiv-by-snmp.yaml
 ```
 
 Ao alterar um template:
 
 1. preserve o UUID do template, exceto se estiver criando intencionalmente um novo template;
 2. preserve chaves e UUIDs de itens em alterações compatíveis;
-3. mantenha equivalência semântica entre Zabbix 7.0 e 8.0;
-4. atualize `VERSION` e todos os `vendor.version` para uma release;
-5. importe no build Zabbix alvo sempre que possível;
-6. valide Latest data contra o LCD/interface web do nobreak;
-7. documente modelo do nobreak, placa de gerenciamento, firmware e build Zabbix utilizados na validação em execução.
+3. mantenha equivalência semântica entre Zabbix 7.0 e 8.0 enquanto o export 8.0 permanecer preliminar;
+4. atualize `VERSION` e todos os `vendor.version` para uma nova candidata/release;
+5. atualize `STABLE_VERSION` apenas quando essa versão tiver sido efetivamente publicada com tag/release estável;
+6. importe no build Zabbix alvo sempre que possível;
+7. valide Latest data contra o LCD/interface web do nobreak;
+8. documente modelo do nobreak, placa de gerenciamento, firmware e build Zabbix utilizados na validação em execução;
+9. registre as evidências de validação em campo nos registros versionados, atualmente `docs/en/homologation-1.5.0.md` e `docs/pt-BR/homologation-1.5.0.md`, antes das decisões de promoção.
 
 ## Relatos de compatibilidade
 

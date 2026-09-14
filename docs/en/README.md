@@ -23,13 +23,17 @@ The template uses two SNMP namespaces:
 
 Vertiv/Liebert products and management cards can expose different subsets of the enterprise MIB. An item being unsupported does not automatically mean the template is wrong; the device may not implement that OID.
 
-After the first import, compare Zabbix values with the UPS LCD/web interface and review unsupported items. This is particularly important for the private electrical summary objects added in 1.1.0. See [Electrical summary metrics](electrical-summary.md) and [Troubleshooting](troubleshooting.md).
+After the first import, compare Zabbix values with the UPS LCD/web interface and review unsupported items. This is particularly important for vendor-private objects. See [Electrical summary metrics](electrical-summary.md), [Compatibility matrix](compatibility.md) and [Troubleshooting](troubleshooting.md).
 
 ## Project version
 
-Current version: **1.1.0**.
+Current repository candidate: **1.5.0**.
 
-See [Versioning](versioning.md) and [CHANGELOG](../../CHANGELOG.md).
+Latest stable release: **1.4.1** until field homologation of 1.5.0 is completed.
+
+The `main` branch is the active development/candidate branch. Production users should install a tagged GitHub Release rather than treating the current `main` tree as a stable release.
+
+See [Versioning](versioning.md), [Project status](project-status.md) and [CHANGELOG](../../CHANGELOG.md).
 
 - [MIB/OID sources and provenance](mib-sources.md)
 - [Compatibility matrix](compatibility.md)
