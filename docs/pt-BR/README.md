@@ -27,11 +27,13 @@ Após a primeira importação, compare os valores do Zabbix com o LCD/interface 
 
 ## Versão do projeto
 
-Candidato atual do repositório: **1.5.0**.
+Versão atual do repositório: **1.5.0**.
 
-Última versão estável: **1.4.1**, até a conclusão da homologação em campo da 1.5.0.
+Última versão estável: **1.5.0**.
 
-A branch `main` é a branch ativa de desenvolvimento/candidato. Para produção, utilize uma GitHub Release com tag em vez de tratar o conteúdo atual da `main` como release estável.
+A branch `main` é a branch ativa de desenvolvimento. Para produção, utilize uma GitHub Release com tag em vez de tratar o conteúdo atual da `main` como um artefato imutável de release.
+
+A versão 1.5.0 passou pela validação do repositório, CodeQL, importação nova no Zabbix 7.0 e teste de upgrade in-place 1.4.1 → 1.5.0. Cenários controlados adicionais em hardware continuam sendo acompanhados separadamente e não são apresentados como certificação de campo concluída.
 
 Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
 
