@@ -7,9 +7,9 @@
 
 O template já inclui o dashboard nativo de template **Vertiv UPS Overview**. Esse dashboard acompanha automaticamente o contexto do host quando o template é vinculado a um nobreak.
 
-Um **dashboard global** do Zabbix é um objeto diferente. A exportação de template não promove automaticamente um dashboard de template para **Monitoring → Dashboards**. Por isso, este projeto fornece `tools/create_global_dashboard.py`, que usa o próprio dashboard nativo como fonte de verdade e o recria pela API do Zabbix para um host real já monitorado.
+Um **dashboard global** do Zabbix é um objeto diferente. A exportação de template não promove automaticamente um dashboard de template para **Monitoring → Dashboards**. Por isso, este projeto fornece `tools/create_global_dashboard.py`, que usa o próprio dashboard nativo como fonte de verdade e cria ou atualiza com segurança um dashboard global pela API do Zabbix para um host real já monitorado.
 
-O mantenedor validou com sucesso o gerador em modo `--dry-run` contra um ambiente Zabbix 7.0 real antes da finalização da documentação da candidata 1.5.1. Isso confirma, no fluxo de referência, a detecção da versão da API, descoberta do host de destino, resolução de itens/gráficos e geração do payload; a criação efetiva do dashboard continua sendo uma ação explícita do operador.
+O mantenedor validou com sucesso o gerador em modo `--dry-run` contra um ambiente Zabbix 7.0 real antes da finalização da documentação da candidata 1.5.1. Isso confirma, no fluxo de referência, a detecção da versão da API, descoberta do host de destino, resolução de itens/gráficos e geração do payload; a criação/atualização efetiva do dashboard continua sendo uma ação explícita do operador.
 
 ## Por que usar o gerador
 
@@ -21,9 +21,10 @@ O gerador evita manter uma segunda definição de dashboard escrita manualmente.
 - resolve as chaves dos itens do template para os IDs dos itens no host escolhido;
 - resolve os nomes dos gráficos para os IDs dos gráficos no host escolhido;
 - preserva páginas, posições, dimensões, títulos, thresholds, cores e demais campos suportados dos widgets;
-- cria o objeto final usando `dashboard.create`.
+- cria um novo dashboard usando `dashboard.create`;
+- quando `--replace` é informado explicitamente, atualiza in-place exatamente um dashboard editável de mesmo nome usando `dashboard.update`.
 
-Assim, alterações futuras feitas no dashboard nativo do template podem ser refletidas no dashboard global sem manter dois layouts independentes.
+O utilitário nunca usa `dashboard.delete`. Assim, a substituição é fail-safe: o objeto existente não é removido antes de o Zabbix aceitar a atualização.
 
 ## Requisitos
 
@@ -31,7 +32,7 @@ Assim, alterações futuras feitas no dashboard nativo do template podem ser ref
 - template Vertiv já importado e vinculado ao host do nobreak;
 - Python 3.9+;
 - PyYAML (`pip install -r requirements-dev.txt` é suficiente);
-- token de API do Zabbix cujo usuário tenha permissão para ler o host, itens e gráficos e criar dashboards.
+- token de API do Zabbix cujo usuário tenha permissão para ler host/itens/gráficos e criar ou editar dashboards conforme necessário.
 
 ## Faça primeiro um dry-run
 
@@ -45,7 +46,7 @@ python3 tools/create_global_dashboard.py \
   --dry-run
 ```
 
-Esse comando resolve todas as referências e mostra o payload exato que seria enviado ao `dashboard.create`, sem criar nada.
+Esse comando resolve todas as referências e mostra o payload do dashboard sem criar ou atualizar nada.
 
 Para um endpoint interno de laboratório ou gerenciamento que utilize deliberadamente um certificado não confiável, acrescente `--insecure`. Essa opção não deve ser o padrão normal de produção.
 
@@ -78,7 +79,7 @@ python3 tools/create_global_dashboard.py \
 
 ## Privado ou público
 
-Por padrão, o dashboard global é criado como privado. Para criá-lo como público, adicione `--public`:
+Por padrão, o dashboard global é criado como privado. Para criá-lo como público, ou para marcar como público o dashboard selecionado durante uma atualização explícita, adicione `--public`:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -88,13 +89,13 @@ python3 tools/create_global_dashboard.py \
   --public
 ```
 
-O compartilhamento com usuários ou grupos específicos deve ser configurado depois da criação, de acordo com a política de acesso do ambiente Zabbix.
+O compartilhamento com usuários ou grupos específicos deve seguir a política de acesso do ambiente Zabbix.
 
-## Recriar um dashboard existente
+## Atualizar com segurança um dashboard existente
 
-O utilitário se recusa a sobrescrever silenciosamente um dashboard com o mesmo nome. Isso é proposital.
+O utilitário se recusa a sobrescrever um dashboard editável de mesmo nome sem que `--replace` seja informado explicitamente.
 
-Depois de revisar o `--dry-run`, use `--replace` para excluir e recriar explicitamente o dashboard existente:
+Depois de revisar o `--dry-run`, use:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -104,7 +105,15 @@ python3 tools/create_global_dashboard.py \
   --replace
 ```
 
-Como `--replace` recria o objeto, compartilhamentos personalizados e edições manuais feitas diretamente no dashboard global precisarão ser reaplicados. O modelo recomendado é fazer alterações de layout no dashboard do template e depois gerar novamente o global.
+A substituição é deliberadamente conservadora:
+
+- a descoberta usa `dashboard.get` com `editable=true`, portanto dashboards que o usuário da API não pode editar não são alvos de substituição;
+- se não existir dashboard editável com o nome exato, um novo é criado;
+- se existir exatamente um dashboard editável com o nome exato, `dashboard.update` atualiza suas propriedades/páginas geradas in-place;
+- se existirem dois ou mais dashboards editáveis com o mesmo nome exato, o utilitário interrompe a execução sem modificar nada porque o alvo é ambíguo;
+- `dashboard.delete` nunca é chamado.
+
+Como o dashboard existente é atualizado in-place, sua identidade é preservada. O utilitário não envia `users` nem `userGroups` durante a atualização, portanto as definições de compartilhamento existentes não são deliberadamente substituídas pela ferramenta. As páginas/layout derivados do template são substituídos; consequentemente, edições manuais de widgets/layout feitas diretamente no dashboard global podem ser sobrescritas. Sempre que possível, mantenha as alterações de layout no dashboard do template.
 
 ## TLS
 
@@ -137,5 +146,6 @@ A candidata `1.5.1` introduz esta ferramenta auxiliar e sua documentação sem a
 - Utilize um token de API com o menor privilégio prático.
 - Nunca grave o token de API no repositório.
 - Revogue/rotacione imediatamente um token caso ele seja exposto em histórico de shell, chat, logs ou outro local não controlado.
-- O utilitário faz leituras para descobrir host, itens e gráficos e cria um dashboard. Ele somente exclui um dashboard quando `--replace` é informado explicitamente.
+- A substituição é fail-closed: múltiplos dashboards editáveis de mesmo nome fazem a execução falhar antes de qualquer escrita.
+- Dashboards existentes são atualizados in-place; esta ferramenta não chama `dashboard.delete`.
 - Nenhuma operação SNMP de escrita é adicionada por esta funcionalidade.
