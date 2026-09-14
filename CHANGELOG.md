@@ -23,7 +23,7 @@ Released repository version: **1.5.1**.
 ### Changed
 
 - Repository candidate version advanced from `1.5.0` to `1.5.1` for the global-dashboard tooling/documentation patch.
-- `STABLE_VERSION` remains `1.5.0` until the 1.5.1 release is explicitly promoted/tagged.
+- `STABLE_VERSION` is promoted to `1.5.1` for the stable tagged release.
 - The template dashboard remains the single source of truth; the project does not maintain a second hand-written global dashboard definition.
 
 ### Validated
