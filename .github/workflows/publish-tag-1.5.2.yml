@@ -1,0 +1,39 @@
+name: One-time publish v1.5.2 tag
+
+on:
+  push:
+    branches:
+      - release-tag/1.5.2
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact release commit
+        uses: actions/checkout@v4
+        with:
+          ref: 42650ada445f76e5a75d45e4a9e2a7bce3a2b8e2
+          fetch-depth: 0
+      - name: Verify release markers
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(cat VERSION)" = "1.5.2"
+          test "$(cat STABLE_VERSION)" = "1.5.2"
+          grep -q 'version: 1.5-2' templates/7.0/vertiv-by-snmp.yaml
+          grep -q 'version: 1.5-2' templates/8.0/vertiv-by-snmp.yaml
+      - name: Create and push tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git ls-remote --exit-code --tags origin refs/tags/v1.5.2 >/dev/null 2>&1; then
+            echo 'Tag v1.5.2 already exists; refusing to move it.' >&2
+            exit 1
+          fi
+          git tag -a v1.5.2 42650ada445f76e5a75d45e4a9e2a7bce3a2b8e2 -m 'Vertiv by SNMP v1.5.2'
+          git push origin refs/tags/v1.5.2
