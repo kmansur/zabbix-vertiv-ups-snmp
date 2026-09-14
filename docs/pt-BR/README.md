@@ -23,13 +23,17 @@ O template utiliza dois espaços de OIDs SNMP:
 
 Produtos e placas de gerenciamento Vertiv/Liebert podem expor subconjuntos diferentes da MIB privada. Um item ficar unsupported não significa automaticamente que o template está incorreto; o equipamento pode não implementar aquele OID.
 
-Após a primeira importação, compare os valores do Zabbix com o LCD/interface web do nobreak e revise os itens unsupported. Isso é especialmente importante para os objetos elétricos privados adicionados na versão 1.1.0. Consulte [Resumo elétrico](electrical-summary.md) e [Troubleshooting](troubleshooting.md).
+Após a primeira importação, compare os valores do Zabbix com o LCD/interface web do nobreak e revise os itens unsupported. Isso é especialmente importante para objetos privados do fabricante. Consulte [Resumo elétrico](electrical-summary.md), [Matriz de compatibilidade](compatibility.md) e [Troubleshooting](troubleshooting.md).
 
 ## Versão do projeto
 
-Versão atual: **1.1.0**.
+Candidato atual do repositório: **1.5.0**.
 
-Consulte [Versionamento](versioning.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
+Última versão estável: **1.4.1**, até a conclusão da homologação em campo da 1.5.0.
+
+A branch `main` é a branch ativa de desenvolvimento/candidato. Para produção, utilize uma GitHub Release com tag em vez de tratar o conteúdo atual da `main` como release estável.
+
+Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md) e o [CHANGELOG](../../CHANGELOG.pt-BR.md).
 
 - [Fontes MIB/OID e proveniência](mib-sources.md)
 - [Matriz de compatibilidade](compatibility.md)
