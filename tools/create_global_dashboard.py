@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Create a global Zabbix dashboard from the native template dashboard.
 
 The script keeps the template dashboard as the single source of truth. It reads
@@ -45,9 +44,11 @@ class ZabbixAPIError(RuntimeError):
 class ZabbixAPI:
     def __init__(self, url: str, token: str, verify_tls: bool = True) -> None:
         base = url.rstrip("/")
-        self.url = base if base.endswith("api_jsonrpc.php") else f"{base}/api_jsonrpc.php"
+        self.url = (
+            base if base.endswith("api_jsonrpc.php") else f"{base}/api_jsonrpc.php"
+        )
         self.token = token
-        self.context = None if verify_tls else ssl._create_unverified_context()  # noqa: S323
+        self.context = None if verify_tls else ssl._create_unverified_context()
         self.request_id = 0
 
     def call(self, method: str, params: Any, authenticated: bool = True) -> Any:
@@ -63,9 +64,13 @@ class ZabbixAPI:
         if authenticated:
             headers["Authorization"] = f"Bearer {self.token}"
 
-        request = urllib.request.Request(self.url, data=data, headers=headers, method="POST")
+        request = urllib.request.Request(
+            self.url, data=data, headers=headers, method="POST"
+        )
         try:
-            with urllib.request.urlopen(request, context=self.context, timeout=30) as response:
+            with urllib.request.urlopen(
+                request, context=self.context, timeout=30
+            ) as response:
                 result = json.loads(response.read().decode("utf-8"))
         except urllib.error.URLError as exc:
             raise ZabbixAPIError(f"API connection failed: {exc}") from exc
@@ -73,7 +78,8 @@ class ZabbixAPI:
         if "error" in result:
             error = result["error"]
             raise ZabbixAPIError(
-                f"{method} failed: {error.get('message', 'API error')} - {error.get('data', '')}"
+                f"{method} failed: {error.get('message', 'API error')} - "
+                f"{error.get('data', '')}"
             )
         return result["result"]
 
@@ -82,9 +88,17 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Create a global dashboard from the Vertiv template dashboard."
     )
-    parser.add_argument("--url", required=True, help="Zabbix frontend URL, e.g. https://zabbix.example.com")
+    parser.add_argument(
+        "--url",
+        required=True,
+        help="Zabbix frontend URL, e.g. https://zabbix.example.com",
+    )
     parser.add_argument("--token", required=True, help="Zabbix API token")
-    parser.add_argument("--host", required=True, help="Technical or visible name of the monitored UPS host")
+    parser.add_argument(
+        "--host",
+        required=True,
+        help="Technical or visible name of the monitored UPS host",
+    )
     parser.add_argument(
         "--dashboard-name",
         default=None,
@@ -99,12 +113,27 @@ def parse_args() -> argparse.Namespace:
         "--template-file",
         type=Path,
         default=None,
-        help="Override template YAML path; normally selected from the server major.minor version",
+        help=(
+            "Override template YAML path; normally selected from the server "
+            "major.minor version"
+        ),
     )
-    parser.add_argument("--public", action="store_true", help="Create a public dashboard")
-    parser.add_argument("--replace", action="store_true", help="Delete an existing dashboard with the same name")
-    parser.add_argument("--dry-run", action="store_true", help="Resolve references and print the API payload only")
-    parser.add_argument("--insecure", action="store_true", help="Disable TLS certificate validation")
+    parser.add_argument(
+        "--public", action="store_true", help="Create a public dashboard"
+    )
+    parser.add_argument(
+        "--replace",
+        action="store_true",
+        help="Delete an existing dashboard with the same name",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Resolve references and print the API payload only",
+    )
+    parser.add_argument(
+        "--insecure", action="store_true", help="Disable TLS certificate validation"
+    )
     return parser.parse_args()
 
 
@@ -121,9 +150,15 @@ def select_template_file(server_version: str, override: Path | None) -> Path:
     version = f"{parts[0]}.{parts[1]}"
     candidate = repository_root() / "templates" / version / "vertiv-by-snmp.yaml"
     if not candidate.exists():
-        supported = sorted(p.parent.name for p in (repository_root() / "templates").glob("*/vertiv-by-snmp.yaml"))
+        supported = sorted(
+            p.parent.name
+            for p in (repository_root() / "templates").glob(
+                "*/vertiv-by-snmp.yaml"
+            )
+        )
         raise RuntimeError(
-            f"No template export for Zabbix {version}. Available exports: {', '.join(supported)}"
+            f"No template export for Zabbix {version}. "
+            f"Available exports: {', '.join(supported)}"
         )
     return candidate
 
@@ -157,7 +192,9 @@ def resolve_host(api: ZabbixAPI, host_name: str) -> dict[str, str]:
             },
         )
     if len(hosts) != 1:
-        raise RuntimeError(f"Expected exactly one host matching '{host_name}', found {len(hosts)}")
+        raise RuntimeError(
+            f"Expected exactly one host matching '{host_name}', found {len(hosts)}"
+        )
     return hosts[0]
 
 
@@ -203,7 +240,8 @@ def convert_field(
         value = graph_index[name]
     elif isinstance(value, dict):
         raise RuntimeError(
-            f"Unsupported structured field reference: type={raw_type}, name={field.get('name')}, value={value}"
+            "Unsupported structured field reference: "
+            f"type={raw_type}, name={field.get('name')}, value={value}"
         )
 
     return {"type": int(field_type), "name": field["name"], "value": value}
@@ -249,7 +287,13 @@ def build_dashboard_payload(
 
 
 def find_dashboard(api: ZabbixAPI, name: str) -> list[dict[str, str]]:
-    return api.call("dashboard.get", {"output": ["dashboardid", "name"], "filter": {"name": [name]}})
+    return api.call(
+        "dashboard.get",
+        {
+            "output": ["dashboardid", "name"],
+            "filter": {"name": [name]},
+        },
+    )
 
 
 def main() -> int:
@@ -273,13 +317,23 @@ def main() -> int:
     )
 
     if args.dry_run:
-        print(json.dumps({"server_version": server_version, "template_file": str(template_file), "dashboard": payload}, indent=2))
+        print(
+            json.dumps(
+                {
+                    "server_version": server_version,
+                    "template_file": str(template_file),
+                    "dashboard": payload,
+                },
+                indent=2,
+            )
+        )
         return 0
 
     existing = find_dashboard(api, dashboard_name)
     if existing and not args.replace:
         raise RuntimeError(
-            f"Dashboard '{dashboard_name}' already exists. Use --replace to recreate it explicitly."
+            f"Dashboard '{dashboard_name}' already exists. "
+            "Use --replace to recreate it explicitly."
         )
     if existing:
         api.call("dashboard.delete", [entry["dashboardid"] for entry in existing])
