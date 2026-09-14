@@ -1,0 +1,108 @@
+name: Prepare v1.5.3 field-validation update
+
+on:
+  push:
+    branches:
+      - maintenance/1.5.3-field-validation
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: maintenance/1.5.3-field-validation
+
+      - name: Apply field-validation maintenance changes
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace(path, old, new, count=None):
+              p = Path(path)
+              s = p.read_text()
+              if old not in s:
+                  raise SystemExit(f"expected text not found in {path}: {old[:120]!r}")
+              s = s.replace(old, new, -1 if count is None else count)
+              p.write_text(s)
+
+          Path('VERSION').write_text('1.5.3\n')
+
+          for path in ['templates/7.0/vertiv-by-snmp.yaml', 'templates/8.0/vertiv-by-snmp.yaml']:
+              replace(path, '      version: 1.5-2\n', '      version: 1.5-3\n', 1)
+              replace(
+                  path,
+                  "      Version 1.5.2 aligns repository and template licensing/attribution with the original template author''s GPLv3 authorization. Monitoring items, OIDs, triggers and read-only behavior are unchanged from 1.5.1.\n",
+                  "      Version 1.5.2 aligns repository and template licensing/attribution with the original template author''s GPLv3 authorization. Monitoring items, OIDs, triggers and read-only behavior are unchanged from 1.5.1.\n\n\n      Version 1.5.3 reduces RFC1628 active-alarm discovery from 1 minute to 30 seconds after field validation showed that a real 30-second UPS alarm can occur entirely between 1-minute discovery cycles. Aggregate alarm/status polling remains unchanged.\n",
+                  1,
+              )
+              marker = "      key: ups.alarm.discovery\n      delay: 1m\n      lifetime: 1d"
+              replace(path, marker, "      key: ups.alarm.discovery\n      delay: 30s\n      lifetime: 1d", 1)
+
+          # README version status (stable remains 1.5.2 until promotion).
+          replace('README.md', '- **Current repository version:** `1.5.2`', '- **Current repository version:** `1.5.3`', 1)
+          replace('README.md', '- **1.5.2 scope:** GPLv3 licensing/attribution alignment and release metadata; monitoring behavior remains unchanged from 1.5.1', '- **1.5.3 candidate scope:** field-validation maintenance; active-alarm LLD cadence reduced from 1m to 30s to improve capture of transient RFC1628 alarm rows', 1)
+          replace('README.md', 'Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author\'s permission and does not change monitoring semantics. `STABLE_VERSION` is `1.5.2` for the promoted stable release.', 'Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author\'s permission. Repository candidate `1.5.3` applies a field-driven alarm-discovery cadence improvement while `STABLE_VERSION` remains `1.5.2` until promotion.', 1)
+          replace('README.md', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.2 stable metadata/licensing release; monitoring semantics remain unchanged from 1.5.1 |', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.3 candidate; field-driven 30s active-alarm discovery, with 1.5.2 remaining stable until promotion |', 1)
+
+          replace('README.pt-BR.md', '- **Versão atual do repositório:** `1.5.2`', '- **Versão atual do repositório:** `1.5.3`', 1)
+          replace('README.pt-BR.md', '- **Escopo da 1.5.2:** alinhamento de licença/atribuição GPLv3 e metadados de release; o comportamento de monitoramento permanece igual ao da 1.5.1', '- **Escopo da candidata 1.5.3:** manutenção orientada pela validação em campo; a LLD de alarmes ativos passa de 1m para 30s para melhorar a captura de linhas transitórias RFC1628', 1)
+          replace('README.pt-BR.md', 'A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original, sem alterar a semântica de monitoramento. O `STABLE_VERSION` é `1.5.2` para a release estável promovida.', 'A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original. A candidata `1.5.3` aplica uma melhoria de cadência de descoberta de alarmes baseada em evidência de campo, enquanto o `STABLE_VERSION` permanece `1.5.2` até a promoção.', 1)
+          replace('README.pt-BR.md', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Release estável 1.5.2 de metadados/licenciamento; a semântica de monitoramento permanece igual à 1.5.1 |', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Candidata 1.5.3; descoberta de alarmes ativos em 30s baseada em validação de campo, mantendo 1.5.2 como estável até a promoção |', 1)
+
+          en_unreleased = """## [Unreleased]\n\n### Changed\n\n- Reduced RFC1628 `UPS active alarms discovery` cadence from 1 minute to 30 seconds in the Zabbix 7.0 and 8.0 exports. Field validation observed a real alarm that lasted only 30 seconds, which the aggregate 30-second alarm/status polling detected while a 1-minute LLD cycle could legitimately miss the transient `upsAlarmTable` row.\n- Kept lost-resource handling unchanged (`disable after 1h`, `delete after 1d`) so captured transient alarm rows remain available for diagnostics.\n\n### Field validation\n\n- Confirmed the dedicated SNMP heartbeat updates every minute and validated the complete five-minute `nodata()` PROBLEM/recovery cycle through a controlled UDP/161 interruption.\n- Confirmed no currently enabled default item is in the Zabbix `Not supported` state on the reference ITA-20kVA / IS-UNITY-DP firmware combination.\n- Recorded SNMPv2c/UDP 161 direct-server monitoring, reviewed all three host-dashboard pages, and confirmed real historical on-battery, warning, active-alarm, blackout and battery-discharge events with automatic recovery.\n- Battery-test result collection/value mapping is validated as `Passed`; a result-state transition remains pending natural observation. Management-agent reset-trigger evidence and individual transient `upsAlarmTable` LLD-row capture also remain pending/non-forced field observations.\n"""
+          replace('CHANGELOG.md', '## [Unreleased]\n', en_unreleased, 1)
+
+          pt_unreleased = """## [Unreleased]\n\n### Alterado\n\n- Reduzida a cadência da `UPS active alarms discovery` RFC1628 de 1 minuto para 30 segundos nos exports Zabbix 7.0 e 8.0. A validação em campo observou um alarme real com duração de apenas 30 segundos, detectado pelo polling agregado de alarmes/status em 30s, enquanto um ciclo LLD de 1 minuto pode legitimamente perder a linha transitória da `upsAlarmTable`.\n- Mantido o tratamento de recursos perdidos (`desabilitar após 1h`, `excluir após 1d`) para preservar por tempo suficiente as linhas transitórias capturadas para diagnóstico.\n\n### Validação em campo\n\n- Confirmado o heartbeat SNMP dedicado a cada minuto e validado o ciclo completo PROBLEM/recuperação do `nodata()` de cinco minutos por interrupção controlada de UDP/161.\n- Confirmado que nenhum item padrão atualmente habilitado está em estado `Not supported` no conjunto de referência ITA-20kVA / IS-UNITY-DP.\n- Registrado SNMPv2c/UDP 161 monitorado diretamente pelo servidor, revisadas as três páginas do dashboard e confirmados eventos históricos reais de operação em bateria, warning, alarme ativo, blackout e descarga de bateria com recuperação automática.\n- A coleta/mapeamento do resultado do teste de bateria foi validada como `Passed`; uma transição de estado do teste permanece pendente de observação natural. A evidência do trigger de reset do agente e a captura individual de linha transitória da `upsAlarmTable` também permanecem como observações de campo pendentes e não forçadas.\n"""
+          replace('CHANGELOG.pt-BR.md', '## [Unreleased]\n', pt_unreleased, 1)
+
+          # Project status: candidate 1.5.3, stable 1.5.2.
+          replace('docs/en/project-status.md', '**Current repository version: 1.5.2**', '**Current repository version: 1.5.3**', 1)
+          replace('docs/en/project-status.md', 'VERSION:        1.5.2\nSTABLE_VERSION: 1.5.2', 'VERSION:        1.5.3\nSTABLE_VERSION: 1.5.2', 1)
+          replace('docs/en/project-status.md', 'Version **1.5.2** is the current stable release. It aligns repository/template licensing and attribution with the direct GPLv3 authorization received from the original Template Vertiv author. Monitoring items, OIDs, keys, triggers, macros and read-only behavior are unchanged from 1.5.1.', 'Version **1.5.2** remains the current stable release. Repository candidate **1.5.3** incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s after a real 30-second alarm demonstrated the observability gap between aggregate polling and the slower discovery cycle.', 1)
+          replace('docs/en/project-status.md', '| Field compatibility record | IN PROGRESS | Real-hardware evidence exists for one Vertiv ITA-20kVA / IS-UNITY-DP environment; controlled event scenarios remain open |', '| Field compatibility record | IN PROGRESS | Heartbeat/nodata, dashboards, SNMP transport, enabled-item support and multiple real UPS events are validated; non-forced reset/test-transition/individual transient alarm-row observations remain open |', 1)
+
+          replace('docs/pt-BR/project-status.md', '**Versão atual do repositório: 1.5.2**', '**Versão atual do repositório: 1.5.3**', 1)
+          replace('docs/pt-BR/project-status.md', 'VERSION:        1.5.2\nSTABLE_VERSION: 1.5.2', 'VERSION:        1.5.3\nSTABLE_VERSION: 1.5.2', 1)
+
+          # Homologation checklists: mark only directly completed evidence as PASS.
+          en = 'docs/en/homologation-1.5.0.md'
+          for old in [
+              '- [ ] Confirm `ups.snmp.uptime` updates every minute on the production/homologation host.',
+              '- [ ] In a controlled window, interrupt SNMP reachability long enough to verify the five-minute `nodata()` problem event and automatic recovery.',
+              '- [ ] Review all three dashboard pages during a normal window and at least one representative incident/event window.',
+              '- [ ] Record the SNMP version/security level used in the reference environment.',
+              '- [ ] Confirm no unexpected unsupported items remain enabled by default on this exact card/firmware.',
+          ]:
+              replace(en, old, old.replace('- [ ]', '- [x]'), 1)
+          replace(en, 'The current repository candidate is **1.5.2** and the latest stable release is **1.5.2**; release 1.5.2 changes licensing/attribution and metadata without changing the monitoring semantics validated here.', 'The current repository candidate is **1.5.3** and the latest stable release remains **1.5.2**. Candidate 1.5.3 incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s; it does not introduce write/control behavior.', 1)
+          insert_en = """\n## Field-validation evidence collected on 2026-09-14\n\n- `ups.snmp.uptime` was observed updating at the configured 1-minute interval.\n- A controlled monitoring-side UDP/161 interruption produced the expected HIGH `UPS SNMP data unavailable` event after five minutes and recovered automatically after SNMP was restored.\n- Zabbix `Not supported` filtering returned no enabled/default items for the reference host.\n- Reference monitoring uses SNMPv2c on UDP/161 directly from the Zabbix Server; the community secret is intentionally excluded from this record.\n- Overview, Electrical and Battery & Environment dashboards rendered correctly in normal operation; collection gaps visible in history correspond to the intentional SNMP interruption.\n- Real events from 2026-09-12 confirmed active-alarm, on-battery, warning, blackout-counter and battery-discharge-counter triggers with automatic recovery. The active alarm lasted 30 seconds.\n- `upsAlarmsPresent` and normal empty `upsAlarmTable` behavior are validated. The 30-second real alarm was shorter than the current 1-minute LLD cadence, so individual alarm-row capture is not claimed; candidate 1.5.3 reduces that discovery cadence to 30 seconds.\n- `UPS: Battery test result` is collected and mapped as `Passed`; no state transition has yet been observed in retained history, so a transition remains pending natural observation.\n- A real management-card restart occurred previously and only restarted the management card, but the Zabbix uptime-reset trigger was not retained as direct evidence; the restart is not repeated solely for validation.\n\n"""
+          replace(en, '\n## Release decision\n', insert_en + '## Release decision\n', 1)
+
+          pt = 'docs/pt-BR/homologation-1.5.0.md'
+          for old in [
+              '- [ ] Confirmar que `ups.snmp.uptime` atualiza a cada minuto no host de produção/homologação.',
+              '- [ ] Em janela controlada, interromper o acesso SNMP tempo suficiente para validar o problema `nodata()` após cinco minutos e a recuperação automática.',
+              '- [ ] Revisar as três páginas do dashboard em janela normal e em pelo menos uma janela representativa de incidente/evento.',
+              '- [ ] Registrar a versão/nível de segurança SNMP utilizado no ambiente de referência.',
+              '- [ ] Confirmar que nenhum item inesperadamente unsupported permanece habilitado por padrão nessa combinação exata de placa/firmware.',
+          ]:
+              replace(pt, old, old.replace('- [ ]', '- [x]'), 1)
+          replace(pt, 'A candidata atual do repositório é **1.5.2** e a última release estável é **1.5.2**; a release 1.5.2 altera licenciamento/atribuição e metadados sem modificar a semântica de monitoramento validada aqui.', 'A candidata atual do repositório é **1.5.3** e a última release estável permanece **1.5.2**. A candidata 1.5.3 incorpora evidência de validação em campo e reduz a cadência da LLD de alarmes ativos de 1m para 30s, sem introduzir operações de escrita/controle.', 1)
+          insert_pt = """\n## Evidência de validação em campo coletada em 14/09/2026\n\n- `ups.snmp.uptime` foi observado atualizando no intervalo configurado de 1 minuto.\n- Uma interrupção controlada de UDP/161 no lado do monitoramento gerou o evento HIGH esperado `UPS SNMP data unavailable` após cinco minutos e recuperou automaticamente após a restauração do SNMP.\n- O filtro `Not supported` do Zabbix não retornou nenhum item padrão/habilitado no host de referência.\n- O ambiente de referência usa SNMPv2c em UDP/161 monitorado diretamente pelo Zabbix Server; o segredo da community é intencionalmente omitido deste registro.\n- Os dashboards Overview, Electrical e Battery & Environment renderizaram corretamente em operação normal; as lacunas no histórico correspondem à interrupção SNMP intencional.\n- Eventos reais de 12/09/2026 confirmaram triggers de alarme ativo, operação em bateria, warning, contador de blackout e contador de descarga da bateria com recuperação automática. O alarme ativo durou 30 segundos.\n- `upsAlarmsPresent` e o comportamento normal de `upsAlarmTable` vazia estão validados. Como o alarme real de 30 segundos foi menor que a cadência atual de 1 minuto da LLD, não é afirmada a captura individual da linha; a candidata 1.5.3 reduz a descoberta para 30 segundos.\n- `UPS: Battery test result` é coletado e mapeado como `Passed`; nenhuma transição de estado foi observada no histórico retido, portanto a transição permanece pendente de observação natural.\n- Um restart real da placa de gerenciamento ocorreu anteriormente e reiniciou somente a placa, mas o trigger de reset de uptime do Zabbix não ficou retido como evidência direta; o restart não será repetido apenas para validação.\n\n"""
+          replace(pt, '\n## Decisão de release\n', insert_pt + '## Decisão de release\n', 1)
+
+          # Remove this one-off workflow from the branch before committing.
+          Path('.github/workflows/prepare-1.5.3.yml').unlink()
+
+      - name: Commit prepared candidate
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: prepare v1.5.3 field-validation maintenance candidate"
+          git push origin HEAD:maintenance/1.5.3-field-validation
