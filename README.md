@@ -11,10 +11,13 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 ## Release status
 
 - **Latest stable release:** `1.5.0`
-- **Current repository version:** `1.5.0`
+- **Current repository version:** `1.5.1`
+- **1.5.1 candidate scope:** global-dashboard tooling/documentation; template monitoring behavior remains unchanged from 1.5.0
 - **Extended field homologation:** in progress after release
 
 Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
+
+Repository candidate `1.5.1` adds the optional global-dashboard generator and its bilingual documentation/tests. The maintainer has successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. `STABLE_VERSION` intentionally remains `1.5.0` until 1.5.1 is explicitly promoted and tagged.
 
 The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
@@ -28,13 +31,14 @@ See [project status](docs/en/project-status.md), [production readiness](docs/en/
   </a>
 </p>
 
-Detailed dashboard interpretation: [docs/en/dashboard.md](docs/en/dashboard.md).
+Detailed dashboard interpretation: [docs/en/dashboard.md](docs/en/dashboard.md).  
+Global dashboard generation: [docs/en/global-dashboard.md](docs/en/global-dashboard.md).
 
 ## Compatibility
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.0 release export; CI fresh-import and 1.4.1 → 1.5.0 in-place upgrade tested |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.0 stable monitoring export; 1.5.1 repository candidate adds external dashboard tooling without changing monitoring semantics |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export; semantic parity is checked, runtime/import validation is still required |
 
 See the [compatibility matrix](docs/en/compatibility.md).
@@ -82,6 +86,8 @@ Load alerts use standardized RFC1628 `upsOutputPercentLoad` discovery prototypes
 ### Development testing
 
 Files under `templates/` on `main` represent the current repository development state and may become newer than the latest stable release. Use a tagged GitHub Release for production and use `main` only when intentionally testing development changes.
+
+For repository candidate 1.5.1, the new global-dashboard generator can be tested independently of the monitoring template with `--dry-run` before dashboard creation.
 
 Detailed instructions: [docs/en/installation.md](docs/en/installation.md).
 
@@ -140,6 +146,7 @@ CI also performs a real Zabbix 7.0 API import/upgrade test. See [CONTRIBUTING.md
 - [Metrics and OIDs](docs/en/metrics.md)
 - [Electrical summary](docs/en/electrical-summary.md)
 - [Dashboard](docs/en/dashboard.md)
+- [Global dashboard generator](docs/en/global-dashboard.md)
 - [Triggers](docs/en/triggers.md)
 - [SNMP architecture](docs/en/snmp.md)
 - [Troubleshooting](docs/en/troubleshooting.md)
@@ -153,14 +160,14 @@ Brazilian Portuguese documentation is under [docs/pt-BR/](docs/pt-BR/README.md).
 
 ## Versioning
 
-Project releases use Semantic Versioning `X.Y.Z`. Zabbix `vendor.version` uses the equivalent `X.Y-Z` representation.
+Project releases use Semantic Versioning `X.Y.Z`. Zabbix `vendor.version` uses the equivalent `X.Y-Z` representation for the template monitoring artifact.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-Release `1.5.0` is exported as `vendor.version: 1.5-0`.
+The current repository candidate is `1.5.1`, while the latest stable release and unchanged template monitoring artifact remain `1.5.0` / `vendor.version: 1.5-0`. Before a candidate that changes the template is promoted, release validation requires the template vendor metadata to match the promoted version.
 
 ## License and attribution
 
