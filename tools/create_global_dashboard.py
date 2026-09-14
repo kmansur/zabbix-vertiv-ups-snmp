@@ -152,9 +152,7 @@ def select_template_file(server_version: str, override: Path | None) -> Path:
     if not candidate.exists():
         supported = sorted(
             p.parent.name
-            for p in (repository_root() / "templates").glob(
-                "*/vertiv-by-snmp.yaml"
-            )
+            for p in (repository_root() / "templates").glob("*/vertiv-by-snmp.yaml")
         )
         raise RuntimeError(
             f"No template export for Zabbix {version}. "
