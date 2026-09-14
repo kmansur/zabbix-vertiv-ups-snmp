@@ -71,3 +71,7 @@ Quando todos os checks de campo pós-release acima forem concluídos:
 1. alterar o status da validação estendida em campo para **PASS** e incluir data/aprovação final;
 2. atualizar a matriz de compatibilidade para `1.5.0 homologada em campo` para essa combinação exata de hardware;
 3. fechar a issue de acompanhamento da validação de campo pós-release.
+
+## Contexto das releases posteriores
+
+Este documento permanece como registro de validação em campo da release de monitoramento 1.5.0. A candidata atual do repositório é **1.5.2** e a última release estável é **1.5.2**; a release 1.5.2 altera licenciamento/atribuição e metadados sem modificar a semântica de monitoramento validada aqui.

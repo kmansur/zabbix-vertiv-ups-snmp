@@ -10,14 +10,14 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 
 ## Status das versões
 
-- **Última versão estável:** `1.5.1`
-- **Versão atual do repositório:** `1.5.1`
-- **Escopo da candidata 1.5.1:** ferramenta/documentação do dashboard global; o comportamento de monitoramento do template permanece igual ao da 1.5.0
+- **Última versão estável:** `1.5.2`
+- **Versão atual do repositório:** `1.5.2`
+- **Escopo da 1.5.2:** alinhamento de licença/atribuição GPLv3 e metadados de release; o comportamento de monitoramento permanece igual ao da 1.5.1
 - **Homologação estendida em campo:** em andamento após a release
 
 A versão `1.5.0` foi aprovada para release pelo mantenedor após aprovação da validação do repositório, CodeQL, importação nova no Zabbix 7.0 e upgrade in-place de `1.4.1` para `1.5.0`. Os cenários controlados restantes em hardware continuam sendo acompanhados separadamente e **não devem ser interpretados como certificação de campo concluída**.
 
-A release `1.5.1` adiciona o gerador opcional de dashboard global e sua documentação/testes bilíngues. O mantenedor validou com sucesso o fluxo `--dry-run` contra um ambiente Zabbix 7.0 real. O `STABLE_VERSION` é `1.5.1` para a release estável promovida.
+A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original, sem alterar a semântica de monitoramento. O `STABLE_VERSION` é `1.5.2` para a release estável promovida.
 
 A branch `main` é a branch ativa de desenvolvimento. **Em produção, utilize uma GitHub Release com tag**, pois a `main` pode avançar além da última release estável quando um novo ciclo de desenvolvimento começar.
 
@@ -38,7 +38,7 @@ Geração do dashboard global: [docs/pt-BR/global-dashboard.md](docs/pt-BR/globa
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export estável de monitoramento 1.5.0; a candidata 1.5.1 do repositório adiciona ferramenta externa de dashboard sem alterar a semântica do monitoramento |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Release estável 1.5.2 de metadados/licenciamento; a semântica de monitoramento permanece igual à 1.5.1 |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export preliminar de compatibilidade; a equivalência semântica é verificada, mas ainda falta validação real de importação/execução |
 
 Consulte a [matriz de compatibilidade](docs/pt-BR/compatibility.md).
@@ -87,7 +87,7 @@ Os alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o item p
 
 Os arquivos em `templates/` na `main` representam o estado atual de desenvolvimento e podem ficar mais novos que a última release estável. Use uma GitHub Release com tag em produção e utilize a `main` apenas quando a intenção for testar alterações de desenvolvimento.
 
-Na candidata 1.5.1, o novo gerador de dashboard global pode ser testado independentemente do template de monitoramento usando `--dry-run` antes da criação do dashboard.
+O gerador de dashboard global introduzido na 1.5.1 pode ser testado independentemente do template de monitoramento usando `--dry-run` antes da criação do dashboard.
 
 Instruções detalhadas: [docs/pt-BR/installation.md](docs/pt-BR/installation.md).
 
@@ -167,7 +167,7 @@ VERSION / tag Git / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-A candidata atual do repositório é `1.5.1`, enquanto a última release estável e o artefato de monitoramento do template, que não foi alterado, permanecem `1.5.0` / `vendor.version: 1.5-0`. Antes da promoção de uma candidata que altere o template, a validação de release exige que os metadados de vendor correspondam à versão promovida.
+A versão atual do repositório e a release estável são `1.5.2`, com metadados do template `vendor.version: 1.5-2`. A validação de release exige que `VERSION`, `STABLE_VERSION`, a tag Git e os metadados de vendor correspondam à versão promovida.
 
 ## Licença e atribuição
 

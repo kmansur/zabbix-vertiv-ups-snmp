@@ -10,14 +10,14 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 
 ## Release status
 
-- **Latest stable release:** `1.5.1`
-- **Current repository version:** `1.5.1`
-- **1.5.1 candidate scope:** global-dashboard tooling/documentation; template monitoring behavior remains unchanged from 1.5.0
+- **Latest stable release:** `1.5.2`
+- **Current repository version:** `1.5.2`
+- **1.5.2 scope:** GPLv3 licensing/attribution alignment and release metadata; monitoring behavior remains unchanged from 1.5.1
 - **Extended field homologation:** in progress after release
 
 Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
 
-Release `1.5.1` adds the optional global-dashboard generator and its bilingual documentation/tests. The maintainer has successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. `STABLE_VERSION` is `1.5.1` for the promoted stable release.
+Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author's permission and does not change monitoring semantics. `STABLE_VERSION` is `1.5.2` for the promoted stable release.
 
 The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
@@ -38,7 +38,7 @@ Global dashboard generation: [docs/en/global-dashboard.md](docs/en/global-dashbo
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.0 stable monitoring export; 1.5.1 repository candidate adds external dashboard tooling without changing monitoring semantics |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.2 stable metadata/licensing release; monitoring semantics remain unchanged from 1.5.1 |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export; semantic parity is checked, runtime/import validation is still required |
 
 See the [compatibility matrix](docs/en/compatibility.md).
@@ -87,7 +87,7 @@ Load alerts use standardized RFC1628 `upsOutputPercentLoad` discovery prototypes
 
 Files under `templates/` on `main` represent the current repository development state and may become newer than the latest stable release. Use a tagged GitHub Release for production and use `main` only when intentionally testing development changes.
 
-For repository candidate 1.5.1, the new global-dashboard generator can be tested independently of the monitoring template with `--dry-run` before dashboard creation.
+The global-dashboard generator introduced in 1.5.1 can be tested independently of the monitoring template with `--dry-run` before dashboard creation.
 
 Detailed instructions: [docs/en/installation.md](docs/en/installation.md).
 
@@ -167,7 +167,7 @@ VERSION / Git tag / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-The current repository candidate is `1.5.1`, while the latest stable release and template release metadata are `1.5.1` / `vendor.version: 1.5-1`. Before a candidate that changes the template is promoted, release validation requires the template vendor metadata to match the promoted version.
+The current repository and stable release are `1.5.2`, with template metadata `vendor.version: 1.5-2`. Release validation requires `VERSION`, `STABLE_VERSION`, the Git tag and template vendor metadata to match the promoted version.
 
 ## License and attribution
 
