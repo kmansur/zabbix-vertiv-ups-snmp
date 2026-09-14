@@ -1,14 +1,29 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
 from create_global_dashboard import (
+    apply_dashboard,
     build_dashboard_payload,
     convert_field,
+    find_editable_dashboards,
     load_template_dashboard,
 )
+
+
+class FakeAPI:
+    def __init__(self, responses):
+        self.responses = responses
+        self.calls = []
+
+    def call(self, method, params, authenticated=True):
+        self.calls.append((method, params, authenticated))
+        response = self.responses[method]
+        return response(params) if callable(response) else response
 
 
 def test_template_dashboard_exists_in_both_exports():
@@ -108,3 +123,90 @@ def test_build_payload_preserves_layout_and_converts_scalar_types():
         "name": "value_size",
         "value": "26",
     }
+
+
+def test_find_dashboard_only_requests_editable_exact_name():
+    api = FakeAPI({"dashboard.get": []})
+    assert find_editable_dashboards(api, "Vertiv UPS - Test") == []
+    method, params, authenticated = api.calls[0]
+    assert method == "dashboard.get"
+    assert authenticated is True
+    assert params["filter"] == {"name": ["Vertiv UPS - Test"]}
+    assert params["editable"] is True
+
+
+def test_apply_dashboard_creates_when_no_editable_match_exists():
+    payload = {"name": "Vertiv UPS - Test", "pages": []}
+    api = FakeAPI(
+        {
+            "dashboard.get": [],
+            "dashboard.create": {"dashboardids": ["101"]},
+        }
+    )
+
+    action, ids = apply_dashboard(api, payload, replace=False)
+
+    assert action == "Created"
+    assert ids == ["101"]
+    assert [call[0] for call in api.calls] == ["dashboard.get", "dashboard.create"]
+
+
+def test_apply_dashboard_refuses_existing_without_replace():
+    payload = {"name": "Vertiv UPS - Test", "pages": []}
+    api = FakeAPI(
+        {
+            "dashboard.get": [
+                {"dashboardid": "101", "name": "Vertiv UPS - Test"}
+            ]
+        }
+    )
+
+    with pytest.raises(RuntimeError, match="Use --replace"):
+        apply_dashboard(api, payload, replace=False)
+
+    assert [call[0] for call in api.calls] == ["dashboard.get"]
+
+
+def test_apply_dashboard_updates_single_match_in_place():
+    payload = {
+        "name": "Vertiv UPS - Test",
+        "private": 1,
+        "pages": [{"name": "Overview", "widgets": []}],
+    }
+    api = FakeAPI(
+        {
+            "dashboard.get": [
+                {"dashboardid": "101", "name": "Vertiv UPS - Test"}
+            ],
+            "dashboard.update": {"dashboardids": ["101"]},
+        }
+    )
+
+    action, ids = apply_dashboard(api, payload, replace=True)
+
+    assert action == "Updated"
+    assert ids == ["101"]
+    assert [call[0] for call in api.calls] == ["dashboard.get", "dashboard.update"]
+    update_payload = api.calls[1][1]
+    assert update_payload["dashboardid"] == "101"
+    assert update_payload["pages"] == payload["pages"]
+    assert "users" not in update_payload
+    assert "userGroups" not in update_payload
+    assert all(call[0] != "dashboard.delete" for call in api.calls)
+
+
+def test_apply_dashboard_rejects_ambiguous_editable_matches_without_mutation():
+    payload = {"name": "Vertiv UPS - Test", "pages": []}
+    api = FakeAPI(
+        {
+            "dashboard.get": [
+                {"dashboardid": "101", "name": "Vertiv UPS - Test"},
+                {"dashboardid": "202", "name": "Vertiv UPS - Test"},
+            ]
+        }
+    )
+
+    with pytest.raises(RuntimeError, match="Multiple editable dashboards"):
+        apply_dashboard(api, payload, replace=True)
+
+    assert [call[0] for call in api.calls] == ["dashboard.get"]
