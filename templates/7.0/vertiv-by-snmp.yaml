@@ -80,7 +80,7 @@ zabbix_export:
       Export target: Zabbix 7.0.'
     vendor:
       name: Net Tech
-      version: 1.5-0
+      version: 1.5-1
     groups:
     - name: Templates/Power
     items:

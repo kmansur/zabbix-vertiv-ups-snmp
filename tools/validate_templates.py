@@ -91,11 +91,19 @@ class ValidationError(Exception):
     """Raised when repository template validation fails."""
 
 
-def load_version() -> str:
-    version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+def load_version_file(name: str) -> str:
+    version = (ROOT / name).read_text(encoding="utf-8").strip()
     if not SEMVER_RE.fullmatch(version):
-        raise ValidationError(f"VERSION is not Semantic Versioning: {version!r}")
+        raise ValidationError(f"{name} is not Semantic Versioning: {version!r}")
     return version
+
+
+def load_version() -> str:
+    return load_version_file("VERSION")
+
+
+def load_stable_version() -> str:
+    return load_version_file("STABLE_VERSION")
 
 
 def zabbix_vendor_version(project_version: str) -> str:
@@ -155,7 +163,9 @@ def collect_item_keys(template: dict[str, Any]) -> tuple[list[str], list[str]]:
 
 
 def validate_one(
-    export_version: str, data: dict[str, Any], project_version: str
+    export_version: str,
+    data: dict[str, Any],
+    allowed_vendor_versions: set[str],
 ) -> None:
     errors: list[str] = []
 
@@ -184,10 +194,11 @@ def validate_one(
     vendor = template.get("vendor", {})
     if vendor.get("name") != VENDOR_NAME:
         errors.append(f"vendor.name must be {VENDOR_NAME!r}")
-    expected_vendor_version = zabbix_vendor_version(project_version)
-    if str(vendor.get("version")) != expected_vendor_version:
+    actual_vendor_version = str(vendor.get("version"))
+    if actual_vendor_version not in allowed_vendor_versions:
+        expected = ", ".join(sorted(allowed_vendor_versions))
         errors.append(
-            f"vendor.version={vendor.get('version')!r}; expected {expected_vendor_version!r}"
+            f"vendor.version={actual_vendor_version!r}; expected one of: {expected}"
         )
 
     dashboards = template.get("dashboards", [])
@@ -522,11 +533,24 @@ def validate_semantic_parity(v7: dict[str, Any], v8: dict[str, Any]) -> None:
 
 def run() -> None:
     project_version = load_version()
+    stable_version = load_stable_version()
+    allowed_vendor_versions = {zabbix_vendor_version(project_version)}
+    if project_version != stable_version:
+        # Development candidates may contain tooling/docs changes while the
+        # template export itself remains byte-for-byte equivalent to the stable
+        # monitoring artifact. Once STABLE_VERSION is promoted to the candidate,
+        # only the candidate vendor.version is accepted, preventing an
+        # inconsistent tagged release.
+        allowed_vendor_versions.add(zabbix_vendor_version(stable_version))
+
     loaded = {version: load_template(path) for version, path in TEMPLATE_FILES.items()}
     for version, data in loaded.items():
-        validate_one(version, data, project_version)
+        validate_one(version, data, allowed_vendor_versions)
     validate_semantic_parity(loaded["7.0"], loaded["8.0"])
-    print(f"OK: validated VERTIV by SNMP {project_version} for Zabbix 7.0 and 8.0")
+    print(
+        f"OK: validated VERTIV by SNMP {project_version} for Zabbix 7.0 and 8.0 "
+        f"(stable {stable_version})"
+    )
 
 
 if __name__ == "__main__":

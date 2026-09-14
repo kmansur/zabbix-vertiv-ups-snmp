@@ -9,6 +9,8 @@
 
 Este registro separa a evidência já coletada em hardware real dos cenários controlados que ainda exigem ação em campo. O mantenedor aprovou a release de software 1.5.0 depois que passaram a validação do repositório, o CodeQL, a importação nova no Zabbix 7.0 e o upgrade in-place 1.4.1 → 1.5.0. Checks de campo pendentes não são convertidos em PASS com base em CI, e o hardware de referência ainda não é descrito como totalmente homologado em campo.
 
+A candidata de repositório **1.5.1** adiciona apenas ferramenta/documentação de dashboard global e não altera a semântica de monitoramento da 1.5.0 nem invalida este registro de campo. O `--dry-run` do gerador foi validado com sucesso pelo mantenedor contra um ambiente Zabbix 7.0 real.
+
 ## Ambiente de referência
 
 | Componente | Valor observado |

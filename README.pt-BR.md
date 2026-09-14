@@ -10,11 +10,14 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 
 ## Status das versões
 
-- **Última versão estável:** `1.5.0`
-- **Versão atual do repositório:** `1.5.0`
+- **Última versão estável:** `1.5.1`
+- **Versão atual do repositório:** `1.5.1`
+- **Escopo da candidata 1.5.1:** ferramenta/documentação do dashboard global; o comportamento de monitoramento do template permanece igual ao da 1.5.0
 - **Homologação estendida em campo:** em andamento após a release
 
 A versão `1.5.0` foi aprovada para release pelo mantenedor após aprovação da validação do repositório, CodeQL, importação nova no Zabbix 7.0 e upgrade in-place de `1.4.1` para `1.5.0`. Os cenários controlados restantes em hardware continuam sendo acompanhados separadamente e **não devem ser interpretados como certificação de campo concluída**.
+
+A release `1.5.1` adiciona o gerador opcional de dashboard global e sua documentação/testes bilíngues. O mantenedor validou com sucesso o fluxo `--dry-run` contra um ambiente Zabbix 7.0 real. O `STABLE_VERSION` é `1.5.1` para a release estável promovida.
 
 A branch `main` é a branch ativa de desenvolvimento. **Em produção, utilize uma GitHub Release com tag**, pois a `main` pode avançar além da última release estável quando um novo ciclo de desenvolvimento começar.
 
@@ -28,13 +31,14 @@ Consulte [status do projeto](docs/pt-BR/project-status.md), [prontidão para pro
   </a>
 </p>
 
-Guia detalhado de interpretação: [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).
+Guia detalhado de interpretação: [docs/pt-BR/dashboard.md](docs/pt-BR/dashboard.md).  
+Geração do dashboard global: [docs/pt-BR/global-dashboard.md](docs/pt-BR/global-dashboard.md).
 
 ## Compatibilidade
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export da release 1.5.0; importação nova e upgrade in-place 1.4.1 → 1.5.0 testados no CI |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export estável de monitoramento 1.5.0; a candidata 1.5.1 do repositório adiciona ferramenta externa de dashboard sem alterar a semântica do monitoramento |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export preliminar de compatibilidade; a equivalência semântica é verificada, mas ainda falta validação real de importação/execução |
 
 Consulte a [matriz de compatibilidade](docs/pt-BR/compatibility.md).
@@ -82,6 +86,8 @@ Os alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o item p
 ### Teste de desenvolvimento
 
 Os arquivos em `templates/` na `main` representam o estado atual de desenvolvimento e podem ficar mais novos que a última release estável. Use uma GitHub Release com tag em produção e utilize a `main` apenas quando a intenção for testar alterações de desenvolvimento.
+
+Na candidata 1.5.1, o novo gerador de dashboard global pode ser testado independentemente do template de monitoramento usando `--dry-run` antes da criação do dashboard.
 
 Instruções detalhadas: [docs/pt-BR/installation.md](docs/pt-BR/installation.md).
 
@@ -140,6 +146,7 @@ O CI também executa teste real de importação/upgrade pela API do Zabbix 7.0. 
 - [Métricas e OIDs](docs/pt-BR/metrics.md)
 - [Resumo elétrico](docs/pt-BR/electrical-summary.md)
 - [Dashboard](docs/pt-BR/dashboard.md)
+- [Gerador de dashboard global](docs/pt-BR/global-dashboard.md)
 - [Triggers](docs/pt-BR/triggers.md)
 - [Arquitetura SNMP](docs/pt-BR/snmp.md)
 - [Troubleshooting](docs/pt-BR/troubleshooting.md)
@@ -153,14 +160,14 @@ A documentação em inglês está disponível em [docs/en/](docs/en/README.md).
 
 ## Versionamento
 
-As releases usam Versionamento Semântico `X.Y.Z`. O `vendor.version` do Zabbix usa a representação equivalente `X.Y-Z`.
+As releases usam Versionamento Semântico `X.Y.Z`. O `vendor.version` do Zabbix usa a representação equivalente `X.Y-Z` para o artefato de monitoramento do template.
 
 ```text
 VERSION / tag Git / GitHub Release: X.Y.Z
 Zabbix vendor.version: X.Y-Z
 ```
 
-A release `1.5.0` é exportada como `vendor.version: 1.5-0`.
+A candidata atual do repositório é `1.5.1`, enquanto a última release estável e o artefato de monitoramento do template, que não foi alterado, permanecem `1.5.0` / `vendor.version: 1.5-0`. Antes da promoção de uma candidata que altere o template, a validação de release exige que os metadados de vendor correspondam à versão promovida.
 
 ## Licença e atribuição
 

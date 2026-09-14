@@ -9,6 +9,8 @@
 
 This record separates evidence already collected on real hardware from controlled scenarios that still require field action. The maintainer approved the 1.5.0 software release after repository validation, CodeQL, Zabbix 7.0 fresh import and the 1.4.1 → 1.5.0 in-place upgrade passed. Pending field checks are not converted into PASS from CI evidence and the reference hardware is not yet described as fully field-homologated.
 
+Repository candidate **1.5.1** adds global-dashboard tooling/documentation only and does not alter the 1.5.0 monitoring semantics or invalidate this field record. Its generator `--dry-run` was successfully validated by the maintainer against a real Zabbix 7.0 environment.
+
 ## Reference environment
 
 | Component | Observed value |

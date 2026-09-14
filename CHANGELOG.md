@@ -8,6 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-09-14
+
+Released repository version: **1.5.1**.
+
+### Added
+
+- Global dashboard generator `tools/create_global_dashboard.py` that recreates the native `Vertiv UPS Overview` template dashboard as a host-bound global Zabbix dashboard through the API.
+- Automatic Zabbix major/minor detection and matching source selection from `templates/<major.minor>/vertiv-by-snmp.yaml`.
+- Host item/graph reference resolution, `--dry-run`, private/public dashboard creation, custom names, explicit `--replace` behavior and controlled `--insecure` TLS mode.
+- Bilingual EN/PT-BR deployment documentation for the global dashboard workflow.
+- Automated tests covering Zabbix 7.0/8.0 dashboard source exports, item/graph conversion and layout/scalar field preservation.
+
+### Changed
+
+- Repository candidate version advanced from `1.5.0` to `1.5.1` for the global-dashboard tooling/documentation patch.
+- `STABLE_VERSION` is promoted to `1.5.1` for the stable tagged release.
+- The template dashboard remains the single source of truth; the project does not maintain a second hand-written global dashboard definition.
+
+### Validated
+
+- The maintainer successfully executed the generator in `--dry-run` mode against a real Zabbix 7.0 environment and confirmed host/template discovery and payload generation.
+
 ### Planned
 
 - Complete the post-release controlled field-validation scenarios and operator sign-off for the reference ITA-20kVA / IS-UNITY-DP environment.
@@ -187,7 +209,7 @@ On the validated Vertiv ITA-20kVA device, the UPS web interface itself reports `
 - Four built-in graphs for battery/runtime, temperatures, output power and power-quality counters.
 - Optional disabled Vertiv enterprise SNMP trap item.
 - Bilingual English/Brazilian Portuguese documentation.
-- Template/documentation validators, tests and GitHub Actions CI.
+- Template/documentation validators, tests and CI in GitHub Actions.
 - Release and CodeQL workflows.
 - MIT licensing for original repository contributions.
 - Explicit attribution to the historical `Template Vertiv` reference by Mihguel da Silva Santos Tavares de Araujo.

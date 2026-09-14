@@ -27,15 +27,17 @@ After the first import, compare Zabbix values with the UPS LCD/web interface and
 
 ## Project version
 
-Current repository version: **1.5.0**.
+Current repository version: **1.5.1**.
 
-Latest stable release: **1.5.0**.
+Latest stable release: **1.5.1**.
+
+Release 1.5.1 adds the optional global-dashboard generator, bilingual documentation and tests without changing the 1.5.0 monitoring semantics. The maintainer successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. The replacement path has been hardened to update one editable same-name dashboard in place and fail closed on ambiguity.
 
 The `main` branch is the active development branch. Production users should install a tagged GitHub Release rather than treating the current `main` tree as an immutable release artifact.
 
 Version 1.5.0 passed repository validation, CodeQL, Zabbix 7.0 fresh import and the 1.4.1 → 1.5.0 in-place upgrade test. Extended controlled hardware scenarios remain tracked separately and are not represented as completed field certification.
 
-See [Versioning](versioning.md), [Project status](project-status.md) and [CHANGELOG](../../CHANGELOG.md).
+See [Versioning](versioning.md), [Project status](project-status.md), [Global dashboard](global-dashboard.md), [PDCA review 1.5.1](pdca-1.5.1.md) and [CHANGELOG](../../CHANGELOG.md).
 
 - [MIB/OID sources and provenance](mib-sources.md)
 - [Compatibility matrix](compatibility.md)
