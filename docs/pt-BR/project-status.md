@@ -10,7 +10,7 @@
 
 **Gate da última release de produção: PASS — 1.5.2**
 
-**Versão atual do repositório: 1.5.2**
+**Versão atual do repositório: 1.5.3**
 
 A versão **1.5.2** é a release estável atual. Ela alinha o licenciamento e a atribuição do repositório/template com a autorização direta para GPLv3 recebida do autor do Template Vertiv original. Itens, OIDs, chaves, triggers, macros e o comportamento somente leitura permanecem iguais aos da 1.5.1.
 
@@ -40,7 +40,7 @@ A `main` é a branch ativa de desenvolvimento. `VERSION` identifica a versão/ca
 Marcadores desta release:
 
 ```text
-VERSION:        1.5.2
+VERSION:        1.5.3
 STABLE_VERSION: 1.5.2
 ```
 

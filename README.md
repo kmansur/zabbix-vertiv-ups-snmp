@@ -11,13 +11,13 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 ## Release status
 
 - **Latest stable release:** `1.5.2`
-- **Current repository version:** `1.5.2`
-- **1.5.2 scope:** GPLv3 licensing/attribution alignment and release metadata; monitoring behavior remains unchanged from 1.5.1
+- **Current repository version:** `1.5.3`
+- **1.5.3 candidate scope:** field-validation maintenance; active-alarm LLD cadence reduced from 1m to 30s to improve capture of transient RFC1628 alarm rows
 - **Extended field homologation:** in progress after release
 
 Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
 
-Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author's permission and does not change monitoring semantics. `STABLE_VERSION` is `1.5.2` for the promoted stable release.
+Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author's permission. Repository candidate `1.5.3` applies a field-driven alarm-discovery cadence improvement while `STABLE_VERSION` remains `1.5.2` until promotion.
 
 The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
@@ -38,7 +38,7 @@ Global dashboard generation: [docs/en/global-dashboard.md](docs/en/global-dashbo
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.2 stable metadata/licensing release; monitoring semantics remain unchanged from 1.5.1 |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.3 candidate; field-driven 30s active-alarm discovery, with 1.5.2 remaining stable until promotion |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Preview compatibility export; semantic parity is checked, runtime/import validation is still required |
 
 See the [compatibility matrix](docs/en/compatibility.md).

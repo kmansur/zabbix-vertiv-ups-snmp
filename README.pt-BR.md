@@ -11,13 +11,13 @@ Template Zabbix para monitoramento **somente leitura de nobreaks Vertiv/Liebert 
 ## Status das versões
 
 - **Última versão estável:** `1.5.2`
-- **Versão atual do repositório:** `1.5.2`
-- **Escopo da 1.5.2:** alinhamento de licença/atribuição GPLv3 e metadados de release; o comportamento de monitoramento permanece igual ao da 1.5.1
+- **Versão atual do repositório:** `1.5.3`
+- **Escopo da candidata 1.5.3:** manutenção orientada pela validação em campo; a LLD de alarmes ativos passa de 1m para 30s para melhorar a captura de linhas transitórias RFC1628
 - **Homologação estendida em campo:** em andamento após a release
 
 A versão `1.5.0` foi aprovada para release pelo mantenedor após aprovação da validação do repositório, CodeQL, importação nova no Zabbix 7.0 e upgrade in-place de `1.4.1` para `1.5.0`. Os cenários controlados restantes em hardware continuam sendo acompanhados separadamente e **não devem ser interpretados como certificação de campo concluída**.
 
-A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original, sem alterar a semântica de monitoramento. O `STABLE_VERSION` é `1.5.2` para a release estável promovida.
+A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original. A candidata `1.5.3` aplica uma melhoria de cadência de descoberta de alarmes baseada em evidência de campo, enquanto o `STABLE_VERSION` permanece `1.5.2` até a promoção.
 
 A branch `main` é a branch ativa de desenvolvimento. **Em produção, utilize uma GitHub Release com tag**, pois a `main` pode avançar além da última release estável quando um novo ciclo de desenvolvimento começar.
 
@@ -38,7 +38,7 @@ Geração do dashboard global: [docs/pt-BR/global-dashboard.md](docs/pt-BR/globa
 
 | Zabbix | Template | Status |
 | --- | --- | --- |
-| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Release estável 1.5.2 de metadados/licenciamento; a semântica de monitoramento permanece igual à 1.5.1 |
+| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Candidata 1.5.3; descoberta de alarmes ativos em 30s baseada em validação de campo, mantendo 1.5.2 como estável até a promoção |
 | 8.0 | `templates/8.0/vertiv-by-snmp.yaml` | Export preliminar de compatibilidade; a equivalência semântica é verificada, mas ainda falta validação real de importação/execução |
 
 Consulte a [matriz de compatibilidade](docs/pt-BR/compatibility.md).

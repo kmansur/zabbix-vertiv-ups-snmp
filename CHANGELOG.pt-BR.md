@@ -8,6 +8,18 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ## [Não lançado]
 
+### Alterado
+
+- Reduzida a cadência da `UPS active alarms discovery` RFC1628 de 1 minuto para 30 segundos nos exports Zabbix 7.0 e 8.0. A validação em campo observou um alarme real com duração de apenas 30 segundos, detectado pelo polling agregado de alarmes/status em 30s, enquanto um ciclo LLD de 1 minuto pode legitimamente perder a linha transitória da `upsAlarmTable`.
+- Mantido o tratamento de recursos perdidos (`desabilitar após 1h`, `excluir após 1d`) para preservar por tempo suficiente as linhas transitórias capturadas para diagnóstico.
+
+### Validação em campo
+
+- Confirmado o heartbeat SNMP dedicado a cada minuto e validado o ciclo completo PROBLEM/recuperação do `nodata()` de cinco minutos por interrupção controlada de UDP/161.
+- Confirmado que nenhum item padrão atualmente habilitado está em estado `Not supported` no conjunto de referência ITA-20kVA / IS-UNITY-DP.
+- Registrado SNMPv2c/UDP 161 monitorado diretamente pelo servidor, revisadas as três páginas do dashboard e confirmados eventos históricos reais de operação em bateria, warning, alarme ativo, blackout e descarga de bateria com recuperação automática.
+- A coleta/mapeamento do resultado do teste de bateria foi validada como `Passed`; uma transição de estado do teste permanece pendente de observação natural. A evidência do trigger de reset do agente e a captura individual de linha transitória da `upsAlarmTable` também permanecem como observações de campo pendentes e não forçadas.
+
 ## [1.5.2] - 2026-09-14
 
 Versão publicada do repositório: **1.5.2**.
