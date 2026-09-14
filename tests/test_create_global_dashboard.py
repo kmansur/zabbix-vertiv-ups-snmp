@@ -154,11 +154,7 @@ def test_apply_dashboard_creates_when_no_editable_match_exists():
 def test_apply_dashboard_refuses_existing_without_replace():
     payload = {"name": "Vertiv UPS - Test", "pages": []}
     api = FakeAPI(
-        {
-            "dashboard.get": [
-                {"dashboardid": "101", "name": "Vertiv UPS - Test"}
-            ]
-        }
+        {"dashboard.get": [{"dashboardid": "101", "name": "Vertiv UPS - Test"}]}
     )
 
     with pytest.raises(RuntimeError, match="Use --replace"):
@@ -175,9 +171,7 @@ def test_apply_dashboard_updates_single_match_in_place():
     }
     api = FakeAPI(
         {
-            "dashboard.get": [
-                {"dashboardid": "101", "name": "Vertiv UPS - Test"}
-            ],
+            "dashboard.get": [{"dashboardid": "101", "name": "Vertiv UPS - Test"}],
             "dashboard.update": {"dashboardids": ["101"]},
         }
     )
