@@ -6,19 +6,28 @@ This matrix distinguishes **engineering compatibility** from **field homologatio
 
 | UPS / card | Zabbix | Status | Notes |
 | --- | --- | --- | --- |
-| Vertiv `ITA-20k00AL3A02E00` (20 kVA), UPS firmware `V220` / `IS-UNITY-DP` card, firmware `8.5.1.0` (`IS-UNITY_8.5.1.0_00173`) | 7.0 | 1.5.0 homologation in progress | Core states, electrical values, enum strings and dashboard behavior were observed on real hardware. `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) and `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) return `noSuchObject` on this card/firmware. The exact Zabbix version still needs to be recorded. |
+| Vertiv `ITA-20k00AL3A02E00` (20 kVA), UPS firmware `V220` / `IS-UNITY-DP` card, firmware `8.5.1.0` (`IS-UNITY_8.5.1.0_00173`) | 7.0.30 | 1.5.0 homologation in progress | Core states, electrical values, enum strings and dashboard behavior were observed on real hardware. `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) and `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) return `noSuchObject` on this card/firmware. |
 | Other Vertiv/Liebert UPS/card firmware | 7.0 | Compatible by RFC1628 design; not field-certified | UPS-MIB implementation can be partial. Optional standard objects must be confirmed on the target device; private OIDs must be compared with the local UPS UI. |
 | Vertiv/Liebert | 8.0 development | Export/semantic parity only | Not a production support claim until a real 8.0 build is imported and run. |
 
 ## Field identification
 
-The management card identified itself as vendor `Vertiv`, model `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173`, with `sysObjectID` `.1.3.6.1.4.1.476.1.42`. The UPS reported model `ITA-20k00AL3A02E00` and firmware `V220`. Serial numbers are intentionally not published in this matrix.
+The management card identified itself as vendor `Vertiv`, model `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173`, with `sysObjectID` `.1.3.6.1.4.1.476.1.42`. The UPS reported model `ITA-20k00AL3A02E00` and firmware `V220`. The homologation environment runs **Zabbix Server 7.0.30**. Serial numbers are intentionally not published in this matrix.
+
+## Field result — RFC1628 coverage
+
+A complete walk of `1.3.6.1.2.1.33` confirmed working support for the standard identification, partial battery, input, output, bypass, alarm, test-result and configuration groups. The candidate uses read-only objects only; the control/configuration groups exposed by the agent are not used for writes.
+
+Observed standard electrical values include three input/output phases, `59.9 Hz`, output load `23/23/24 %`, per-phase output true power `1450/1410/1520 W`, and per-phase input true power `1600/1500/1500 W`. These values are consistent with the Vertiv private objects observed on the same device.
 
 ## Field result — RFC1628 battery group
 
 The management card used for homologation implements only part of the UPS-MIB battery group. Observed behavior:
 
 - `upsBatteryStatus` (`.1.3.6.1.2.1.33.1.2.1.0`) — **supported**;
+- `upsEstimatedMinutesRemaining` — **supported**, returning `4320 min` (`72 h`);
+- `upsEstimatedChargeRemaining` — **supported**, returning `100 %`;
+- `upsBatteryVoltage` — **supported**, returning `5440` tenths of a volt, equivalent to `544.0 V`;
 - `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) — **unsupported**, returns `No Such Object available on this agent at this OID`;
 - `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) — **unsupported**, returns the same `noSuchObject` response.
 
@@ -28,13 +37,17 @@ On the validated device, battery current continues to use the Vertiv private OID
 
 This is an important compatibility rule: implementing parts of RFC1628 **does not imply that every UPS-MIB scalar is implemented** by an SNMP agent.
 
-## Field result — private input power
+## Field result — input power
 
-Private OIDs `6318`, `6319`, and `6320` returned `1.6`, `1.5`, and `1.5`. At the same capture, input voltage/current/power-factor values (`209.3 V / 7.9 A / 0.99`, `212.7 V / 7.6 A / 0.99`, `209.5 V / 7.5 A / 0.99`) imply approximately `4.8 kW` total input power, while the three private objects sum to `4.6`. This is strong evidence that these objects are expressed in **kW per phase**, not watts, but direct confirmation against the UPS LCD/web UI is still required before enabling them by default.
+The scaling of private OIDs `6318`, `6319`, and `6320` is now characterized for this card/firmware. They returned `1.6`, `1.5`, and `1.5`, while the standard RFC1628 `upsInputTruePower` objects on the same device returned `1600`, `1500`, and `1500 W`. Therefore, on IS-UNITY-DP 8.5.1.0 these private objects represent **kW per phase**.
 
-## Field result — events and alarms
+Because UPS-MIB already provides standardized input true power in watts and is supported by this device, the production path remains `upsInputTruePower` through LLD. Private OIDs `6318-6320` remain disabled by default because they are redundant and less portable across models/firmwares.
+
+## Field result — events, alarms and tests
 
 With the UPS in normal state, `upsAlarmsPresent` returned `0` and `upsAlarmTable` contained no rows, which is the expected behavior. The observed private `.2.100.*` event objects returned the text `Inactive Event`, confirming the inactive-state encoding for this card/firmware. The text/encoding of the **active** state still needs to be captured during a real event before private event-specific triggers can be implemented.
+
+The RFC1628 test group is also present and returned identification/result/time objects. The template uses these objects for read-only observation only and includes no command to start tests.
 
 ## Homologation record
 
