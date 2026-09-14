@@ -2,8 +2,8 @@
 
 The script keeps the template dashboard as the single source of truth. It reads
 its pages/widgets from the repository YAML, resolves template item/graph
-references against a real monitored host, and creates a global dashboard via
-the Zabbix API.
+references against a real monitored host, and creates or safely updates a
+global dashboard via the Zabbix API.
 """
 
 from __future__ import annotations
@@ -124,7 +124,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--replace",
         action="store_true",
-        help="Delete an existing dashboard with the same name",
+        help=(
+            "Update the single editable dashboard with the same name in place; "
+            "ambiguous matches are rejected"
+        ),
     )
     parser.add_argument(
         "--dry-run",
@@ -284,14 +287,42 @@ def build_dashboard_payload(
     }
 
 
-def find_dashboard(api: ZabbixAPI, name: str) -> list[dict[str, str]]:
+def find_editable_dashboards(api: ZabbixAPI, name: str) -> list[dict[str, str]]:
     return api.call(
         "dashboard.get",
         {
             "output": ["dashboardid", "name"],
             "filter": {"name": [name]},
+            "editable": True,
         },
     )
+
+
+def apply_dashboard(
+    api: ZabbixAPI, payload: dict[str, Any], replace: bool
+) -> tuple[str, list[str]]:
+    name = str(payload["name"])
+    existing = find_editable_dashboards(api, name)
+
+    if len(existing) > 1:
+        raise RuntimeError(
+            f"Multiple editable dashboards named '{name}' exist. "
+            "Refusing ambiguous replacement; rename or remove duplicates first."
+        )
+
+    if existing:
+        if not replace:
+            raise RuntimeError(
+                f"An editable dashboard named '{name}' already exists. "
+                "Use --replace to update it in place."
+            )
+        dashboardid = existing[0]["dashboardid"]
+        update_payload = {"dashboardid": dashboardid, **payload}
+        result = api.call("dashboard.update", update_payload)
+        return "Updated", result.get("dashboardids", [dashboardid])
+
+    result = api.call("dashboard.create", payload)
+    return "Created", result.get("dashboardids", [])
 
 
 def main() -> int:
@@ -327,19 +358,9 @@ def main() -> int:
         )
         return 0
 
-    existing = find_dashboard(api, dashboard_name)
-    if existing and not args.replace:
-        raise RuntimeError(
-            f"Dashboard '{dashboard_name}' already exists. "
-            "Use --replace to recreate it explicitly."
-        )
-    if existing:
-        api.call("dashboard.delete", [entry["dashboardid"] for entry in existing])
-
-    result = api.call("dashboard.create", payload)
-    dashboard_ids = result.get("dashboardids", [])
+    action, dashboard_ids = apply_dashboard(api, payload, args.replace)
     print(
-        f"Created global dashboard '{dashboard_name}' for host '{host['name']}' "
+        f"{action} global dashboard '{dashboard_name}' for host '{host['name']}' "
         f"on Zabbix {server_version}: {', '.join(dashboard_ids)}"
     )
     return 0
