@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-only
 # Copyright (C) 2026 Karim Mansur / Net Tech
-# Based on Template Vertiv by Mihguel da Silva Santos Tavares de Araujo; used with the original author''s permission.
+# Based on Template Vertiv by Mihguel da Silva Santos Tavares de Araujo; used with the original author's permission.
 # See NOTICE.md for origin, attribution, and licensing details.
 zabbix_export:
   version: '7.0'
