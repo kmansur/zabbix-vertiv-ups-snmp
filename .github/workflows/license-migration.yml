@@ -1,0 +1,280 @@
+name: One-time GPLv3 licensing migration
+
+on:
+  push:
+    branches:
+      - licensing/gplv3-attribution
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.event.head_commit.message == 'chore: migrate licensing to GPL-3.0-only'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: licensing/gplv3-attribution
+
+      - name: Apply licensing and attribution updates
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          curl -fsSL \
+            https://raw.githubusercontent.com/spdx/license-list-data/main/text/GPL-3.0-only.txt \
+            -o LICENSE
+
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected text not found in {path}: {old[:120]!r}')
+              p.write_text(text.replace(old, new), encoding='utf-8')
+
+          # README badges and licensing sections.
+          for path in ('README.md', 'README.pt-BR.md'):
+              replace(path,
+                      '[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)',
+                      '[![License: GPLv3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)')
+
+          replace('README.md',
+          '''## License and attribution
+
+Original work in this repository is distributed under the **MIT License**.
+
+This project credits the original **Template Vertiv** by **Mihguel da Silva Santos Tavares de Araujo** as a structural and historical reference:
+
+https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+No explicit license was found in the referenced repository at the time of review, therefore the original file is not redistributed here and is not relicensed by this project.
+
+See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) and [docs/en/license-attribution.md](docs/en/license-attribution.md).
+
+Maintained by **Karim Mansur / Net Tech**.''',
+          '''## License and attribution
+
+This repository is distributed under the **GNU General Public License v3.0 only (`GPL-3.0-only`)**.
+
+This project is based on the original **Template Vertiv** by **Mihguel da Silva Santos Tavares de Araujo**:
+
+https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+The original repository did not contain an explicit license when it was reviewed on 2026-09-10. On 2026-09-14, the original author provided the maintainer with direct written authorization to use his template as the basis for this project and to publish the resulting community project under GPLv3.
+
+For clarity and to avoid implying broader permission than was actually granted, this repository uses the conservative SPDX identifier **`GPL-3.0-only`**. This project does not claim to change the licensing of the author's separate original repository.
+
+See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md) and [docs/en/license-attribution.md](docs/en/license-attribution.md).
+
+Maintained modifications and repository organization: **Karim Mansur / Net Tech**.''')
+
+          replace('README.pt-BR.md',
+          '''## Licença e atribuição
+
+O trabalho original deste repositório é distribuído sob a **Licença MIT**.
+
+Este projeto credita o **Template Vertiv** original de **Mihguel da Silva Santos Tavares de Araujo** como referência estrutural e histórica:
+
+https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+Nenhuma licença explícita foi encontrada no repositório referenciado no momento da revisão; por isso o arquivo original não é redistribuído aqui e não é relicenciado por este projeto.
+
+Consulte [LICENSE](LICENSE), [NOTICE.pt-BR.md](NOTICE.pt-BR.md) e [docs/pt-BR/license-attribution.md](docs/pt-BR/license-attribution.md).
+
+Mantido por **Karim Mansur / Net Tech**.''',
+          '''## Licença e atribuição
+
+Este repositório é distribuído sob a **GNU General Public License v3.0 somente (`GPL-3.0-only`)**.
+
+Este projeto é baseado no **Template Vertiv** original de **Mihguel da Silva Santos Tavares de Araujo**:
+
+https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+O repositório original não possuía uma licença explícita quando foi revisado em 10/09/2026. Em 14/09/2026, o autor original forneceu ao mantenedor autorização direta e por escrito para utilizar seu template como base deste projeto e publicar o projeto comunitário resultante sob GPLv3.
+
+Por cautela e para não atribuir à autorização um alcance maior do que o efetivamente concedido, este repositório utiliza o identificador SPDX **`GPL-3.0-only`**. Este projeto não afirma alterar a licença do repositório original separado do autor.
+
+Consulte [LICENSE](LICENSE), [NOTICE.pt-BR.md](NOTICE.pt-BR.md) e [docs/pt-BR/license-attribution.md](docs/pt-BR/license-attribution.md).
+
+Modificações mantidas e organização do repositório: **Karim Mansur / Net Tech**.''')
+
+          Path('NOTICE.md').write_text('''# Notice
+
+**English** | [Português (Brasil)](NOTICE.pt-BR.md)
+
+`Vertiv by SNMP` is a community-maintained Zabbix template for monitoring Vertiv/Liebert UPS systems by SNMP.
+
+## Origin and attribution
+
+This project is based on:
+
+- **Template Vertiv**
+- Original author: **Mihguel da Silva Santos Tavares de Araujo**
+- Original source: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+The original repository was reviewed on 2026-09-10 and, at that time, no explicit `LICENSE` file or license notice was present in the referenced template.
+
+On 2026-09-14, the original author provided the maintainer with direct written authorization to use his template as the basis for this project and to make the resulting community project available under GPLv3. The authorization also expressed support for keeping the work open to the community.
+
+This repository contains a substantially expanded and maintained derivative work, including RFC 1628 UPS-MIB monitoring, Vertiv/Liebert enterprise OIDs, new keys, triggers, value maps, macros, discovery rules, dashboards, validation tooling and bilingual documentation.
+
+## License for this repository
+
+This repository is distributed under the **GNU General Public License v3.0 only**, SPDX identifier **`GPL-3.0-only`**. See [LICENSE](LICENSE).
+
+`GPL-3.0-only` is used conservatively because the authorization referred to “GPL3” without expressly granting the “or later” option. This repository does not claim to change the licensing status of the author's separate original repository.
+
+## Trademarks and independence
+
+Vertiv and Liebert are trademarks of their respective owners. Zabbix is a trademark of Zabbix LLC.
+
+This is an independent community project and is not an official Vertiv or Zabbix project.
+
+Maintained modifications and repository organization: **Karim Mansur / Net Tech**.
+''', encoding='utf-8')
+
+          Path('NOTICE.pt-BR.md').write_text('''# Aviso
+
+[English](NOTICE.md) | **Português (Brasil)**
+
+`Vertiv by SNMP` é um template Zabbix mantido pela comunidade para monitoramento de nobreaks Vertiv/Liebert via SNMP.
+
+## Origem e atribuição
+
+Este projeto é baseado em:
+
+- **Template Vertiv**
+- Autor original: **Mihguel da Silva Santos Tavares de Araujo**
+- Fonte original: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+O repositório original foi revisado em 10/09/2026 e, naquele momento, não havia arquivo `LICENSE` nem declaração explícita de licença no template referenciado.
+
+Em 14/09/2026, o autor original forneceu ao mantenedor autorização direta e por escrito para utilizar seu template como base deste projeto e disponibilizar o projeto comunitário resultante sob GPLv3. A autorização também manifestou apoio para que o trabalho permaneça aberto à comunidade.
+
+Este repositório contém um trabalho derivado substancialmente ampliado e mantido, incluindo monitoramento pela RFC 1628 UPS-MIB, OIDs privados Vertiv/Liebert, novas chaves, triggers, value maps, macros, regras de descoberta, dashboards, ferramentas de validação e documentação bilíngue.
+
+## Licença deste repositório
+
+Este repositório é distribuído sob a **GNU General Public License v3.0 somente**, identificador SPDX **`GPL-3.0-only`**. Consulte [LICENSE](LICENSE).
+
+O identificador `GPL-3.0-only` é utilizado de forma conservadora porque a autorização mencionou “GPL3” sem conceder expressamente a opção “ou qualquer versão posterior”. Este repositório não afirma alterar a situação de licenciamento do repositório original separado do autor.
+
+## Marcas e independência
+
+Vertiv e Liebert são marcas de seus respectivos proprietários. Zabbix é marca da Zabbix LLC.
+
+Este é um projeto comunitário independente e não é um projeto oficial da Vertiv ou da Zabbix.
+
+Modificações mantidas e organização do repositório: **Karim Mansur / Net Tech**.
+''', encoding='utf-8')
+
+          Path('docs/en/license-attribution.md').write_text('''# License and attribution
+
+[Português (Brasil)](../pt-BR/license-attribution.md)
+
+## Repository license
+
+This repository is licensed under the **GNU General Public License v3.0 only**, SPDX identifier **`GPL-3.0-only`**.
+
+See [LICENSE](../../LICENSE).
+
+## Original Vertiv template
+
+This project is based on:
+
+- **Template Vertiv**
+- author: **Mihguel da Silva Santos Tavares de Araujo**
+- source: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+The referenced repository was inspected on 2026-09-10. At that time, no explicit `LICENSE` file or license notice was present in the referenced template.
+
+On 2026-09-14, the original author provided the maintainer with direct written authorization to use his template as the basis for this project and to publish the resulting community project under GPLv3. The authorization also supported keeping the work open to the community.
+
+The maintained `Vertiv by SNMP` project substantially expands the original basis with RFC 1628 UPS-MIB monitoring, Vertiv/Liebert enterprise OIDs, new monitoring logic, naming, keys, thresholds, discovery rules, value maps, dashboards, validation tooling and bilingual documentation.
+
+## Why `GPL-3.0-only`
+
+The authorization referred to “GPL3” but did not explicitly say “GPLv3 or any later version”. To avoid granting downstream permissions broader than the wording received from the original author, the project uses the conservative SPDX identifier **`GPL-3.0-only`**.
+
+This choice applies to this repository and its derivative work. It does not claim to retroactively add or change a license in the author's separate original repository.
+
+## Record keeping
+
+The maintainer should retain the original written authorization as project provenance. The private conversation itself does not need to be published in the repository unless both parties later choose to do so.
+
+This page documents the project's licensing and attribution basis and is not legal advice.
+''', encoding='utf-8')
+
+          Path('docs/pt-BR/license-attribution.md').write_text('''# Licença e atribuição
+
+[English](../en/license-attribution.md)
+
+## Licença do repositório
+
+Este repositório é licenciado sob a **GNU General Public License v3.0 somente**, identificador SPDX **`GPL-3.0-only`**.
+
+Consulte [LICENSE](../../LICENSE).
+
+## Template Vertiv original
+
+Este projeto é baseado em:
+
+- **Template Vertiv**
+- autor: **Mihguel da Silva Santos Tavares de Araujo**
+- fonte: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
+
+O repositório de referência foi inspecionado em 10/09/2026. Naquele momento, não havia arquivo `LICENSE` nem declaração explícita de licença no template referenciado.
+
+Em 14/09/2026, o autor original forneceu ao mantenedor autorização direta e por escrito para utilizar seu template como base deste projeto e publicar o projeto comunitário resultante sob GPLv3. A autorização também apoiou a manutenção do trabalho aberto à comunidade.
+
+O projeto mantido `Vertiv by SNMP` amplia substancialmente a base original com monitoramento RFC 1628 UPS-MIB, OIDs privados Vertiv/Liebert, nova lógica de monitoramento, nomenclatura, chaves, limites, regras de descoberta, value maps, dashboards, ferramentas de validação e documentação bilíngue.
+
+## Por que `GPL-3.0-only`
+
+A autorização mencionou “GPL3”, mas não declarou expressamente “GPLv3 ou qualquer versão posterior”. Para evitar conceder a terceiros permissões mais amplas do que a redação recebida do autor original, o projeto utiliza o identificador SPDX conservador **`GPL-3.0-only`**.
+
+Essa escolha se aplica a este repositório e ao seu trabalho derivado. Ela não afirma adicionar ou alterar retroativamente uma licença no repositório original separado do autor.
+
+## Preservação do registro
+
+O mantenedor deve conservar a autorização escrita original como registro de proveniência do projeto. A conversa privada não precisa ser publicada no repositório, salvo se ambas as partes decidirem fazê-lo futuramente.
+
+Esta página documenta a base de licenciamento e atribuição do projeto e não constitui aconselhamento jurídico.
+''', encoding='utf-8')
+
+          # Add the licensing change under the existing Unreleased sections.
+          replace('CHANGELOG.md',
+                  '## [Unreleased]\n',
+                  '''## [Unreleased]\n\n### Changed\n\n- Project licensing changed from MIT to **GNU GPL v3.0 only (`GPL-3.0-only`)** after the original Template Vertiv author provided direct written authorization on 2026-09-14 to use his template as the basis for this project and publish the resulting community work under GPLv3.\n- Attribution and licensing documentation now records the original author/source, the prior absence of an explicit repository license, and the subsequent direct authorization without claiming to relicense the author’s separate original repository.\n- Zabbix 7.0 and 8.0 template SPDX headers now identify `GPL-3.0-only`.\n''')
+
+          replace('CHANGELOG.pt-BR.md',
+                  '## [Não lançado]\n',
+                  '''## [Não lançado]\n\n### Alterado\n\n- O licenciamento do projeto foi alterado de MIT para **GNU GPL v3.0 somente (`GPL-3.0-only`)** após o autor do Template Vertiv original fornecer autorização direta e por escrito em 14/09/2026 para utilizar seu template como base deste projeto e publicar o trabalho comunitário resultante sob GPLv3.\n- A documentação de atribuição e licenciamento agora registra o autor/fonte original, a ausência anterior de licença explícita no repositório e a autorização direta posterior, sem afirmar que este projeto relicencia o repositório original separado do autor.\n- Os cabeçalhos SPDX dos templates Zabbix 7.0 e 8.0 agora identificam `GPL-3.0-only`.\n''')
+
+          for path in ('templates/7.0/vertiv-by-snmp.yaml', 'templates/8.0/vertiv-by-snmp.yaml'):
+              replace(path,
+                      '# SPDX-License-Identifier: MIT\n# Copyright (C) 2026 Karim Mansur / Net Tech\n# See NOTICE.md for attribution to the original Vertiv template reference.\n',
+                      '# SPDX-License-Identifier: GPL-3.0-only\n# Copyright (C) 2026 Karim Mansur / Net Tech\n# Based on Template Vertiv by Mihguel da Silva Santos Tavares de Araujo; used with the original author\'s permission.\n# See NOTICE.md for origin, attribution, and licensing details.\n')
+
+          # This workflow is intentionally one-shot; remove it in the generated commit.
+          Path('.github/workflows/license-migration.yml').unlink()
+          PY
+
+      - name: Commit migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add LICENSE README.md README.pt-BR.md NOTICE.md NOTICE.pt-BR.md \
+            docs/en/license-attribution.md docs/pt-BR/license-attribution.md \
+            CHANGELOG.md CHANGELOG.pt-BR.md \
+            templates/7.0/vertiv-by-snmp.yaml templates/8.0/vertiv-by-snmp.yaml \
+            .github/workflows/license-migration.yml
+          git commit -m 'chore: align licensing and attribution with GPLv3 authorization'
+          git push origin HEAD:licensing/gplv3-attribution
