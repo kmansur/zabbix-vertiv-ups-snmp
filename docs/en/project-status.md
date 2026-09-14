@@ -2,25 +2,26 @@
 
 [Português (Brasil)](../pt-BR/project-status.md)
 
-**Current project maturity: 85%**
+**Production implementation readiness: 100%**
 
-This percentage is a maintained engineering maturity score, not an uptime/SLA metric. It reflects the state of the template, field validation, automation and documentation.
+**Field homologation: pending**
 
-| Area | Score | Notes |
+Version **1.5.0** is the production-hardening candidate. The 100% score means that all repository-side work identified by the production review is implemented, guarded by automated validation, and has no known software/documentation blocker. It does **not** claim that every Vertiv UPS model/firmware has been field-certified.
+
+| Area | Score | Status |
 | --- | ---: | --- |
-| Zabbix 7.0 core template and real-device validation | 30/30 | Import, collection, enum normalization and dashboard validated on real Vertiv hardware |
-| Dashboard and operator usability | 15/15 | Native dashboard, severity colors, readable mapped statuses and trend graphs |
-| Documentation, versioning, CI and security automation | 20/20 | Bilingual docs, validators, pytest, Ruff, CodeQL and release automation |
-| Read-only safety and control-OID exclusion | 10/10 | Consequential write/control branches are explicitly excluded and validated |
-| Private electrical scaling validation | 5/10 | Most displayed values are plausible; private input-power scale still requires confirmation |
-| Model/firmware coverage | 3/5 | One production device/card behavior has been validated in depth; broader coverage is pending |
-| Event-specific SNMP trap processing | 0/5 | Waiting for real trap payload capture before creating event-specific parsers/triggers |
-| Zabbix 8.0 runtime validation | 2/5 | Export parity is automated, but import/runtime testing against an actual Zabbix 8 build is pending |
+| Zabbix 7.0 template structure and field-derived behavior | 25/25 | Complete |
+| Operator dashboard and documentation | 15/15 | Complete |
+| Read-only safety and experimental-metric isolation | 15/15 | Complete |
+| RFC1628 availability, identification, test and active-alarm coverage | 15/15 | Complete |
+| CI, validators, real Zabbix 7 import test and release gating | 15/15 | Complete |
+| MIB/OID provenance, compatibility and homologation procedure | 10/10 | Complete |
+| Zabbix 8 export parity without claiming production support | 5/5 | Complete |
 
-## Main remaining work
+## Meaning of 100%
 
-1. Validate private input-power OID scaling against the UPS web/LCD values before using those metrics for alerting.
-2. Capture real Vertiv trap payloads and implement event-specific trap processing only from verified encodings.
-3. Validate additional UPS models and management-card firmware.
-4. Import and runtime-test the 8.0 export on an actual Zabbix 8 environment.
-5. Validate the optional synoptic map import on production-like Zabbix 7/8 instances.
+The candidate is ready to enter homologation. Unknown vendor-private scaling/state encodings are not treated as supported production data: they are disabled, isolated or documented instead of guessed. Optional event-specific Vertiv trap parsing remains outside the production path until real payloads are captured; active-alarm diagnostics are provided by the standardized RFC1628 alarm table.
+
+## Promotion gate
+
+After real-hardware homologation succeeds, merge the candidate to `main`, record the exact UPS/card/firmware/Zabbix versions in the compatibility matrix, date the 1.5.0 changelog entry and create tag/release `v1.5.0`.

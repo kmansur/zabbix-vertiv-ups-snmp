@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v7
@@ -36,7 +38,55 @@ jobs:
           fi
           python tools/validate_templates.py
           python tools/validate_docs.py
+          python tools/validate_production.py
           pytest -q
+
+      - name: Prepare stable upgrade baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show v1.4.1:templates/7.0/vertiv-by-snmp.yaml > /tmp/vertiv-by-snmp-v1.4.1.yaml
+          test -s /tmp/vertiv-by-snmp-v1.4.1.yaml
+
+      - name: Start production validation Zabbix 7.0 stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create zabbix-release-ci
+          docker run -d --name zabbix-db --network zabbix-release-ci \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            postgres:16-alpine
+          for i in $(seq 1 60); do
+            if docker exec zabbix-db pg_isready -U zabbix -d zabbix >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec zabbix-db pg_isready -U zabbix -d zabbix
+
+          docker run -d --name zabbix-server --network zabbix-release-ci \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            zabbix/zabbix-server-pgsql:alpine-7.0-latest
+
+          docker run -d --name zabbix-web --network zabbix-release-ci -p 8080:8080 \
+            -e DB_SERVER_HOST=zabbix-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            -e ZBX_SERVER_HOST=zabbix-server \
+            -e ZBX_SERVER_NAME="Vertiv release validation" \
+            zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
+
+      - name: Import stable v1.4.1 baseline
+        run: python tools/zabbix_api_import_test.py --template /tmp/vertiv-by-snmp-v1.4.1.yaml --wait 300
+
+      - name: Upgrade in place to release candidate
+        run: python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 60
 
       - name: Build release assets
         shell: bash

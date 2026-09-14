@@ -56,10 +56,11 @@ These fixed items intentionally coexist with RFC 1628 LLD items. LLD remains use
 | `vertiv.battery.cabinet.type` | `...2.1.6183` | Internal, External, LRT |
 | `vertiv.battery.test.interval` | `...2.1.5805` | 8, 12, 16, 20 or 26 weeks |
 
-## New graphs
+## Production graphs
 
-- **UPS: Input phase power**;
 - **UPS: Output phase load**.
+
+The private **UPS: Input phase power** graph is removed from the 1.5.0 candidate because its source OIDs still lack a verified SNMP scale. The private input-power items are disabled by default.
 
 ## Event-condition OIDs: identified but not activated
 

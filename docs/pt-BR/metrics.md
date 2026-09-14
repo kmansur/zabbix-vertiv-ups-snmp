@@ -144,3 +144,22 @@ Protótipos:
 As escalas padronizadas da UPS-MIB são aplicadas quando definidas pela RFC 1628, como décimos de hertz, décimos de ampère ou décimos de volt nos objetos correspondentes.
 
 Nenhum multiplicador arbitrário é aplicado aos OIDs privados Vertiv sem que a definição SNMP fornecida estabeleça essa escala. Durante a implantação, compare sempre os valores específicos do fabricante com o LCD/interface web do nobreak.
+
+## Adições de produção na 1.5.0
+
+| Key | OID | Uso |
+| --- | --- | --- |
+| `ups.snmp.uptime` | `1.3.6.1.2.1.1.3.0` | heartbeat SNMP / disponibilidade |
+| `ups.ident.manufacturer` | `1.3.6.1.2.1.33.1.1.1.0` | identificação RFC1628 |
+| `ups.ident.model` | `1.3.6.1.2.1.33.1.1.2.0` | identificação RFC1628 |
+| `ups.ident.ups.software` | `1.3.6.1.2.1.33.1.1.3.0` | software/firmware UPS |
+| `ups.ident.agent.software` | `1.3.6.1.2.1.33.1.1.4.0` | software do agente |
+| `ups.ident.name` | `1.3.6.1.2.1.33.1.1.5.0` | nome administrativo (somente leitura no template) |
+| `ups.battery.current` | `1.3.6.1.2.1.33.1.2.6.0` | corrente de bateria RFC1628, escala 0,1 A |
+| `ups.battery.temperature` | `1.3.6.1.2.1.33.1.2.7.0` | temperatura de bateria RFC1628 |
+| `ups.test.results.summary` | `1.3.6.1.2.1.33.1.7.3.0` | resultado de teste |
+| `ups.test.results.detail` | `1.3.6.1.2.1.33.1.7.4.0` | detalhe do teste |
+| `ups.test.start.time` | `1.3.6.1.2.1.33.1.7.5.0` | marcador TimeTicks do início |
+| `ups.test.elapsed.time` | `1.3.6.1.2.1.33.1.7.6.0` | duração do teste |
+
+A descoberta `ups.alarm.discovery` usa `upsAlarmDescr` (`...33.1.6.2.1.2`) e `upsAlarmTime` (`...33.1.6.2.1.3`) para listar condições ativas.

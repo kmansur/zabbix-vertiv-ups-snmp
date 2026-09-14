@@ -4,11 +4,13 @@
 
 Este projeto utiliza **Versionamento Semântico** (`MAJOR.MINOR.PATCH`).
 
-Versão atual:
+Versão candidata atual:
 
 ```text
-1.4.1
+1.5.0
 ```
+
+A release estável permanece **1.4.1** até a conclusão da homologação em campo.
 
 ## Regras
 

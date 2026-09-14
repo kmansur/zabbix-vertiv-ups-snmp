@@ -65,3 +65,9 @@ A disabled trap item is supplied for the Vertiv enterprise branch. Before enabli
 5. only then add event-specific preprocessing and triggers.
 
 This avoids false assumptions about management-card trap formats.
+
+## Standardized availability and diagnostics in the 1.5.0 candidate
+
+- `sysUpTime.0` (`1.3.6.1.2.1.1.3.0`) is polled every minute without discard-unchanged preprocessing and drives the SNMP `nodata(5m)` availability trigger.
+- `upsAlarmTable` (`1.3.6.1.2.1.33.1.6.2`) is dynamically discovered to identify active alarms by description OID.
+- `upsTestResultsSummary/Detail/StartTime/ElapsedTime` are read for diagnostics; writable `upsTestId`/`upsTestSpinLock` objects are not used to initiate tests.

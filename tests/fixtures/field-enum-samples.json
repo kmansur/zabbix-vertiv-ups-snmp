@@ -1,0 +1,42 @@
+{
+  "vertiv.system.status": {
+    "raw": "Normal Operation",
+    "expected": 1
+  },
+  "vertiv.inverter.state": {
+    "raw": "on",
+    "expected": 1
+  },
+  "vertiv.eco.status": {
+    "raw": "off",
+    "expected": 0
+  },
+  "vertiv.topology": {
+    "raw": "Online",
+    "expected": 3
+  },
+  "vertiv.shutdown.reason": {
+    "raw": "None",
+    "expected": 0
+  },
+  "vertiv.battery.charge.status": {
+    "raw": "fully charged",
+    "expected": 0
+  },
+  "vertiv.battery.test.result": {
+    "raw": "Passed",
+    "expected": 1
+  },
+  "vertiv.battery.autotest": {
+    "raw": "disabled",
+    "expected": 0
+  },
+  "vertiv.battery.test.interval": {
+    "raw": "8 weeks",
+    "expected": 0
+  },
+  "vertiv.battery.cabinet.type": {
+    "raw": "External",
+    "expected": 1
+  }
+}

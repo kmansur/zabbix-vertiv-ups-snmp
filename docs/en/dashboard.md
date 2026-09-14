@@ -4,6 +4,8 @@
 
 The **Vertiv UPS Overview** template dashboard is imported together with the template and automatically follows the monitored host. The screenshots below were captured from a real Vertiv UPS running the v1.4.1 dashboard while the unit was in normal online operation. Values are examples only; voltage, load, runtime and temperature depend on the UPS model, battery system and connected load.
 
+> **1.5.0 candidate note:** during homologation, the tested management card returned `noSuchObject` for RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature`. Those two standard items are therefore disabled by default. The Battery temperature card visible in the 1.4.1 screenshot is replaced by **Battery status** in the 1.5.0 candidate; battery current continues to use the field-validated Vertiv private OID.
+
 The dashboard is intentionally split into three pages:
 
 - **Overview** — operational health, battery state, output power and phase load at a glance.
@@ -34,7 +36,7 @@ The Overview page is the first place to look during normal operation and during 
 
 - **System status** should normally remain green and show `Normal operation`.
 - **Output source** should normally show `Normal`. A change to Battery or Bypass is operationally significant even if the load remains powered.
-- **Active alarms** is the number of currently reported UPS-MIB alarms. Zero is the expected healthy state.
+- **Active alarms** is the number of currently reported UPS-MIB alarms. Zero is the expected healthy state. In the 1.5.0 candidate, any positive value receives critical visual emphasis; count is not used to infer alarm severity.
 - **Battery status** should normally show `Normal`.
 - **Battery charge** is the estimated state of charge.
 - **Runtime remaining** is a display-oriented conversion of the RFC1628 runtime value from minutes to hours. The raw item remains in minutes for trigger logic.
@@ -130,14 +132,14 @@ The full-width graph is the same L1/L2/L3 load view shown on Overview, but with 
 
 ![Vertiv UPS Battery and Environment dashboard](../images/dashboard-battery-environment.png)
 
-This page concentrates battery health, test/configuration state and environmental temperature.
+This page concentrates battery health, test/configuration state and environmental temperature. The screenshot above is from v1.4.1; in the 1.5.0 candidate the old **Battery temperature** card is replaced by **Battery status** after field testing confirmed that the management card does not implement `upsBatteryTemperature`.
 
 ### Battery and status cards
 
 - **Battery charge** — estimated charge percentage.
 - **Runtime remaining** — estimated autonomy in hours for display purposes.
-- **Battery current** — current into/out of the battery as exposed by the Vertiv private MIB.
-- **Battery temperature** — private Vertiv battery-temperature value.
+- **Battery current** — current into/out of the battery from the Vertiv private `...4149` OID, validated on the homologation device.
+- **Battery status** — standardized RFC1628 `upsBatteryStatus`, supported by the tested card.
 - **Inlet temperature** — UPS inlet/ambient-air temperature.
 - **Battery test result** — most recent battery-test state.
 - **Shutdown reason** — last/current shutdown reason reported by the device.
@@ -148,16 +150,19 @@ This page concentrates battery health, test/configuration state and environmenta
 
 `Battery discharges` is a historical counter, not the number of batteries and not the number of currently active discharges.
 
-### Battery temperature caveat
+### Battery current and temperature: real compatibility
 
-On the field-tested Vertiv firmware, the private battery-temperature OID reports approximately `-0.1 °C` even while inlet temperature is about 24–25 °C. That is not physically plausible for the installation and may represent a sentinel/unavailable sensor value or a model-specific interpretation.
+The 1.5.0 candidate initially added RFC1628 `upsBatteryCurrent` and `upsBatteryTemperature` to improve portability. Homologation showed that the tested ITA-20kVA management card returns `No Such Object available on this agent at this OID` for both scalars.
 
-For that reason:
+The candidate's final policy is:
 
-- the item is still collected and retained for troubleshooting;
-- it remains visible as a card;
-- it is **not** used by the default environmental trend graph;
-- operators should validate this metric against the UPS local/web interface before relying on it for environmental decisions.
+- `ups.battery.current` and `ups.battery.temperature` remain in the template but are **disabled by default**, trigger-free and absent from the dashboard;
+- `vertiv.battery.current` (`...4149`) remains the displayed battery current because it works on the validated device;
+- `vertiv.battery.temperature` (`...4156`) remains disabled because it returned approximately `-0.1 °C`, inconsistent with the observed environment;
+- no default battery-temperature trigger exists until a supported and validated battery-temperature sensor/OID is available;
+- default environmental monitoring uses **Inlet temperature**.
+
+This prevents unsupported items and alerts based on an invalid sensor value while retaining compatibility for other cards that may implement the optional RFC1628 scalars.
 
 ### Inlet temperature
 
@@ -176,7 +181,7 @@ The same dual-axis graph from Overview is repeated here so battery investigation
 
 ## Why there are no additional default graphs
 
-Version 1.4.1 intentionally keeps the default dashboard small. The current graphs answer the main operational questions without duplicating every numeric item as a trend.
+Version 1.4.1 and the 1.5.0 candidate intentionally keep the default dashboard small. The current graphs answer the main operational questions without duplicating every numeric item as a trend.
 
 Items such as input/output/bypass voltage and frequency are still retained in history and can be graphed from Latest data when investigating power-quality incidents. They are kept as cards in the default dashboard because, under normal operation, those values are usually stable and adding permanent graphs would increase visual noise.
 
@@ -190,11 +195,13 @@ The private Vertiv input-power phase OIDs are also not featured because their SN
 4. Inspect **Output phase load** for overload or imbalance.
 5. Open **Electrical** and compare input/output/bypass voltage and frequency.
 6. Check whether blackout/brownout counters increased.
-7. Open **Battery & Environment** and review inlet temperature, battery-test result and shutdown reason.
+7. Open **Battery & Environment** and review battery current, inlet temperature, battery-test result and shutdown reason.
 8. Expand the dashboard time range to include the period before and after the incident.
 
 ## Field-validation notes
 
 The dashboard was field-tested with a Vertiv UPS/management card that returns private enum values as strings such as `Normal Operation`, `Online`, `Passed` and `External`. The template normalizes those responses to canonical numeric values so Zabbix value maps, triggers and colored cards remain consistent.
+
+The same homologation confirmed that the agent implements UPS-MIB only partially: support for `upsBatteryStatus`, runtime and other RFC1628 objects does not imply support for `upsBatteryCurrent` or `upsBatteryTemperature`.
 
 The raw RFC1628 runtime item remains authoritative for trigger calculations, while `ups.battery.runtime.hours` exists only to make the dashboard easier to read.

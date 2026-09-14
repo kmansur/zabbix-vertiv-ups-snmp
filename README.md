@@ -50,9 +50,9 @@ Zabbix 8.0 is currently documented by Zabbix as a development version. See [docs
 
 ## Project status
 
-Current release: **1.4.1**
+Current stable release: **1.4.1**
 
-**Engineering maturity: 85%** — see [project status and remaining work](docs/en/project-status.md).
+Homologation candidate: **1.5.0** — **100% production implementation complete**; real-hardware homologation pending. See [project status](docs/en/project-status.md).
 
 ## What the template monitors
 
@@ -134,6 +134,9 @@ English:
 - [Zabbix 8.0 compatibility](docs/en/zabbix-8.0.md)
 - [Versioning](docs/en/versioning.md)
 - [License and attribution](docs/en/license-attribution.md)
+- [MIB/OID sources and provenance](docs/en/mib-sources.md)
+- [Compatibility matrix](docs/en/compatibility.md)
+- [Production readiness and homologation](docs/en/production-readiness.md)
 
 Brazilian Portuguese documentation is available under [docs/pt-BR/](docs/pt-BR/README.md).
 
@@ -160,9 +163,9 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Versioning
 
-Current project version: **1.4.1**. The project follows Semantic Versioning.
+Candidate project version: **1.5.0**. Stable remains 1.4.1 until field homologation. The project follows Semantic Versioning.
 
-Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore project version `1.4.1` is exported as `vendor.version: 1.4-1`.
+Project releases use `X.Y.Z`, while the Zabbix template `vendor.version` follows the Zabbix convention `X.Y-Z`. Therefore candidate version `1.5.0` is exported as `vendor.version: 1.5-0`.
 
 ```text
 VERSION / Git tag / GitHub Release: X.Y.Z
