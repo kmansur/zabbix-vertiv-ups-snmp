@@ -12,7 +12,7 @@ Esta matriz separa **compatibilidade de engenharia** de **homologação em campo
 
 ## Identificação observada em campo
 
-A placa respondeu como fabricante `Vertiv`, modelo `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173` e `sysObjectID` `.1.3.6.1.4.1.476.1.42`. O nobreak reportou modelo `ITA-20k00AL3A02E00` e firmware `V220`. O ambiente de homologação usa **Zabbix Server 7.0.30**. Números de série não são publicados nesta matriz.
+A placa respondeu como fabricante `Vertiv`, modelo `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173` e `sysObjectID` `.1.3.6.1.4.1.476.1.42`. O nobreak reportou modelo `ITA-20k00AL3A02E00` e firmware `V220`. O ambiente de homologação usa **Zabbix Server 7.0.30**. O `sysName.0` retornou `nobreak-01`, enquanto os objetos de nome do UPS retornaram preenchimento de zeros; por isso o inventory `NAME` passa a usar `sysName.0` como fonte confiável. Números de série não são publicados nesta matriz.
 
 ## Resultado de campo — cobertura RFC1628
 

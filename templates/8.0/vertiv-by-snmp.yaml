@@ -215,7 +215,7 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
-      inventory_link: NAME
+
     - uuid: 33d164a0f0954b9ca80fa29ee624cd66
       name: 'UPS: System status'
       type: SNMP_AGENT
@@ -1827,6 +1827,24 @@ zabbix_export:
       tags:
       - tag: component
         value: identification
+    - uuid: 87e44a559b2045ee9f16a9b51f78f247
+      name: 'UPS: SNMP system name'
+      type: SNMP_AGENT
+      snmp_oid: 1.3.6.1.2.1.1.5.0
+      key: ups.snmp.sysname
+      delay: 1h
+      history: 30d
+      trends: '0'
+      value_type: CHAR
+      description: SNMPv2-MIB sysName. Preferred source for Zabbix inventory Name because some Vertiv UPS name objects return placeholder zero strings. This template performs read-only SNMP GET operations.
+      preprocessing:
+      - type: DISCARD_UNCHANGED_HEARTBEAT
+        parameters:
+        - 1d
+      tags:
+      - tag: component
+        value: identification
+      inventory_link: NAME
     - uuid: 5699f88221464fe08694b26b7c8cf6b1
       name: 'UPS: SNMP agent uptime'
       type: SNMP_AGENT

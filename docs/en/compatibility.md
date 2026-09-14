@@ -12,7 +12,7 @@ This matrix distinguishes **engineering compatibility** from **field homologatio
 
 ## Field identification
 
-The management card identified itself as vendor `Vertiv`, model `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173`, with `sysObjectID` `.1.3.6.1.4.1.476.1.42`. The UPS reported model `ITA-20k00AL3A02E00` and firmware `V220`. The homologation environment runs **Zabbix Server 7.0.30**. Serial numbers are intentionally not published in this matrix.
+The management card identified itself as vendor `Vertiv`, model `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173`, with `sysObjectID` `.1.3.6.1.4.1.476.1.42`. The UPS reported model `ITA-20k00AL3A02E00` and firmware `V220`. The homologation environment runs **Zabbix Server 7.0.30**. `sysName.0` returned `nobreak-01`, while the UPS-specific name objects returned zero-filled placeholders; therefore inventory `NAME` now uses `sysName.0` as the reliable source. Serial numbers are intentionally not published in this matrix.
 
 ## Field result — RFC1628 coverage
 
