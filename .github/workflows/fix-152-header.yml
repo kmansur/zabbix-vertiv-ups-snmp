@@ -1,0 +1,46 @@
+name: One-time v1.5.2 attribution header cleanup
+
+on:
+  push:
+    branches:
+      - release/1.5.2
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release/1.5.2
+      - name: Normalize header comments
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          for name in ('templates/7.0/vertiv-by-snmp.yaml', 'templates/8.0/vertiv-by-snmp.yaml'):
+              p = Path(name)
+              lines = p.read_text(encoding='utf-8').splitlines()
+              if "author''s permission" not in lines[2]:
+                  raise SystemExit(f'unexpected attribution header in {name}')
+              lines[2] = lines[2].replace("author''s permission", "author's permission")
+              p.write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+          python -m pip install -r requirements-dev.txt
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/validate_production.py
+          pytest -q
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/fix-152-header.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: normalize v1.5.2 attribution headers'
+          git push origin HEAD:release/1.5.2
