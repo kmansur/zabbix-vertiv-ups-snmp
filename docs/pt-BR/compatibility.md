@@ -6,19 +6,28 @@ Esta matriz separa **compatibilidade de engenharia** de **homologação em campo
 
 | Nobreak / placa | Zabbix | Status | Observações |
 | --- | --- | --- | --- |
-| Vertiv `ITA-20k00AL3A02E00` (20 kVA), firmware UPS `V220` / placa `IS-UNITY-DP`, firmware `8.5.1.0` (`IS-UNITY_8.5.1.0_00173`) | 7.0 | Homologação 1.5.0 em andamento | Estados principais, valores elétricos, enums textuais e dashboard foram observados em hardware real. `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) e `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) retornam `noSuchObject` nesta placa/firmware. A versão exata do Zabbix ainda deve ser registrada. |
+| Vertiv `ITA-20k00AL3A02E00` (20 kVA), firmware UPS `V220` / placa `IS-UNITY-DP`, firmware `8.5.1.0` (`IS-UNITY_8.5.1.0_00173`) | 7.0.30 | Homologação 1.5.0 em andamento | Estados principais, valores elétricos, enums textuais e dashboard foram observados em hardware real. `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) e `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) retornam `noSuchObject` nesta placa/firmware. |
 | Outros Vertiv/Liebert / firmwares de placa | 7.0 | Compatível por projeto RFC1628; não certificado em campo | A implementação de UPS-MIB pode ser parcial. Objetos padrão opcionais devem ser confirmados no equipamento; OIDs privados precisam ser comparados com a UI local do nobreak. |
 | Vertiv/Liebert | 8.0 desenvolvimento | Apenas export/paridade semântica | Não é alegação de suporte de produção até importação e execução em uma build 8.0 real. |
 
 ## Identificação observada em campo
 
-A placa respondeu como fabricante `Vertiv`, modelo `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173` e `sysObjectID` `.1.3.6.1.4.1.476.1.42`. O nobreak reportou modelo `ITA-20k00AL3A02E00` e firmware `V220`. Números de série não são publicados nesta matriz.
+A placa respondeu como fabricante `Vertiv`, modelo `IS-UNITY-DP`, firmware `8.5.1.0`, build `IS-UNITY_8.5.1.0_00173` e `sysObjectID` `.1.3.6.1.4.1.476.1.42`. O nobreak reportou modelo `ITA-20k00AL3A02E00` e firmware `V220`. O ambiente de homologação usa **Zabbix Server 7.0.30**. Números de série não são publicados nesta matriz.
+
+## Resultado de campo — cobertura RFC1628
+
+O walk completo da árvore `1.3.6.1.2.1.33` confirmou suporte funcional aos grupos padronizados de identificação, bateria parcial, entrada, saída, bypass, alarmes, resultados de teste e configuração. A candidata usa apenas objetos de leitura; os grupos de controle/configuração presentes no agente não são usados para escrita.
+
+Valores elétricos padronizados observados incluem três fases de entrada e saída, frequência de `59,9 Hz`, carga de saída de `23/23/24 %`, potência real de saída por fase de `1450/1410/1520 W` e potência real de entrada por fase de `1600/1500/1500 W`. Esses valores são coerentes com os objetos privados Vertiv observados no mesmo equipamento.
 
 ## Resultado de campo — grupo de bateria RFC1628
 
 A placa usada na homologação implementa apenas parte do grupo UPS-MIB de bateria. Foram observados:
 
 - `upsBatteryStatus` (`.1.3.6.1.2.1.33.1.2.1.0`) — **suportado**;
+- `upsEstimatedMinutesRemaining` — **suportado**, retornando `4320 min` (`72 h`);
+- `upsEstimatedChargeRemaining` — **suportado**, retornando `100 %`;
+- `upsBatteryVoltage` — **suportado**, retornando `5440` décimos de volt, equivalente a `544,0 V`;
 - `upsBatteryCurrent` (`.1.3.6.1.2.1.33.1.2.6.0`) — **não suportado**, retorna `No Such Object available on this agent at this OID`;
 - `upsBatteryTemperature` (`.1.3.6.1.2.1.33.1.2.7.0`) — **não suportado**, retorna a mesma resposta `noSuchObject`.
 
@@ -28,13 +37,17 @@ No equipamento validado, a corrente de bateria continua sendo coletada pelo OID 
 
 Esse comportamento é um exemplo importante: conformidade com partes da RFC1628 **não implica implementação de todos os escalares do UPS-MIB** pelo agente SNMP.
 
-## Resultado de campo — potência de entrada privada
+## Resultado de campo — potência de entrada
 
-Os OIDs privados `6318`, `6319` e `6320` retornaram respectivamente `1,6`, `1,5` e `1,5`. No mesmo instante, as tensões/correntes/fatores de potência de entrada (`209,3 V / 7,9 A / 0,99`, `212,7 V / 7,6 A / 0,99`, `209,5 V / 7,5 A / 0,99`) implicam aproximadamente `4,8 kW` no total, enquanto a soma dos três objetos privados é `4,6`. Isso é forte evidência de que esses objetos usam **kW por fase**, e não watts, mas a confirmação final contra LCD/interface web continua obrigatória antes de habilitá-los por padrão.
+A escala dos OIDs privados `6318`, `6319` e `6320` está agora caracterizada para esta placa/firmware. Eles retornaram `1,6`, `1,5` e `1,5`, enquanto os objetos padronizados RFC1628 `upsInputTruePower` retornaram no mesmo equipamento `1600`, `1500` e `1500 W`. Portanto, nesta IS-UNITY-DP 8.5.1.0 os objetos privados representam **kW por fase**.
 
-## Resultado de campo — eventos e alarmes
+Como a própria UPS-MIB padronizada fornece a potência real de entrada em watts e já é suportada pelo equipamento, o caminho de produção continua sendo `upsInputTruePower` via LLD. Os OIDs privados `6318-6320` permanecem desabilitados por padrão por serem redundantes e menos portáveis entre modelos/firmwares.
+
+## Resultado de campo — eventos, alarmes e testes
 
 Com o equipamento em estado normal, `upsAlarmsPresent` retornou `0` e a `upsAlarmTable` não apresentou linhas, comportamento esperado. Os objetos privados `.2.100.*` observados retornaram o texto `Inactive Event`; esse estado inativo está portanto confirmado para esta placa/firmware. O texto/encoding do estado **ativo** ainda precisa ser capturado em um evento real antes de criar triggers privados específicos.
+
+O grupo RFC1628 de testes também está presente e respondeu aos objetos de identificação/resultado/tempo. O template usa esses objetos somente para leitura e não inclui nenhum comando para iniciar testes.
 
 ## Registro de homologação
 
