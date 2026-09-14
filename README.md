@@ -59,7 +59,7 @@ The template is intentionally **read-only**. Reboot, shutdown, outlet control, t
 
 ## Important production behavior
 
-The field-homologated card used during development implements only part of RFC1628. `upsBatteryCurrent` and `upsBatteryTemperature` return `noSuchObject` on that card/firmware and are therefore retained **disabled by default** for compatibility with other devices.
+The reference/test card used during development implements only part of RFC1628. `upsBatteryCurrent` and `upsBatteryTemperature` return `noSuchObject` on that card/firmware and are therefore retained **disabled by default** for compatibility with other devices.
 
 The Vertiv private battery-temperature object also produced an unreliable/sentinel-like value on the test device, so **no default battery-temperature trigger is active in candidate 1.5.0**. Battery-temperature macros remain reserved for compatibility/future profiles but do not enable alerting by themselves.
 
