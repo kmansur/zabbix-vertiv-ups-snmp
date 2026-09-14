@@ -71,3 +71,7 @@ When every post-release field checkbox above is complete:
 1. change the extended field-validation status to **PASS** and add the final homologation date/sign-off;
 2. update the compatibility matrix wording to `1.5.0 field-homologated` for this exact hardware combination;
 3. close the post-release field-validation tracking issue.
+
+## Later release context
+
+This document remains the field-validation record for monitoring release 1.5.0. The current repository candidate is **1.5.2** and the latest stable release is **1.5.2**; release 1.5.2 changes licensing/attribution and metadata without changing the monitoring semantics validated here.

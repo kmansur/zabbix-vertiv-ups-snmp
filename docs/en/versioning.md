@@ -69,3 +69,7 @@ Therefore the same project version can exist in both Zabbix 7.0 and Zabbix 8.0 e
 ## Stable technical identifier
 
 Starting with 1.4.0 the visible template name is **Vertiv by SNMP**, while the technical export identifier remains `VERTIV by SNMP`. Keeping the technical identifier stable is deliberate: it allows imports to update existing installations instead of creating a second template only because capitalization changed.
+
+## Current release markers
+
+For release **1.5.2**, both the repository candidate and latest stable release are **1.5.2**. The Zabbix template metadata is `vendor.version: 1.5-2`.

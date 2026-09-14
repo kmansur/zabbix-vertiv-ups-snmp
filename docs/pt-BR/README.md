@@ -42,3 +42,7 @@ Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md),
 - [Fontes MIB/OID e proveniência](mib-sources.md)
 - [Matriz de compatibilidade](compatibility.md)
 - [Prontidão para produção e homologação](production-readiness.md)
+
+## Acompanhamento da release atual
+
+Candidata atual do repositório: **1.5.2**. Última release estável: **1.5.2**. A 1.5.2 é um patch de licenciamento/atribuição e metadados; a semântica de monitoramento permanece igual à 1.5.1.

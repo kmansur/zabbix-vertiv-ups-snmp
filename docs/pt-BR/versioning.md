@@ -69,3 +69,7 @@ Portanto a mesma versão de projeto pode existir simultaneamente nos exports Zab
 ## Identificador técnico estável
 
 A partir da 1.4.0 o nome visível do template é **Vertiv by SNMP**, enquanto o identificador técnico do export permanece `VERTIV by SNMP`. Manter o identificador técnico estável é intencional: isso permite atualizar instalações existentes sem criar um segundo template apenas por causa da capitalização.
+
+## Marcadores da release atual
+
+Para a release **1.5.2**, tanto a candidata atual do repositório quanto a última release estável são **1.5.2**. Os metadados do template Zabbix utilizam `vendor.version: 1.5-2`.

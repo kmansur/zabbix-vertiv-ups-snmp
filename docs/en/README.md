@@ -42,3 +42,7 @@ See [Versioning](versioning.md), [Project status](project-status.md), [Global da
 - [MIB/OID sources and provenance](mib-sources.md)
 - [Compatibility matrix](compatibility.md)
 - [Production readiness and homologation](production-readiness.md)
+
+## Current release tracking
+
+Repository candidate: **1.5.2**. Latest stable release: **1.5.2**. Release 1.5.2 is a licensing/attribution and metadata patch; monitoring semantics remain unchanged from 1.5.1.

@@ -44,7 +44,7 @@ zabbix_export:
       Maintained and substantially rewritten by Karim Mansur / Net Tech.
 
 
-      License: MIT for the original work in this repository. See LICENSE and NOTICE.md for attribution and third-party licensing notes.
+      License: GNU GPL v3.0 only (GPL-3.0-only). Based on Template Vertiv by Mihguel da Silva Santos Tavares de Araujo and used with the original author''s permission. See LICENSE and NOTICE.md.
 
 
       Important: the supplied Vertiv SNMP parameter list identifies enterprise metrics but does not define scaling for every private OID. Private electrical summary items therefore do not apply guessed multipliers. Validate values against the UPS LCD/web interface before relying on them for thresholds or dashboards.
@@ -75,13 +75,16 @@ zabbix_export:
       Version 1.5.0 hardens production monitoring with an explicit SNMP heartbeat, RFC1628 identification/test coverage, active-alarm table discovery, safe-by-default handling of unvalidated private metrics, standard battery current/temperature objects, and production CI import validation. Vendor-private event encodings remain unguessed.
 
 
+      Version 1.5.2 aligns repository and template licensing/attribution with the original template author''s GPLv3 authorization. Monitoring items, OIDs, triggers and read-only behavior are unchanged from 1.5.1.
+
+
       Field homologation note: the tested ITA-20kVA management agent returns noSuchObject for RFC1628 upsBatteryCurrent and upsBatteryTemperature. These optional scalars are retained disabled by default and do not drive production dashboards or triggers.
 
 
       Export target: Zabbix 8.0.'
     vendor:
       name: Net Tech
-      version: 1.5-1
+      version: 1.5-2
     groups:
     - name: Templates/Power
     items:
