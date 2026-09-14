@@ -1,0 +1,149 @@
+name: Publish v1.5.1
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/publish-v1.5.1.yml
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+
+      - name: Install validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+
+      - name: Validate release state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(tr -d '\r\n' < VERSION)" = "1.5.1"
+          test "$(tr -d '\r\n' < STABLE_VERSION)" = "1.5.1"
+          grep -q 'version: 1.5-1' templates/7.0/vertiv-by-snmp.yaml
+          grep -q 'version: 1.5-1' templates/8.0/vertiv-by-snmp.yaml
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/validate_production.py
+          pytest -q
+
+      - name: Prepare stable upgrade baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git show v1.4.1:templates/7.0/vertiv-by-snmp.yaml > /tmp/vertiv-by-snmp-v1.4.1.yaml
+          test -s /tmp/vertiv-by-snmp-v1.4.1.yaml
+
+      - name: Start disposable Zabbix 7.0 stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker network create zabbix-publish-ci
+          docker run -d --name zabbix-publish-db --network zabbix-publish-ci \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            postgres:16-alpine
+          for i in $(seq 1 60); do
+            if docker exec zabbix-publish-db pg_isready -U zabbix -d zabbix >/dev/null 2>&1; then
+              break
+            fi
+            sleep 2
+          done
+          docker exec zabbix-publish-db pg_isready -U zabbix -d zabbix
+
+          docker run -d --name zabbix-publish-server --network zabbix-publish-ci \
+            -e DB_SERVER_HOST=zabbix-publish-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            zabbix/zabbix-server-pgsql:alpine-7.0-latest
+
+          docker run -d --name zabbix-publish-web --network zabbix-publish-ci -p 8080:8080 \
+            -e DB_SERVER_HOST=zabbix-publish-db \
+            -e POSTGRES_DB=zabbix \
+            -e POSTGRES_USER=zabbix \
+            -e POSTGRES_PASSWORD=zabbix \
+            -e ZBX_SERVER_HOST=zabbix-publish-server \
+            -e ZBX_SERVER_NAME="Vertiv publish validation" \
+            zabbix/zabbix-web-nginx-pgsql:alpine-7.0-latest
+
+      - name: Import stable baseline and upgrade to v1.5.1
+        run: |
+          python tools/zabbix_api_import_test.py --template /tmp/vertiv-by-snmp-v1.4.1.yaml --wait 300
+          python tools/zabbix_api_import_test.py --template templates/7.0/vertiv-by-snmp.yaml --wait 60
+
+      - name: Remove one-off workflow and create final release commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/publish-v1.5.1.yml
+          git commit -m "chore: remove one-off v1.5.1 publish workflow"
+          git push origin HEAD:main
+
+      - name: Create annotated tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --tags origin refs/tags/v1.5.1 >/dev/null 2>&1; then
+            echo "Tag v1.5.1 already exists" >&2
+            exit 1
+          fi
+          git tag -a v1.5.1 -m "Vertiv by SNMP v1.5.1"
+          git push origin v1.5.1
+
+      - name: Build release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="1.5.1"
+          package="zabbix-vertiv-ups-snmp-${version}"
+          mkdir -p "dist/${package}"
+          cp -r templates docs tools "dist/${package}/"
+          cp README.md README.pt-BR.md \
+             CHANGELOG.md CHANGELOG.pt-BR.md \
+             CONTRIBUTING.md CONTRIBUTING.pt-BR.md \
+             SECURITY.md SECURITY.pt-BR.md \
+             LICENSE NOTICE.md NOTICE.pt-BR.md VERSION STABLE_VERSION requirements-dev.txt \
+             "dist/${package}/"
+          cp templates/7.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-7.0.yaml"
+          cp templates/8.0/vertiv-by-snmp.yaml "dist/vertiv-by-snmp-zabbix-8.0.yaml"
+          (cd dist && zip -r "${package}.zip" "${package}")
+          (cd dist && sha256sum \
+            vertiv-by-snmp-zabbix-7.0.yaml \
+            vertiv-by-snmp-zabbix-8.0.yaml \
+            "${package}.zip" > SHA256SUMS)
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create v1.5.1 \
+            dist/vertiv-by-snmp-zabbix-7.0.yaml \
+            dist/vertiv-by-snmp-zabbix-8.0.yaml \
+            dist/zabbix-vertiv-ups-snmp-1.5.1.zip \
+            dist/SHA256SUMS \
+            --title "Vertiv by SNMP v1.5.1" \
+            --generate-notes
