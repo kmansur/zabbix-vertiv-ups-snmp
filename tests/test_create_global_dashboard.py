@@ -1,10 +1,14 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
-from create_global_dashboard import build_dashboard_payload, convert_field, load_template_dashboard  # noqa: E402
+from create_global_dashboard import (
+    build_dashboard_payload,
+    convert_field,
+    load_template_dashboard,
+)
 
 
 def test_template_dashboard_exists_in_both_exports():
@@ -62,9 +66,16 @@ def test_build_payload_preserves_layout_and_converts_scalar_types():
                             {
                                 "type": "ITEM",
                                 "name": "itemid.0",
-                                "value": {"host": "VERTIV by SNMP", "key": "ups.battery.charge"},
+                                "value": {
+                                    "host": "VERTIV by SNMP",
+                                    "key": "ups.battery.charge",
+                                },
                             },
-                            {"type": "INTEGER", "name": "value_size", "value": "26"},
+                            {
+                                "type": "INTEGER",
+                                "name": "value_size",
+                                "value": "26",
+                            },
                         ],
                     }
                 ],
@@ -81,6 +92,19 @@ def test_build_payload_preserves_layout_and_converts_scalar_types():
     widget = payload["pages"][0]["widgets"][0]
     assert payload["name"] == "Vertiv UPS - Test"
     assert payload["private"] == 1
-    assert (widget["x"], widget["y"], widget["width"], widget["height"]) == (50, 0, 11, 2)
-    assert widget["fields"][0] == {"type": 4, "name": "itemid.0", "value": "12345"}
-    assert widget["fields"][1] == {"type": 0, "name": "value_size", "value": "26"}
+    assert (widget["x"], widget["y"], widget["width"], widget["height"]) == (
+        50,
+        0,
+        11,
+        2,
+    )
+    assert widget["fields"][0] == {
+        "type": 4,
+        "name": "itemid.0",
+        "value": "12345",
+    }
+    assert widget["fields"][1] == {
+        "type": 0,
+        "name": "value_size",
+        "value": "26",
+    }
