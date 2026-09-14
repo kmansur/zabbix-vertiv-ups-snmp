@@ -2,9 +2,14 @@
 
 [English](../en/global-dashboard.md)
 
+**Introduzido na candidata do repositório:** `1.5.1`  
+**Última release estável enquanto esta candidata está em revisão:** `1.5.0`
+
 O template já inclui o dashboard nativo de template **Vertiv UPS Overview**. Esse dashboard acompanha automaticamente o contexto do host quando o template é vinculado a um nobreak.
 
 Um **dashboard global** do Zabbix é um objeto diferente. A exportação de template não promove automaticamente um dashboard de template para **Monitoring → Dashboards**. Por isso, este projeto fornece `tools/create_global_dashboard.py`, que usa o próprio dashboard nativo como fonte de verdade e o recria pela API do Zabbix para um host real já monitorado.
+
+O mantenedor validou com sucesso o gerador em modo `--dry-run` contra um ambiente Zabbix 7.0 real antes da finalização da documentação da candidata 1.5.1. Isso confirma, no fluxo de referência, a detecção da versão da API, descoberta do host de destino, resolução de itens/gráficos e geração do payload; a criação efetiva do dashboard continua sendo uma ação explícita do operador.
 
 ## Por que usar o gerador
 
@@ -42,7 +47,11 @@ python3 tools/create_global_dashboard.py \
 
 Esse comando resolve todas as referências e mostra o payload exato que seria enviado ao `dashboard.create`, sem criar nada.
 
+Para um endpoint interno de laboratório ou gerenciamento que utilize deliberadamente um certificado não confiável, acrescente `--insecure`. Essa opção não deve ser o padrão normal de produção.
+
 ## Criar o dashboard
+
+Depois de revisar a saída do dry-run:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -119,9 +128,14 @@ Se não existir `templates/<major.minor>/vertiv-by-snmp.yaml` para a versão enc
 
 O dashboard global gerado fica propositalmente associado a um único host, porque os widgets de item e gráfico precisam de IDs reais. Para vários nobreaks, gere um dashboard por host ou construa separadamente um dashboard de frota/NOC baseado em padrões de host ou widgets de navegação.
 
+## Observação de versionamento
+
+A candidata `1.5.1` introduz esta ferramenta auxiliar e sua documentação sem alterar a semântica de monitoramento do template estável `1.5.0`. Por isso, `VERSION` pode estar em `1.5.1` enquanto `STABLE_VERSION` e o `vendor.version` do template não alterado permanecem em `1.5.0` / `1.5-0` até uma promoção explícita de release. Consulte [Versionamento](versioning.md).
+
 ## Segurança
 
 - Utilize um token de API com o menor privilégio prático.
 - Nunca grave o token de API no repositório.
+- Revogue/rotacione imediatamente um token caso ele seja exposto em histórico de shell, chat, logs ou outro local não controlado.
 - O utilitário faz leituras para descobrir host, itens e gráficos e cria um dashboard. Ele somente exclui um dashboard quando `--replace` é informado explicitamente.
 - Nenhuma operação SNMP de escrita é adicionada por esta funcionalidade.
