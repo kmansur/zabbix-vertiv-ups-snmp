@@ -59,7 +59,7 @@ O template é intencionalmente **somente leitura**. Operações de reboot, shutd
 
 ## Comportamento importante em produção
 
-A placa usada durante a homologação implementa apenas parte da RFC1628. `upsBatteryCurrent` e `upsBatteryTemperature` retornam `noSuchObject` nesse conjunto placa/firmware e, por isso, permanecem **desabilitados por padrão** para compatibilidade com outros equipamentos.
+A placa de referência/teste usada durante o desenvolvimento implementa apenas parte da RFC1628. `upsBatteryCurrent` e `upsBatteryTemperature` retornam `noSuchObject` nesse conjunto placa/firmware e, por isso, permanecem **desabilitados por padrão** para compatibilidade com outros equipamentos.
 
 O objeto privado Vertiv de temperatura da bateria também retornou valor não confiável/semelhante a sentinela no equipamento de teste. Portanto, **não existe trigger padrão de temperatura da bateria na candidata 1.5.0**. As macros de temperatura da bateria permanecem reservadas por compatibilidade/futuros perfis, mas não habilitam alertamento sozinhas.
 
