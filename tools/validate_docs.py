@@ -13,7 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 LINK_RE = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 MACRO_RE = re.compile(r"\{\$[A-Z0-9_.]+\}")
-TRIGGER_ROW_RE = re.compile(r"^\|\s*(UPS[^|]+?)\s*\|\s*(?:INFO|WARNING|AVERAGE|HIGH|DISASTER|NOT_CLASSIFIED)\s*\|", re.MULTILINE)
+TRIGGER_ROW_RE = re.compile(
+    r"^\|\s*(UPS[^|]+?)\s*\|\s*(?:INFO|WARNING|AVERAGE|HIGH|DISASTER|NOT_CLASSIFIED)\s*\|",
+    re.MULTILINE,
+)
 
 ROOT_PAIRS = [
     ("README.md", "README.pt-BR.md"),
@@ -101,10 +104,14 @@ def validate_local_links() -> list[str]:
             try:
                 resolved.relative_to(ROOT.resolve())
             except ValueError:
-                errors.append(f"{path.relative_to(ROOT)} links outside repository: {target}")
+                errors.append(
+                    f"{path.relative_to(ROOT)} links outside repository: {target}"
+                )
                 continue
             if not resolved.exists():
-                errors.append(f"{path.relative_to(ROOT)} has broken local link: {target}")
+                errors.append(
+                    f"{path.relative_to(ROOT)} has broken local link: {target}"
+                )
     return errors
 
 
@@ -164,13 +171,17 @@ def validate_trigger_docs() -> list[str]:
             errors.append(f"{rel} documents non-existent trigger rows: {extra}")
         count_text = f"{len(expected)} "
         if count_text not in text:
-            errors.append(f"{rel} does not state the actual trigger count {len(expected)}")
+            errors.append(
+                f"{rel} does not state the actual trigger count {len(expected)}"
+            )
     return errors
 
 
 def validate_macro_docs() -> list[str]:
     template = _load_template()
-    expected = {str(m.get("macro")) for m in template.get("macros", []) if m.get("macro")}
+    expected = {
+        str(m.get("macro")) for m in template.get("macros", []) if m.get("macro")
+    }
     errors: list[str] = []
     for rel in ("docs/en/configuration.md", "docs/pt-BR/configuration.md"):
         documented = set(MACRO_RE.findall(_read(ROOT / rel)))
@@ -195,14 +206,18 @@ def validate_branch_policy_docs() -> list[str]:
         text = _read(ROOT / rel)
         for phrase in required:
             if phrase not in text:
-                errors.append(f"{rel} is missing branch/release policy phrase: {phrase!r}")
+                errors.append(
+                    f"{rel} is missing branch/release policy phrase: {phrase!r}"
+                )
 
     for rel in ("CONTRIBUTING.md", "CONTRIBUTING.pt-BR.md"):
         text = _read(ROOT / rel)
         if "templates/7.0/" not in text or "templates/8.0/" not in text:
             errors.append(f"{rel} must document the real versioned template paths")
         if "templates/zabbix-<major.minor>/" in text:
-            errors.append(f"{rel} still documents the obsolete template path convention")
+            errors.append(
+                f"{rel} still documents the obsolete template path convention"
+            )
     return errors
 
 
@@ -216,7 +231,9 @@ def run() -> None:
     errors.extend(validate_branch_policy_docs())
     if errors:
         raise ValidationError("\n  - ".join([""] + errors))
-    print("OK: bilingual docs, links, versions, triggers, macros and release policy validated")
+    print(
+        "OK: bilingual docs, links, versions, triggers, macros and release policy validated"
+    )
 
 
 if __name__ == "__main__":
