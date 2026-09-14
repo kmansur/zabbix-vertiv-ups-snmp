@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+### Changed
+
+- Project licensing changed from MIT to **GNU GPL v3.0 only (`GPL-3.0-only`)** after the original Template Vertiv author provided direct written authorization on 2026-09-14 to use his template as the basis for this project and publish the resulting community work under GPLv3.
+- Attribution and licensing documentation now records the original author/source, the prior absence of an explicit repository license, and the subsequent direct authorization without claiming to relicense the author’s separate original repository.
+- Zabbix 7.0 and 8.0 template SPDX headers now identify `GPL-3.0-only`.
+
 ## [1.5.1] - 2026-09-14
 
 Released repository version: **1.5.1**.

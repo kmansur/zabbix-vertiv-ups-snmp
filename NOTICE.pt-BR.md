@@ -4,23 +4,25 @@
 
 `Vertiv by SNMP` é um template Zabbix mantido pela comunidade para monitoramento de nobreaks Vertiv/Liebert via SNMP.
 
-## Atribuição
+## Origem e atribuição
 
-O projeto foi criado utilizando o template abaixo como referência estrutural e histórica:
+Este projeto é baseado em:
 
 - **Template Vertiv**
 - Autor original: **Mihguel da Silva Santos Tavares de Araujo**
 - Fonte original: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
 
-O repositório de referência foi revisado em 2026-09-10. Naquele momento, a raiz continha os arquivos de template, porém não havia arquivo `LICENSE`, e também não foi encontrada uma declaração explícita de licença no template referenciado. Por esse motivo, este repositório **não** redistribui o arquivo original nem afirma relicenciá-lo.
+O repositório original foi revisado em 10/09/2026 e, naquele momento, não havia arquivo `LICENSE` nem declaração explícita de licença no template referenciado.
 
-O template mantido neste repositório foi substancialmente reescrito para monitoramento de nobreaks utilizando objetos da RFC 1628 UPS-MIB e OIDs privados Vertiv/Liebert, com novas chaves, triggers, value maps, macros, regras de descoberta, documentação, ferramentas de validação e organização do repositório.
+Em 14/09/2026, o autor original forneceu ao mantenedor autorização direta e por escrito para utilizar seu template como base deste projeto e disponibilizar o projeto comunitário resultante sob GPLv3. A autorização também manifestou apoio para que o trabalho permaneça aberto à comunidade.
+
+Este repositório contém um trabalho derivado substancialmente ampliado e mantido, incluindo monitoramento pela RFC 1628 UPS-MIB, OIDs privados Vertiv/Liebert, novas chaves, triggers, value maps, macros, regras de descoberta, dashboards, ferramentas de validação e documentação bilíngue.
 
 ## Licença deste repositório
 
-As contribuições originais desenvolvidas para este repositório são distribuídas sob a **MIT License**. Consulte [LICENSE](LICENSE).
+Este repositório é distribuído sob a **GNU General Public License v3.0 somente**, identificador SPDX **`GPL-3.0-only`**. Consulte [LICENSE](LICENSE).
 
-A Licença MIT deste repositório se aplica apenas ao material sobre o qual este projeto possui autoridade para licenciar. Ela não concede direitos sobre materiais de terceiros que possam possuir termos próprios.
+O identificador `GPL-3.0-only` é utilizado de forma conservadora porque a autorização mencionou “GPL3” sem conceder expressamente a opção “ou qualquer versão posterior”. Este repositório não afirma alterar a situação de licenciamento do repositório original separado do autor.
 
 ## Marcas e independência
 

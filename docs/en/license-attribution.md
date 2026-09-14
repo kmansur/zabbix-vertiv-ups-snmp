@@ -4,28 +4,32 @@
 
 ## Repository license
 
-Original contributions in this repository are licensed under the **MIT License**.
+This repository is licensed under the **GNU General Public License v3.0 only**, SPDX identifier **`GPL-3.0-only`**.
 
 See [LICENSE](../../LICENSE).
 
-## Original Vertiv template reference
+## Original Vertiv template
 
-The project credits:
+This project is based on:
 
 - **Template Vertiv**
 - author: **Mihguel da Silva Santos Tavares de Araujo**
 - source: https://github.com/Mihguel-Araujo/Template-Zabbix/blob/main/Template%20Vertiv
 
-The referenced GitHub repository was inspected on 2026-09-10. Its root exposed the template files and no `LICENSE` file, and a repository code search found no explicit `license` notice in the referenced content.
+The referenced repository was inspected on 2026-09-10. At that time, no explicit `LICENSE` file or license notice was present in the referenced template.
 
-Because there is no explicit permission to redistribute or relicense that original file, this repository does not include a copy of it.
+On 2026-09-14, the original author provided the maintainer with direct written authorization to use his template as the basis for this project and to publish the resulting community project under GPLv3. The authorization also supported keeping the work open to the community.
 
-The maintained `Vertiv by SNMP` template was substantially rewritten around RFC 1628 UPS-MIB and Vertiv/Liebert enterprise OIDs, and includes new monitoring logic, naming, keys, thresholds, LLD, value maps, documentation and tooling.
+The maintained `Vertiv by SNMP` project substantially expands the original basis with RFC 1628 UPS-MIB monitoring, Vertiv/Liebert enterprise OIDs, new monitoring logic, naming, keys, thresholds, discovery rules, value maps, dashboards, validation tooling and bilingual documentation.
 
-## Why MIT
+## Why `GPL-3.0-only`
 
-The MIT License was selected for the newly authored project content because it is simple, permissive and well suited to a reusable monitoring template.
+The authorization referred to “GPL3” but did not explicitly say “GPLv3 or any later version”. To avoid granting downstream permissions broader than the wording received from the original author, the project uses the conservative SPDX identifier **`GPL-3.0-only`**.
 
-This licensing choice applies only to material for which the project maintainer has licensing authority. It does not retroactively grant rights over the unlicensed reference file or any third-party MIB/documentation.
+This choice applies to this repository and its derivative work. It does not claim to retroactively add or change a license in the author's separate original repository.
 
-This page documents the project's current licensing assessment and is not legal advice.
+## Record keeping
+
+The maintainer should retain the original written authorization as project provenance. The private conversation itself does not need to be published in the repository unless both parties later choose to do so.
+
+This page documents the project's licensing and attribution basis and is not legal advice.
