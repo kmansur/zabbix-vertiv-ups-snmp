@@ -8,10 +8,28 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 
 ## [Não lançado]
 
+### Alterado
+
+- O endurecimento do PDCA alinha a documentação raiz/EN/PT-BR ao comportamento real da candidata 1.5.0.
+- `VERSION` passa a identificar a candidata do repositório e `STABLE_VERSION` a última release estável com tag.
+- A validação documental passa a verificar cobertura bilíngue, referências de versão candidata/estável, paridade da tabela de triggers, paridade de macros, links locais e política de branch/release contra o export Zabbix 7.0.
+- O status de prontidão passa a usar gates explícitos PASS/EM ANDAMENTO/BLOQUEADO em vez de percentual.
+- Um registro formal bilíngue de homologação em campo passa a separar evidência já coletada dos checks obrigatórios ainda pendentes para a release.
+
+### Corrigido
+
+- Removida documentação obsoleta que afirmava existir trigger padrão de temperatura da bateria na 1.5.0.
+- Removida documentação obsoleta que afirmava que o agregado privado `vertiv.output.load` gera triggers de carga.
+- Incluídas na documentação as duas triggers RFC1628 de resultado diagnóstico e as triggers de heartbeat/reset do agente SNMP.
+- Corrigido o caminho obsoleto `templates/zabbix-<major.minor>/` na documentação de contribuição.
+- Esclarecido que as macros de temperatura da bateria são mantidas/reservadas, mas não habilitam alertas padrão de produção.
+
 ### Planejado
 
+- Concluir os checks obrigatórios e a aprovação final da homologação em campo da 1.5.0.
+- Proteger a `main` com ruleset GitHub exigindo os checks de CI/importação/segurança.
 - Validar modelos adicionais de nobreaks Vertiv/Liebert e firmwares de placas de gerenciamento.
-- Adicionar processamento específico de traps SNMP após a captura e documentação de payloads reais.
+- Adicionar processamento específico de traps SNMP após captura e documentação de payloads reais.
 - Revalidar o export Zabbix 8.0 contra builds RC/final.
 
 ## [1.5.0] - Não lançado (candidata para homologação)
@@ -19,22 +37,24 @@ O formato é baseado no [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.
 ### Adicionado
 
 - Heartbeat SNMP dedicado por `sysUpTime.0`, trigger de indisponibilidade por `nodata(5m)` e aviso de reset do agente.
-- Identificação RFC1628, corrente/temperatura de bateria padronizadas e resultados somente leitura de testes diagnósticos.
+- Identificação RFC1628, objetos opcionais padronizados de corrente/temperatura da bateria e objetos somente leitura de resultado de testes diagnósticos.
+- Triggers RFC1628 de aviso/falha do resultado diagnóstico; o template não inicia nem interrompe testes.
 - Descoberta de `upsAlarmTable` com value map dos 24 alarmes conhecidos da RFC1628.
-- Proveniência MIB/OID, matriz de compatibilidade e checklist de homologação de produção.
+- Proveniência MIB/OID, matriz de compatibilidade e checklist/registro de homologação de produção.
 - Validador específico de produção e teste CI de importação via API em Zabbix 7 real.
 
 ### Alterado
 
-- Alertas de temperatura de bateria passam a usar `upsBatteryTemperature` RFC1628.
-- Alertas de carga permanecem nos protótipos `upsOutputPercentLoad` RFC1628; o agregado privado deixa de gerar trigger.
-- Card de alarmes fica vermelho para qualquer quantidade positiva, evitando sugerir severidade pela contagem.
+- `upsBatteryCurrent` e `upsBatteryTemperature` RFC1628 permanecem disponíveis para equipamentos compatíveis, mas ficam desabilitados e sem triggers por padrão no perfil homologado porque a placa de referência retorna `noSuchObject`.
+- Não existe trigger padrão de temperatura da bateria na 1.5.0; o objeto privado de temperatura também fica desabilitado após comportamento inválido/semelhante a sentinela em campo.
+- Alertas de carga usam os protótipos RFC1628 `upsOutputPercentLoad`; o agregado privado deixa de gerar triggers.
+- O card de alarmes fica vermelho para qualquer quantidade positiva, evitando sugerir severidade pela contagem.
 
 ### Segurança / confiabilidade
 
 - Potência privada de entrada e temperatura privada de bateria ficam desabilitadas por padrão.
 - Gráficos legados baseados em métricas experimentais/contadores cumulativos foram removidos.
-- Nenhum OID de controle/escrita foi adicionado.
+- Nenhum OID de controle/escrita ou de início de teste foi adicionado.
 
 ## [1.4.1] - 2026-09-11
 
