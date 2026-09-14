@@ -20,6 +20,18 @@ jobs:
       - name: Apply release preparation
         run: python tools/release_prep_152.py
 
+      - name: Escape apostrophes in YAML description
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for path in (Path('templates/7.0/vertiv-by-snmp.yaml'), Path('templates/8.0/vertiv-by-snmp.yaml')):
+              text = path.read_text(encoding='utf-8')
+              text = text.replace("original author's permission", "original author''s permission")
+              text = text.replace("template author's GPLv3 authorization", "template author''s GPLv3 authorization")
+              path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Validate release candidate
         shell: bash
         run: |
