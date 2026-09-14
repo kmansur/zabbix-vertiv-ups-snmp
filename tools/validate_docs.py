@@ -29,6 +29,7 @@ DOC_BASENAMES = [
     "configuration.md",
     "dashboard.md",
     "electrical-summary.md",
+    "homologation-1.5.0.md",
     "installation.md",
     "license-attribution.md",
     "metrics.md",
@@ -128,6 +129,8 @@ def validate_version_mentions() -> list[str]:
         "docs/pt-BR/versioning.md",
         "docs/en/project-status.md",
         "docs/pt-BR/project-status.md",
+        "docs/en/homologation-1.5.0.md",
+        "docs/pt-BR/homologation-1.5.0.md",
     ]
     stable_required = [
         "README.md",
