@@ -7,9 +7,9 @@
 
 The template already ships with the native **Vertiv UPS Overview** template dashboard. That dashboard follows the host context automatically when the template is linked to a UPS.
 
-A Zabbix **global dashboard** is a different object. Template exports do not promote a template dashboard into **Monitoring → Dashboards**. For that reason this project provides `tools/create_global_dashboard.py`, which uses the native template dashboard as the source of truth and recreates it through the Zabbix API for a real monitored host.
+A Zabbix **global dashboard** is a different object. Template exports do not promote a template dashboard into **Monitoring → Dashboards**. For that reason this project provides `tools/create_global_dashboard.py`, which uses the native template dashboard as the source of truth and creates or safely updates a global dashboard through the Zabbix API for a real monitored host.
 
-The maintainer successfully validated the generator in `--dry-run` mode against a real Zabbix 7.0 environment before the 1.5.1 candidate documentation was finalized. This confirms API version detection, target-host discovery, item/graph resolution and payload generation in the reference workflow; actual dashboard creation remains an explicit operator action.
+The maintainer successfully validated the generator in `--dry-run` mode against a real Zabbix 7.0 environment before the 1.5.1 candidate documentation was finalized. This confirms API version detection, target-host discovery, item/graph resolution and payload generation in the reference workflow; actual dashboard creation/update remains an explicit operator action.
 
 ## Why use the generator
 
@@ -21,9 +21,10 @@ The generator avoids maintaining a second hand-written dashboard definition. It:
 - resolves template item keys to item IDs on the selected host;
 - resolves graph names to graph IDs on the selected host;
 - preserves pages, widget positions, dimensions, titles, thresholds, colors and other supported fields;
-- creates the resulting object with `dashboard.create`.
+- creates a new dashboard with `dashboard.create`;
+- when `--replace` is explicitly used, updates exactly one editable same-name dashboard in place with `dashboard.update`.
 
-This makes the global dashboard track future changes made to the native template dashboard.
+The tool never uses `dashboard.delete`. This makes replacement fail-safe: the existing object is not removed before Zabbix has accepted the update.
 
 ## Requirements
 
@@ -31,7 +32,7 @@ This makes the global dashboard track future changes made to the native template
 - the Vertiv template already imported and linked to the target UPS host;
 - Python 3.9+;
 - PyYAML (`pip install -r requirements-dev.txt` is sufficient);
-- a Zabbix API token whose user role can read the target host/items/graphs and create dashboards.
+- a Zabbix API token whose user role can read the target host/items/graphs and create or edit dashboards as required.
 
 ## Dry run first
 
@@ -45,7 +46,7 @@ python3 tools/create_global_dashboard.py \
   --dry-run
 ```
 
-The command resolves all references and prints the exact `dashboard.create` payload without creating anything.
+The command resolves all references and prints the dashboard payload without creating or updating anything.
 
 For an internal lab or management endpoint that deliberately uses an untrusted certificate, append `--insecure`. Do not use that option as the normal production default.
 
@@ -78,7 +79,7 @@ python3 tools/create_global_dashboard.py \
 
 ## Private or public
 
-By default the generated dashboard is private. Add `--public` to create a public dashboard:
+By default the generated dashboard is private. Add `--public` to create it as public, or to set the selected dashboard public during an explicit in-place update:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -88,13 +89,13 @@ python3 tools/create_global_dashboard.py \
   --public
 ```
 
-Sharing with specific users/groups should be configured after creation according to the local Zabbix access policy.
+Sharing with specific users/groups should be configured according to the local Zabbix access policy.
 
-## Recreating an existing dashboard
+## Safely update an existing dashboard
 
-The tool refuses to overwrite a dashboard with the same name. This is intentional.
+The utility refuses to overwrite an existing editable dashboard with the same name unless `--replace` is explicitly supplied.
 
-After reviewing the dry-run output, use `--replace` to delete and recreate the existing dashboard:
+After reviewing the `--dry-run`, use:
 
 ```bash
 python3 tools/create_global_dashboard.py \
@@ -104,7 +105,15 @@ python3 tools/create_global_dashboard.py \
   --replace
 ```
 
-`--replace` recreates the dashboard object, so custom sharing and manual edits on that global dashboard must be reapplied. Prefer keeping layout changes in the template dashboard and regenerating from the repository.
+Replacement is deliberately conservative:
+
+- discovery uses `dashboard.get` with `editable=true`, so dashboards the API user cannot edit are not replacement targets;
+- if no editable exact-name dashboard exists, a new one is created;
+- if exactly one editable exact-name dashboard exists, `dashboard.update` replaces its generated properties/pages in place;
+- if more than one editable exact-name dashboard exists, the tool aborts without modifying anything because the target is ambiguous;
+- `dashboard.delete` is never called.
+
+Because the existing dashboard is updated in place, its object identity is preserved. The tool does not send `users` or `userGroups` during update, so existing sharing definitions are not deliberately replaced by this utility. Template-derived pages/layout are replaced, therefore manual widget/layout edits made directly in the global dashboard can be overwritten. Keep layout changes in the template dashboard whenever possible.
 
 ## TLS
 
@@ -137,5 +146,6 @@ Candidate `1.5.1` introduces this helper tool and documentation without changing
 - Use an API token with the minimum practical privileges.
 - Do not commit API tokens to this repository.
 - Revoke/rotate a token immediately if it is exposed in shell history, chat, logs or another uncontrolled location.
-- The tool performs read operations for host/item/graph discovery and creates a dashboard. It only deletes a dashboard when `--replace` is explicitly supplied.
+- Replacement is fail-closed: ambiguous editable same-name dashboards cause an error before any write operation.
+- Existing dashboards are updated in place; this tool does not call `dashboard.delete`.
 - No SNMP write operation is introduced by this feature.
