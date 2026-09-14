@@ -1,0 +1,50 @@
+name: Fix v1.5.1 release text
+
+on:
+  push:
+    branches:
+      - feat/global-dashboard
+    paths:
+      - .github/workflows/fix-v1.5.1-release-text.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: feat/global-dashboard
+          fetch-depth: 0
+      - name: Fix promoted changelog wording
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          fixes = {
+              "CHANGELOG.md": (
+                  "- `STABLE_VERSION` remains `1.5.0` until the 1.5.1 release is explicitly promoted/tagged.",
+                  "- `STABLE_VERSION` is promoted to `1.5.1` for the stable tagged release.",
+              ),
+              "CHANGELOG.pt-BR.md": (
+                  "- `STABLE_VERSION` permanece em `1.5.0` até que a 1.5.1 seja promovida e publicada explicitamente com tag.",
+                  "- `STABLE_VERSION` foi promovido para `1.5.1` para a release estável com tag.",
+              ),
+          }
+          for rel, (old, new) in fixes.items():
+              path = Path(rel)
+              text = path.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"expected stale release wording not found in {rel}")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+          git rm .github/workflows/fix-v1.5.1-release-text.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md CHANGELOG.pt-BR.md
+          git commit -m "docs: finalize v1.5.1 stable changelog wording"
+          git push origin HEAD:feat/global-dashboard
