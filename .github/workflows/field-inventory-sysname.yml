@@ -51,7 +51,6 @@ jobs:
 
           uptime_marker = "    - uuid: 5699f88221464fe08694b26b7c8cf6b1\n      name: 'UPS: SNMP agent uptime'\n"
 
-          # Normalize accidental indentation introduced by the Python triple-quoted block.
           sysname_block = '\n'.join(
               line[10:] if line.startswith('          ') else line
               for line in sysname_block.splitlines()
@@ -59,9 +58,6 @@ jobs:
 
           for path in template_paths:
               text = path.read_text(encoding='utf-8')
-
-              # The private Vertiv name returns a zero-filled placeholder on the
-              # field-validated IS-UNITY-DP and must not populate inventory Name.
               start = text.index('      key: vertiv.system.name\n')
               end = text.index('\n    - uuid:', start)
               block = text[start:end]
@@ -115,6 +111,7 @@ jobs:
         shell: bash
         run: |
           python -m pip install -r requirements-dev.txt
+          ruff format tools/validate_production.py
           ruff check tools tests
           ruff format --check tools tests
           pytest -q
