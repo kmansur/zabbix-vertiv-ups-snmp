@@ -16,6 +16,7 @@ TEMPLATE_FILES = (
 )
 REQUIRED_KEYS = {
     "ups.snmp.uptime",
+    "ups.snmp.sysname",
     "ups.ident.manufacturer",
     "ups.ident.model",
     "ups.ident.ups.software",
@@ -184,11 +185,14 @@ def validate(path: Path) -> None:
         "vertiv.system.model": "MODEL",
         "vertiv.system.serial": "SERIALNO_A",
         "vertiv.system.firmware": "SOFTWARE",
-        "vertiv.system.name": "NAME",
+        "ups.snmp.sysname": "NAME",
     }
     for key, expected in inventory_expected.items():
         if items.get(key, {}).get("inventory_link") != expected:
             errors.append(f"inventory link mismatch for {key}: expected {expected}")
+
+    if items.get("vertiv.system.name", {}).get("inventory_link"):
+        errors.append("private Vertiv system name must not populate inventory NAME")
 
     # Safety: no UPS control branch or Vertiv reboot OID can appear anywhere.
     serialized = path.read_text(encoding="utf-8")
