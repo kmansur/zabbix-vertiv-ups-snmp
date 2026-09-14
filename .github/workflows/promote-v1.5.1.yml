@@ -1,0 +1,106 @@
+name: Promote v1.5.1 metadata
+
+on:
+  push:
+    branches:
+      - feat/global-dashboard
+    paths:
+      - .github/workflows/promote-v1.5.1.yml
+      - STABLE_VERSION
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v7
+        with:
+          ref: feat/global-dashboard
+          fetch-depth: 0
+
+      - name: Promote release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(cat VERSION)" = "1.5.1"
+          test "$(cat STABLE_VERSION)" = "1.5.1"
+
+          python - <<'PY'
+          from pathlib import Path
+
+          # The template monitoring artifact is promoted to the repository release
+          # version so tagged-release metadata remains internally consistent.
+          for rel in (
+              "templates/7.0/vertiv-by-snmp.yaml",
+              "templates/8.0/vertiv-by-snmp.yaml",
+          ):
+              path = Path(rel)
+              text = path.read_text(encoding="utf-8")
+              old = "      version: 1.5-0\n"
+              new = "      version: 1.5-1\n"
+              if old not in text:
+                  raise SystemExit(f"expected vendor.version not found in {rel}")
+              path.write_text(text.replace(old, new, 1), encoding="utf-8")
+
+          replacements = {
+              "README.md": [
+                  ("**Latest stable release:** `1.5.0`", "**Latest stable release:** `1.5.1`"),
+                  ("Repository candidate `1.5.1` adds", "Release `1.5.1` adds"),
+                  ("`STABLE_VERSION` intentionally remains `1.5.0` until 1.5.1 is explicitly promoted and tagged.", "`STABLE_VERSION` is `1.5.1` for the promoted stable release."),
+                  ("latest stable release and unchanged template monitoring artifact remain `1.5.0` / `vendor.version: 1.5-0`", "latest stable release and template release metadata are `1.5.1` / `vendor.version: 1.5-1`"),
+              ],
+              "README.pt-BR.md": [
+                  ("**Última versão estável:** `1.5.0`", "**Última versão estável:** `1.5.1`"),
+                  ("A candidata de repositório `1.5.1` adiciona", "A release `1.5.1` adiciona"),
+                  ("O `STABLE_VERSION` permanece intencionalmente em `1.5.0` até que a 1.5.1 seja promovida e publicada com tag.", "O `STABLE_VERSION` é `1.5.1` para a release estável promovida."),
+              ],
+              "docs/en/README.md": [
+                  ("Latest stable release: **1.5.0**.", "Latest stable release: **1.5.1**."),
+                  ("Candidate 1.5.1 adds", "Release 1.5.1 adds"),
+              ],
+              "docs/pt-BR/README.md": [
+                  ("Última versão estável: **1.5.0**.", "Última versão estável: **1.5.1**."),
+                  ("A candidata 1.5.1 adiciona", "A release 1.5.1 adiciona"),
+              ],
+              "docs/en/versioning.md": [
+                  ("Latest stable release:\n\n```text\n1.5.0\n```", "Latest stable release:\n\n```text\n1.5.1\n```"),
+                  ("STABLE_VERSION: 1.5.0", "STABLE_VERSION: 1.5.1"),
+                  ("Release `1.5.0` is exported as `vendor.version: 1.5-0`. Candidate `1.5.1` currently keeps that stable template metadata because the candidate changes only repository tooling/documentation. If `v1.5.1` is promoted as a release artifact that requires the template metadata to move to `1.5-1`, release validation will require that promotion before the tag can be published.", "Release `1.5.1` is promoted with `vendor.version: 1.5-1` in both Zabbix exports. The monitoring semantics remain unchanged from 1.5.0; the metadata bump keeps the tagged release internally consistent."),
+              ],
+              "docs/pt-BR/versioning.md": [
+                  ("Última versão estável:\n\n```text\n1.5.0\n```", "Última versão estável:\n\n```text\n1.5.1\n```"),
+                  ("STABLE_VERSION: 1.5.0", "STABLE_VERSION: 1.5.1"),
+              ],
+          }
+
+          for rel, pairs in replacements.items():
+              path = Path(rel)
+              text = path.read_text(encoding="utf-8")
+              for old, new in pairs:
+                  if old in text:
+                      text = text.replace(old, new)
+              path.write_text(text, encoding="utf-8")
+
+          for rel in ("CHANGELOG.md", "CHANGELOG.pt-BR.md"):
+              path = Path(rel)
+              text = path.read_text(encoding="utf-8")
+              marker = "## [Unreleased]\n" if rel == "CHANGELOG.md" else "## [Não lançado]\n"
+              if marker not in text:
+                  raise SystemExit(f"release section marker missing in {rel}")
+              released = "## [1.5.1] - 2026-09-14\n"
+              text = text.replace(marker, marker + "\n" + released, 1)
+              text = text.replace("Target repository version: **1.5.1**.", "Released repository version: **1.5.1**.", 1)
+              text = text.replace("Versão alvo do repositório: **1.5.1**.", "Versão publicada do repositório: **1.5.1**.", 1)
+              path.write_text(text, encoding="utf-8")
+          PY
+
+          git rm .github/workflows/promote-v1.5.1.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add STABLE_VERSION templates README.md README.pt-BR.md CHANGELOG.md CHANGELOG.pt-BR.md docs
+          git commit -m "release: finalize v1.5.1 promotion metadata"
+          git push origin HEAD:feat/global-dashboard
