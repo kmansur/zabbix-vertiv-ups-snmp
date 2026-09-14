@@ -1,0 +1,48 @@
+name: One-time v1.5.2 release preparation fixed
+
+on:
+  push:
+    branches:
+      - release/1.5.2
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/1.5.2
+
+      - name: Apply release preparation
+        run: python tools/release_prep_152.py
+
+      - name: Validate release candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -R -n --exclude-dir=.git 'License: MIT' .; then
+            echo 'Stale MIT template description remains.' >&2
+            exit 1
+          fi
+          python -m pip install -r requirements-dev.txt
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/validate_production.py
+          pytest -q
+
+      - name: Commit release preparation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/release-prep-1.5.2.yml
+          rm -f .github/workflows/release-prep-1.5.2-fixed.yml
+          rm -f tools/release_prep_152.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: prepare v1.5.2 licensing patch release'
+          git push origin HEAD:release/1.5.2
