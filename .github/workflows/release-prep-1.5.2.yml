@@ -1,0 +1,220 @@
+name: One-time v1.5.2 release preparation
+
+on:
+  push:
+    branches:
+      - release/1.5.2
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.event.head_commit.message == 'ci: prepare one-off v1.5.2 release update'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/1.5.2
+
+      - name: Prepare 1.5.2 metadata and documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def read(path):
+              return Path(path).read_text(encoding='utf-8')
+
+          def write(path, text):
+              Path(path).write_text(text, encoding='utf-8')
+
+          def replace_required(path, old, new):
+              text = read(path)
+              if old not in text:
+                  raise SystemExit(f'Expected text not found in {path}: {old!r}')
+              write(path, text.replace(old, new))
+
+          write('VERSION', '1.5.2\n')
+          write('STABLE_VERSION', '1.5.2\n')
+
+          for path in ('templates/7.0/vertiv-by-snmp.yaml', 'templates/8.0/vertiv-by-snmp.yaml'):
+              replace_required(path, '      version: 1.5-1\n', '      version: 1.5-2\n')
+              replace_required(
+                  path,
+                  '      License: MIT for the original work in this repository. See LICENSE and NOTICE.md for attribution and third-party licensing notes.\n',
+                  '      License: GNU GPL v3.0 only (GPL-3.0-only). Based on Template Vertiv by Mihguel da Silva Santos Tavares de Araujo and used with the original author’s permission. See LICENSE and NOTICE.md.\n'
+              )
+              marker = "      Version 1.5.0 hardens production monitoring with an explicit SNMP heartbeat, RFC1628 identification/test coverage, active-alarm table discovery, safe-by-default handling of unvalidated private metrics, standard battery current/temperature objects, and production CI import validation. Vendor-private event encodings remain unguessed.\n"
+              text = read(path)
+              if marker not in text:
+                  raise SystemExit(f'Version history marker not found in {path}')
+              note = marker + "\n\n      Version 1.5.2 aligns repository and template licensing/attribution with the original template author’s GPLv3 authorization. Monitoring items, OIDs, triggers and read-only behavior are unchanged from 1.5.1.\n"
+              write(path, text.replace(marker, note, 1))
+
+          # README release status and compatibility wording.
+          replace_required('README.md', '- **Latest stable release:** `1.5.1`', '- **Latest stable release:** `1.5.2`')
+          replace_required('README.md', '- **Current repository version:** `1.5.1`', '- **Current repository version:** `1.5.2`')
+          replace_required('README.md', '- **1.5.1 candidate scope:** global-dashboard tooling/documentation; template monitoring behavior remains unchanged from 1.5.0', '- **1.5.2 scope:** GPLv3 licensing/attribution alignment and release metadata; monitoring behavior remains unchanged from 1.5.1')
+          replace_required('README.md', 'Release `1.5.1` adds the optional global-dashboard generator and its bilingual documentation/tests. The maintainer has successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. `STABLE_VERSION` is `1.5.1` for the promoted stable release.', 'Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes the repository and template licensing/attribution under GPLv3 with the original template author’s permission and does not change monitoring semantics. `STABLE_VERSION` is `1.5.2` for the promoted stable release.')
+          replace_required('README.md', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.0 stable monitoring export; 1.5.1 repository candidate adds external dashboard tooling without changing monitoring semantics |', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | 1.5.2 stable metadata/licensing release; monitoring semantics remain unchanged from 1.5.1 |')
+          replace_required('README.md', 'For repository candidate 1.5.1, the new global-dashboard generator can be tested independently of the monitoring template with `--dry-run` before dashboard creation.', 'The global-dashboard generator introduced in 1.5.1 can be tested independently of the monitoring template with `--dry-run` before dashboard creation.')
+          replace_required('README.md', 'The current repository candidate is `1.5.1`, while the latest stable release and template release metadata are `1.5.1` / `vendor.version: 1.5-1`. Before a candidate that changes the template is promoted, release validation requires the template vendor metadata to match the promoted version.', 'The current repository and stable release are `1.5.2`, with template metadata `vendor.version: 1.5-2`. Release validation requires `VERSION`, `STABLE_VERSION`, the Git tag and template vendor metadata to match the promoted version.')
+
+          replace_required('README.pt-BR.md', '- **Última versão estável:** `1.5.1`', '- **Última versão estável:** `1.5.2`')
+          replace_required('README.pt-BR.md', '- **Versão atual do repositório:** `1.5.1`', '- **Versão atual do repositório:** `1.5.2`')
+          replace_required('README.pt-BR.md', '- **Escopo da candidata 1.5.1:** ferramenta/documentação do dashboard global; o comportamento de monitoramento do template permanece igual ao da 1.5.0', '- **Escopo da 1.5.2:** alinhamento de licença/atribuição GPLv3 e metadados de release; o comportamento de monitoramento permanece igual ao da 1.5.1')
+          replace_required('README.pt-BR.md', 'A release `1.5.1` adiciona o gerador opcional de dashboard global e sua documentação/testes bilíngues. O mantenedor validou com sucesso o fluxo `--dry-run` contra um ambiente Zabbix 7.0 real. O `STABLE_VERSION` é `1.5.1` para a release estável promovida.', 'A release `1.5.1` adicionou o gerador opcional de dashboard global e sua documentação/testes bilíngues. A release `1.5.2` regulariza o licenciamento e a atribuição do repositório/template sob GPLv3 com autorização do autor do template original, sem alterar a semântica de monitoramento. O `STABLE_VERSION` é `1.5.2` para a release estável promovida.')
+          replace_required('README.pt-BR.md', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Export estável de monitoramento 1.5.0; a candidata 1.5.1 do repositório adiciona ferramenta externa de dashboard sem alterar a semântica do monitoramento |', '| 7.0 | `templates/7.0/vertiv-by-snmp.yaml` | Release estável 1.5.2 de metadados/licenciamento; a semântica de monitoramento permanece igual à 1.5.1 |')
+          replace_required('README.pt-BR.md', 'Na candidata 1.5.1, o novo gerador de dashboard global pode ser testado independentemente do template de monitoramento usando `--dry-run` antes da criação do dashboard.', 'O gerador de dashboard global introduzido na 1.5.1 pode ser testado independentemente do template de monitoramento usando `--dry-run` antes da criação do dashboard.')
+          replace_required('README.pt-BR.md', 'A candidata atual do repositório é `1.5.1`, enquanto a última release estável e o artefato de monitoramento do template, que não foi alterado, permanecem `1.5.0` / `vendor.version: 1.5-0`. Antes da promoção de uma candidata que altere o template, a validação de release exige que os metadados de vendor correspondam à versão promovida.', 'A versão atual do repositório e a release estável são `1.5.2`, com metadados do template `vendor.version: 1.5-2`. A validação de release exige que `VERSION`, `STABLE_VERSION`, a tag Git e os metadados de vendor correspondam à versão promovida.')
+
+          # Move the already documented licensing change from Unreleased into the 1.5.2 release section.
+          for path, released_line, validated_line, previous in (
+              ('CHANGELOG.md', 'Released repository version: **1.5.2**.', '- CI, template/documentation/production validators, Zabbix 7.0 import/upgrade and CodeQL passed for the licensing change before release promotion.', '## [1.5.1]'),
+              ('CHANGELOG.pt-BR.md', 'Versão publicada do repositório: **1.5.2**.', '- CI, validadores de template/documentação/produção, importação/upgrade no Zabbix 7.0 e CodeQL passaram para a alteração de licenciamento antes da promoção da release.', '## [1.5.1]'),
+          ):
+              text = read(path)
+              m = re.search(r'(## \[(?:Unreleased|Não lançado)\]\n)(.*?)(?=## \[1\.5\.1\])', text, flags=re.S)
+              if not m:
+                  raise SystemExit(f'Unreleased section not found in {path}')
+              body = m.group(2).strip()
+              title = '## [Unreleased]' if path == 'CHANGELOG.md' else '## [Não lançado]'
+              validation_heading = '### Validated' if path == 'CHANGELOG.md' else '### Validado'
+              release = f"{title}\n\n## [1.5.2] - 2026-09-14\n\n{released_line}\n\n{body}\n\n{validation_heading}\n\n{validated_line}\n\n"
+              text = text[:m.start()] + release + text[m.end():]
+              write(path, text)
+
+          en_status = '''# Project status
+
+[Português (Brasil)](../pt-BR/project-status.md)
+
+**Repository readiness: PASS**
+
+**Zabbix 7.0 import/upgrade validation: PASS**
+
+**Field homologation: IN PROGRESS (post-release)**
+
+**Latest production release gate: PASS — 1.5.2**
+
+**Current repository version: 1.5.2**
+
+Version **1.5.2** is the current stable release. It aligns repository/template licensing and attribution with the direct GPLv3 authorization received from the original Template Vertiv author. Monitoring items, OIDs, keys, triggers, macros and read-only behavior are unchanged from 1.5.1.
+
+Version **1.5.1** introduced the optional global-dashboard generator, bilingual deployment documentation and automated conversion/layout tests. The maintainer validated its `--dry-run` flow against a real Zabbix 7.0 environment.
+
+This status deliberately does **not** claim that the reference UPS/card/firmware has completed every field-homologation scenario.
+
+| Area | Status | Notes |
+| --- | --- | --- |
+| Zabbix 7.0 template structure | PASS | Structural/template validators pass |
+| Zabbix 7.0 API fresh import and upgrade | PASS | CI imports the stable baseline and upgrades in place to the current candidate/release |
+| Read-only safety | PASS | Known control/write OID families are forbidden by validation/tests |
+| Experimental/private metric isolation | PASS | Unvalidated values cannot drive default production alerting |
+| Documentation/template semantic checks | PASS | Versions, trigger tables, macros, bilingual file pairs and release policy are validated |
+| CodeQL/security workflow | PASS | Security analysis passes before release promotion |
+| RFC1628 identification, heartbeat, tests and alarm diagnostics | PASS | Production monitoring behavior established in 1.5.0 |
+| Global dashboard generator | VALIDATED | Introduced in 1.5.1; real Zabbix 7.0 `--dry-run` validated by maintainer |
+| GPLv3 licensing and attribution | PASS | Original template author directly authorized use as a basis and GPLv3 publication on 2026-09-14 |
+| Field compatibility record | IN PROGRESS | Real-hardware evidence exists for one Vertiv ITA-20kVA / IS-UNITY-DP environment; controlled event scenarios remain open |
+| Zabbix 8.0 | PREVIEW | Export parity only; no production support claim |
+| Production release `v1.5.2` | PASS | Licensing/metadata patch; monitoring semantics unchanged from 1.5.1 |
+
+## Branch/release model
+
+`main` is the active development branch. `VERSION` identifies the current repository version/candidate and `STABLE_VERSION` identifies the latest tagged stable release. Production users should install a tagged GitHub Release because `main` may move ahead after a new development cycle begins.
+
+Current markers for this release:
+
+```text
+VERSION:        1.5.2
+STABLE_VERSION: 1.5.2
+```
+
+## Release decision
+
+`v1.5.2` is a patch release for licensing, attribution and release metadata. It does not introduce new monitoring behavior. Promotion requires the same repository validators, Zabbix 7.0 import/upgrade path and security checks used by the project release workflow.
+
+Remaining controlled field checks continue in [the 1.5.0 field record](homologation-1.5.0.md) and the corresponding GitHub issue. Completing them may upgrade the compatibility wording to **field-homologated**, but they do not block this licensing/metadata patch release.
+'''
+          write('docs/en/project-status.md', en_status)
+
+          pt_status = '''# Status do projeto
+
+[English](../en/project-status.md)
+
+**Prontidão do repositório: PASS**
+
+**Validação de importação/upgrade no Zabbix 7.0: PASS**
+
+**Homologação em campo: EM ANDAMENTO (pós-release)**
+
+**Gate da última release de produção: PASS — 1.5.2**
+
+**Versão atual do repositório: 1.5.2**
+
+A versão **1.5.2** é a release estável atual. Ela alinha o licenciamento e a atribuição do repositório/template com a autorização direta para GPLv3 recebida do autor do Template Vertiv original. Itens, OIDs, chaves, triggers, macros e o comportamento somente leitura permanecem iguais aos da 1.5.1.
+
+A versão **1.5.1** introduziu o gerador opcional de dashboard global, documentação bilíngue de implantação e testes automatizados de conversão/layout. O mantenedor validou seu fluxo `--dry-run` contra um ambiente Zabbix 7.0 real.
+
+Este status deliberadamente **não** afirma que a combinação de nobreak/placa/firmware de referência concluiu todos os cenários de homologação em campo.
+
+| Área | Status | Observações |
+| --- | --- | --- |
+| Estrutura do template Zabbix 7.0 | PASS | Validadores estruturais/do template passam |
+| Importação nova e upgrade via API no Zabbix 7.0 | PASS | O CI importa o baseline estável e atualiza in-place para a candidata/release atual |
+| Segurança somente leitura | PASS | Famílias conhecidas de OIDs de controle/escrita são proibidas pelos validadores/testes |
+| Isolamento de métricas privadas/experimentais | PASS | Valores não validados não podem gerar alertas padrão de produção |
+| Verificação semântica documentação/template | PASS | Versões, tabelas de triggers, macros, pares bilíngues e política de release são validados |
+| Workflow CodeQL/segurança | PASS | A análise de segurança passa antes da promoção da release |
+| Identificação, heartbeat, testes e diagnóstico de alarmes RFC1628 | PASS | Comportamento de produção estabelecido na 1.5.0 |
+| Gerador de dashboard global | VALIDADO | Introduzido na 1.5.1; `--dry-run` validado pelo mantenedor em Zabbix 7.0 real |
+| Licença e atribuição GPLv3 | PASS | O autor do template original autorizou diretamente o uso como base e a publicação sob GPLv3 em 14/09/2026 |
+| Registro de compatibilidade em campo | EM ANDAMENTO | Há evidência real em um ambiente Vertiv ITA-20kVA / IS-UNITY-DP; cenários controlados de evento permanecem abertos |
+| Zabbix 8.0 | PREVIEW | Apenas paridade de export; sem alegação de suporte de produção |
+| Release de produção `v1.5.2` | PASS | Patch de licença/metadados; sem alteração da semântica de monitoramento da 1.5.1 |
+
+## Modelo de branch/release
+
+A `main` é a branch ativa de desenvolvimento. `VERSION` identifica a versão/candidata atual do repositório e `STABLE_VERSION` identifica a última release estável com tag. Para produção, utilize uma GitHub Release com tag, pois a `main` pode avançar depois que um novo ciclo de desenvolvimento começar.
+
+Marcadores desta release:
+
+```text
+VERSION:        1.5.2
+STABLE_VERSION: 1.5.2
+```
+
+## Decisão de release
+
+`v1.5.2` é uma release patch de licenciamento, atribuição e metadados de release. Ela não introduz novo comportamento de monitoramento. A promoção exige os mesmos validadores do repositório, caminho de importação/upgrade no Zabbix 7.0 e checks de segurança usados pelo workflow de release do projeto.
+
+Os checks controlados de campo restantes continuam registrados no [registro de campo da 1.5.0](homologation-1.5.0.md) e na issue correspondente. A conclusão desses testes poderá elevar a redação de compatibilidade para **homologada em campo**, mas eles não bloqueiam esta release patch de licença/metadados.
+'''
+          write('docs/pt-BR/project-status.md', pt_status)
+          PY
+
+          if grep -R -n --exclude-dir=.git 'License: MIT' .; then
+            echo 'Stale MIT template description remains.' >&2
+            exit 1
+          fi
+
+          python -m pip install -r requirements-dev.txt
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/validate_production.py
+          pytest -q
+
+      - name: Commit release preparation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/release-prep-1.5.2.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'chore: prepare v1.5.2 licensing patch release'
+          git push origin HEAD:release/1.5.2
