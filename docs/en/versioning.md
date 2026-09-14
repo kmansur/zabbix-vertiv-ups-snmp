@@ -4,7 +4,7 @@
 
 This project uses **Semantic Versioning** (`MAJOR.MINOR.PATCH`).
 
-Current repository candidate:
+Current repository version:
 
 ```text
 1.5.0
@@ -13,16 +13,18 @@ Current repository candidate:
 Latest stable release:
 
 ```text
-1.4.1
+1.5.0
 ```
 
-`VERSION` is the source of truth for the current repository candidate. `STABLE_VERSION` is the source of truth for the latest tagged stable release.
+`VERSION` is the source of truth for the current repository version/candidate. `STABLE_VERSION` is the source of truth for the latest tagged stable release.
 
 ## Branch/release model
 
-`main` is the active development/candidate branch. Production users should consume tagged GitHub Releases. It is therefore valid for `VERSION` on `main` to be newer than `STABLE_VERSION` while a candidate is under validation/homologation.
+`main` is the active development branch. Production users should consume tagged GitHub Releases. It is valid for `VERSION` on `main` to become newer than `STABLE_VERSION` when a new candidate is under development.
 
-A candidate becomes stable only after the promotion gate in [Project status](project-status.md) and [Production readiness](production-readiness.md) is complete.
+A candidate becomes stable after the documented release gate is accepted by the maintainer and the release workflow validates that both `VERSION` and `STABLE_VERSION` match the tag being published.
+
+For release `1.5.0`, both files contain `1.5.0`.
 
 ## Rules
 
@@ -43,9 +45,7 @@ Git tag: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-Candidate `1.5.0` is exported as `vendor.version: 1.5-0`. The release workflow validates the tag against `VERSION` and validates both template exports before publishing a release.
-
-When `v1.5.0` is actually promoted and published, the release change must also move `STABLE_VERSION` from `1.4.1` to `1.5.0`.
+Release `1.5.0` is exported as `vendor.version: 1.5-0`. The release workflow validates the tag against both version markers, validates the template/documentation/production rules, runs tests and performs the Zabbix 7.0 upgrade validation before publishing assets.
 
 ## Zabbix compatibility does not define project version
 
