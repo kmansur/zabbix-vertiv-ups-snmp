@@ -17,10 +17,21 @@ def test_zabbix_vendor_version_format():
 
 def test_versioned_templates_validate():
     version = validate_templates.load_version()
+    stable_version = validate_templates.load_stable_version()
+    allowed_vendor_versions = {validate_templates.zabbix_vendor_version(version)}
+    if version != stable_version:
+        allowed_vendor_versions.add(
+            validate_templates.zabbix_vendor_version(stable_version)
+        )
+
     loaded = {}
     for export_version, path in validate_templates.TEMPLATE_FILES.items():
         data = validate_templates.load_template(path)
-        validate_templates.validate_one(export_version, data, version)
+        validate_templates.validate_one(
+            export_version,
+            data,
+            allowed_vendor_versions,
+        )
         loaded[export_version] = data
     validate_templates.validate_semantic_parity(loaded["7.0"], loaded["8.0"])
 
