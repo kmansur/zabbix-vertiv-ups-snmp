@@ -12,7 +12,7 @@ Contributions, device compatibility reports, bug reports, documentation improvem
 - `STABLE_VERSION` identifies the latest tagged stable release.
 - Production documentation must distinguish those two states whenever they differ.
 - Candidate changes must go through a pull request and pass the repository validation suite before merge.
-- A candidate is tagged stable only after the field-homologation gate is complete.
+- A candidate is tagged stable only after the release gate documented for that version is accepted by the maintainer.
 
 ## Development workflow
 
@@ -76,7 +76,7 @@ When changing a template:
 6. import into the target Zabbix build whenever possible;
 7. validate Latest data against the UPS LCD/web interface;
 8. document the exact UPS model, management card, firmware and Zabbix build used for runtime validation;
-9. record field-homologation evidence under `docs/homologation/` before promoting a candidate to stable.
+9. record field-validation evidence in the versioned records, currently `docs/en/homologation-1.5.0.md` and `docs/pt-BR/homologation-1.5.0.md`, before promotion decisions.
 
 ## Device compatibility reports
 
