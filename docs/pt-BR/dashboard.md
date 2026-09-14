@@ -2,9 +2,9 @@
 
 [English](../en/dashboard.md)
 
-O dashboard de template **Vertiv UPS Overview** é importado junto com o template e acompanha automaticamente o host monitorado. As imagens abaixo foram capturadas de um nobreak Vertiv real utilizando o dashboard da versão 1.4.1 enquanto o equipamento estava em operação normal/online. Os valores são apenas exemplos; tensão, carga, autonomia e temperatura variam conforme o modelo do nobreak, banco de baterias e carga conectada.
+O dashboard de template **Vertiv UPS Overview** é importado junto com o template e acompanha automaticamente o host monitorado. As imagens abaixo foram atualizadas durante a homologação da candidata **1.5.0** em um nobreak Vertiv ITA-20kVA, em operação normal/online, e já representam o conjunto atual de cards do dashboard. Os valores são exemplos reais do equipamento testado; tensão, carga, autonomia e temperatura variam conforme o modelo do nobreak, banco de baterias e carga conectada.
 
-> **Nota da candidata 1.5.0:** durante a homologação, a placa testada retornou `noSuchObject` para `upsBatteryCurrent` e `upsBatteryTemperature` da RFC1628. Por isso, esses dois itens padrão ficam desabilitados por default. O card de temperatura de bateria mostrado na captura 1.4.1 foi substituído por **Battery status** na candidata 1.5.0; a corrente continua usando o OID privado Vertiv já validado em campo.
+A homologação confirmou que a placa testada retorna `noSuchObject` para os escalares RFC1628 `upsBatteryCurrent` e `upsBatteryTemperature`. Por isso, esses dois itens padrão permanecem desabilitados por default. O dashboard atual utiliza **Battery status** no lugar da antiga temperatura de bateria e mantém a corrente pelo OID privado Vertiv já validado em campo.
 
 O dashboard é dividido propositalmente em três páginas:
 
@@ -117,9 +117,9 @@ Os cards **Input blackouts**, **Input brownouts** e **Bad input lines** são con
 
 Como interpretar:
 
-- `68` blackouts significa que o nobreak acumulou 68 eventos de falta de entrada durante a vida/período de reset do contador; isso **não** significa que existem 68 quedas ativas agora.
-- Brownouts contabiliza eventos de subtensão/sag conforme expostos pelo equipamento.
-- Bad input lines representa a informação de linhas ruins da UPS-MIB e deve normalmente permanecer em zero em uma fonte saudável.
+- Na captura atual, **Input blackouts = 69**. Isso significa que o nobreak acumulou 69 eventos desde a origem/reset do contador; **não** significa que existem 69 quedas ativas agora.
+- **Input brownouts** também é cumulativo e contabiliza eventos de subtensão/sag conforme expostos pelo equipamento.
+- **Bad input lines** mostra `upsInputLineBads` da RFC1628. Apesar do rótulo compacto, ele **não representa a quantidade de linhas físicas atualmente ruins**; é um contador cumulativo de transições da entrada para uma condição fora de tolerância. Na captura atual, o valor é `0`.
 - O sinal mais útil normalmente é um **incremento** do contador. Em um incidente recente, compare o valor atual com o valor anterior.
 
 Esses contadores são mostrados como cards, e não como gráficos, porque um contador cumulativo tende a produzir uma linha quase reta ou em degraus e pode induzir a uma interpretação errada como visão operacional de eventos.
@@ -132,7 +132,7 @@ O gráfico em largura total é a mesma visão L1/L2/L3 exibida em Overview, por�
 
 ![Dashboard de bateria e ambiente do Vertiv UPS](../images/dashboard-battery-environment.png)
 
-Essa página concentra saúde da bateria, configuração/teste e temperatura ambiente. A captura acima é da 1.4.1; na candidata 1.5.0 o antigo card **Battery temperature** é substituído por **Battery status** após a constatação de campo de que a placa não implementa `upsBatteryTemperature`.
+Essa página concentra saúde da bateria, configuração/teste e temperatura ambiente. A captura atual já representa o layout da candidata 1.5.0: **Battery status** está presente, a corrente utiliza o OID privado Vertiv validado e não há card de temperatura de bateria baseado em um sensor não suportado.
 
 ### Cards de bateria e status
 
@@ -181,11 +181,11 @@ O mesmo gráfico de dois eixos exibido no Overview é repetido nesta página par
 
 ## Por que não há mais gráficos no dashboard padrão
 
-A versão 1.4.1 e a candidata 1.5.0 mantêm propositalmente um conjunto pequeno de gráficos. Os gráficos atuais respondem às principais perguntas operacionais sem duplicar cada item numérico como tendência permanente.
+A candidata 1.5.0 mantém propositalmente um conjunto pequeno de gráficos. Os gráficos atuais respondem às principais perguntas operacionais sem duplicar cada item numérico como tendência permanente.
 
 Tensões e frequências de entrada/saída/bypass continuam armazenadas no histórico e podem ser abertas em gráfico pelo Latest data durante investigação de qualidade de energia. Elas permanecem como cards no dashboard padrão porque, em operação normal, tendem a ser estáveis e adicionar vários gráficos permanentes aumentaria a poluição visual.
 
-Os OIDs privados Vertiv de potência de entrada por fase também não são destacados no dashboard porque a escala SNMP deles ainda não foi validada entre modelos/firmwares. O projeto evita apresentar um gráfico aparentemente confiável enquanto essa escala não estiver confirmada em campo.
+Os OIDs privados Vertiv de potência de entrada por fase também não são destacados no dashboard porque a escala SNMP deles ainda não foi validada de forma portátil entre modelos/firmwares. O projeto evita apresentar um gráfico aparentemente autoritativo enquanto essa escala não estiver comprovada para o equipamento alvo.
 
 ## Ordem recomendada de leitura durante um incidente
 
