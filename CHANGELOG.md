@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-09-14
+
 ### Changed
 
 - Reduced RFC1628 `UPS active alarms discovery` cadence from 1 minute to 30 seconds in the Zabbix 7.0 and 8.0 exports. Field validation observed a real alarm that lasted only 30 seconds, which the aggregate 30-second alarm/status polling detected while a 1-minute LLD cycle could legitimately miss the transient `upsAlarmTable` row.

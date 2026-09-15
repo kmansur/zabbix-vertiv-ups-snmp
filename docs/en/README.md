@@ -27,9 +27,9 @@ After the first import, compare Zabbix values with the UPS LCD/web interface and
 
 ## Project version
 
-Current repository version: **1.5.1**.
+Current repository version: **1.5.3**.
 
-Latest stable release: **1.5.1**.
+Latest stable release: **1.5.2**.
 
 Release 1.5.1 adds the optional global-dashboard generator, bilingual documentation and tests without changing the 1.5.0 monitoring semantics. The maintainer successfully validated its `--dry-run` flow against a real Zabbix 7.0 environment. The replacement path has been hardened to update one editable same-name dashboard in place and fail closed on ambiguity.
 
@@ -45,4 +45,4 @@ See [Versioning](versioning.md), [Project status](project-status.md), [Global da
 
 ## Current release tracking
 
-Repository candidate: **1.5.2**. Latest stable release: **1.5.2**. Release 1.5.2 is a licensing/attribution and metadata patch; monitoring semantics remain unchanged from 1.5.1.
+Repository candidate: **1.5.3**. Latest stable release: **1.5.2**. Release 1.5.2 is a licensing/attribution and metadata patch; monitoring semantics remain unchanged from 1.5.1.
