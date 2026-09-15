@@ -1,0 +1,49 @@
+name: Publish v1.5.3
+on:
+  push:
+    paths:
+      - .github/workflows/publish-1.5.3.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release-tag/1.5.3
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Validate release
+        run: |
+          test "$(cat VERSION)" = "1.5.3"
+          test "$(cat STABLE_VERSION)" = "1.5.3"
+          python tools/validate_templates.py
+          python tools/validate_docs.py
+          python tools/validate_production.py
+          pytest -q
+      - name: Build assets
+        run: |
+          set -euo pipefail
+          version=1.5.3
+          package="zabbix-vertiv-ups-snmp-${version}"
+          mkdir -p "dist/${package}"
+          cp -r templates docs tools "dist/${package}/"
+          cp README.md README.pt-BR.md CHANGELOG.md CHANGELOG.pt-BR.md CONTRIBUTING.md CONTRIBUTING.pt-BR.md SECURITY.md SECURITY.pt-BR.md LICENSE NOTICE.md NOTICE.pt-BR.md VERSION STABLE_VERSION requirements-dev.txt "dist/${package}/"
+          cp templates/7.0/vertiv-by-snmp.yaml dist/vertiv-by-snmp-zabbix-7.0.yaml
+          cp templates/8.0/vertiv-by-snmp.yaml dist/vertiv-by-snmp-zabbix-8.0.yaml
+          (cd dist && zip -r "${package}.zip" "${package}")
+          (cd dist && sha256sum vertiv-by-snmp-zabbix-7.0.yaml vertiv-by-snmp-zabbix-8.0.yaml "${package}.zip" > SHA256SUMS)
+      - name: Tag merged main commit and publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git tag -a v1.5.3 7f5d9fea4fb201dff13532274a8ed1fb8b30990a -m "Vertiv by SNMP v1.5.3"
+          git push origin v1.5.3
+          gh release create v1.5.3 dist/vertiv-by-snmp-zabbix-7.0.yaml dist/vertiv-by-snmp-zabbix-8.0.yaml dist/zabbix-vertiv-ups-snmp-1.5.3.zip dist/SHA256SUMS --title "Vertiv by SNMP v1.5.3" --generate-notes --target 7f5d9fea4fb201dff13532274a8ed1fb8b30990a
