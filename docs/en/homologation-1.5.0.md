@@ -86,4 +86,4 @@ When every post-release field checkbox above is complete:
 
 ## Later release context
 
-This document remains the field-validation record for monitoring release 1.5.0. The current repository candidate is **1.5.3** and the latest stable release remains **1.5.2**. Candidate 1.5.3 incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s; it does not introduce write/control behavior.
+This document remains the field-validation record for monitoring release 1.5.0. The current repository candidate is **1.5.3** and the latest stable release is **1.5.3**. Candidate 1.5.3 incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s; it does not introduce write/control behavior.

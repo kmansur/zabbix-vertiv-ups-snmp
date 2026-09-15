@@ -29,7 +29,7 @@ Após a primeira importação, compare os valores do Zabbix com o LCD/interface 
 
 Versão atual do repositório: **1.5.3**.
 
-Última versão estável: **1.5.2**.
+Última versão estável: **1.5.3**.
 
 A release 1.5.1 adiciona o gerador opcional de dashboard global, documentação bilíngue e testes sem alterar a semântica de monitoramento da 1.5.0. O mantenedor validou com sucesso o fluxo `--dry-run` em um ambiente Zabbix 7.0 real. O caminho de substituição foi endurecido para atualizar in-place um único dashboard editável de mesmo nome e falhar de forma segura em caso de ambiguidade.
 
@@ -45,4 +45,4 @@ Consulte [Versionamento](versioning.md), [Status do projeto](project-status.md),
 
 ## Acompanhamento da release atual
 
-Candidata atual do repositório: **1.5.3**. Última release estável: **1.5.2**. A 1.5.2 é um patch de licenciamento/atribuição e metadados; a semântica de monitoramento permanece igual à 1.5.1.
+Candidata atual do repositório: **1.5.3**. Última release estável: **1.5.3**. A 1.5.2 é um patch de licenciamento/atribuição e metadados; a semântica de monitoramento permanece igual à 1.5.1.

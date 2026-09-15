@@ -41,7 +41,7 @@ Current markers for this release:
 
 ```text
 VERSION:        1.5.3
-STABLE_VERSION: 1.5.2
+STABLE_VERSION: 1.5.3
 ```
 
 ## Release decision

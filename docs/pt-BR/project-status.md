@@ -41,7 +41,7 @@ Marcadores desta release:
 
 ```text
 VERSION:        1.5.3
-STABLE_VERSION: 1.5.2
+STABLE_VERSION: 1.5.3
 ```
 
 ## Decisão de release

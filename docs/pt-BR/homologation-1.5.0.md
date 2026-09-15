@@ -86,4 +86,4 @@ Quando todos os checks de campo pós-release acima forem concluídos:
 
 ## Contexto das releases posteriores
 
-Este documento permanece como registro de validação em campo da release de monitoramento 1.5.0. A candidata atual do repositório é **1.5.3** e a última release estável permanece **1.5.2**. A candidata 1.5.3 incorpora evidência de validação em campo e reduz a cadência da LLD de alarmes ativos de 1m para 30s, sem introduzir operações de escrita/controle.
+Este documento permanece como registro de validação em campo da release de monitoramento 1.5.0. A candidata atual do repositório é **1.5.3** e a última release estável é **1.5.3**. A candidata 1.5.3 incorpora evidência de validação em campo e reduz a cadência da LLD de alarmes ativos de 1m para 30s, sem introduzir operações de escrita/controle.

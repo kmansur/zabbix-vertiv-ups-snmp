@@ -17,7 +17,7 @@ Zabbix template for read-only monitoring of **Vertiv/Liebert UPS systems via SNM
 
 Version `1.5.0` was approved for release by the maintainer after repository validation, CodeQL, Zabbix 7.0 fresh import and in-place upgrade from `1.4.1` all passed. The remaining controlled hardware scenarios are tracked separately and **must not be interpreted as completed field certification**.
 
-Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author's permission. Repository candidate `1.5.3` applies a field-driven alarm-discovery cadence improvement while `STABLE_VERSION` remains `1.5.2` until promotion.
+Release `1.5.1` added the optional global-dashboard generator and its bilingual documentation/tests. Release `1.5.2` regularizes repository/template licensing and attribution under GPLv3 with the original template author's permission. Repository candidate `1.5.3` applies a field-driven alarm-discovery cadence improvement while `STABLE_VERSION` is `1.5.3` for the promoted stable release.
 
 The `main` branch is the active development branch. **Production users should install a tagged GitHub Release**, because `main` may move ahead of the latest stable release after a new development cycle begins.
 
