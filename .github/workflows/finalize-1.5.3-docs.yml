@@ -1,0 +1,42 @@
+name: Finalize v1.5.3 documentation
+on:
+  push:
+    paths:
+      - .github/workflows/finalize-1.5.3-docs.yml
+permissions:
+  contents: write
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: maintenance/1.5.3-field-validation
+      - name: Update required version documentation
+        shell: python
+        run: |
+          from pathlib import Path
+          def repl(path, old, new):
+              p=Path(path); s=p.read_text()
+              if old not in s: raise SystemExit(f'missing in {path}: {old!r}')
+              p.write_text(s.replace(old,new))
+          for path in ['CHANGELOG.md','CHANGELOG.pt-BR.md']:
+              repl(path, '## [Unreleased]\n', '## [Unreleased]\n\n## [1.5.3] - 2026-09-14\n', )
+          repl('docs/en/README.md','Current repository version: **1.5.1**.','Current repository version: **1.5.3**.')
+          repl('docs/en/README.md','Latest stable release: **1.5.1**.','Latest stable release: **1.5.2**.')
+          repl('docs/en/README.md','Repository candidate: **1.5.2**. Latest stable release: **1.5.2**. Release 1.5.2 is a licensing/attribution and metadata patch; monitoring semantics remain unchanged from 1.5.1.','Repository candidate: **1.5.3**. Latest stable release: **1.5.2**. Candidate 1.5.3 incorporates field-validation evidence and reduces RFC1628 active-alarm LLD cadence from 1m to 30s.')
+          repl('docs/pt-BR/README.md','Versão atual do repositório: **1.5.1**.','Versão atual do repositório: **1.5.3**.')
+          repl('docs/pt-BR/README.md','Última versão estável: **1.5.1**.','Última versão estável: **1.5.2**.')
+          repl('docs/pt-BR/README.md','Candidata atual do repositório: **1.5.2**. Última release estável: **1.5.2**. A 1.5.2 é um patch de licenciamento/atribuição e metadados; a semântica de monitoramento permanece igual à 1.5.1.','Candidata atual do repositório: **1.5.3**. Última release estável: **1.5.2**. A candidata 1.5.3 incorpora evidência de validação em campo e reduz a cadência da LLD RFC1628 de alarmes ativos de 1m para 30s.')
+          for path in ['docs/en/versioning.md','docs/pt-BR/versioning.md']:
+              p=Path(path); s=p.read_text(); s=s.replace('1.5.1','1.5.3'); p.write_text(s)
+          repl('docs/en/versioning.md','For release **1.5.2**, both the repository candidate and latest stable release are **1.5.2**. The Zabbix template metadata is `vendor.version: 1.5-2`.','Candidate **1.5.3** uses `vendor.version: 1.5-3`; the latest stable release remains **1.5.2** until promotion.')
+          repl('docs/pt-BR/versioning.md','Para a release **1.5.2**, tanto a candidata atual do repositório quanto a última release estável são **1.5.2**. Os metadados do template Zabbix utilizam `vendor.version: 1.5-2`.','A candidata **1.5.3** utiliza `vendor.version: 1.5-3`; a última release estável permanece **1.5.2** até a promoção.')
+      - name: Commit changes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add CHANGELOG.md CHANGELOG.pt-BR.md docs/en/README.md docs/pt-BR/README.md docs/en/versioning.md docs/pt-BR/versioning.md
+          git commit -m "docs: complete v1.5.3 version references"
+          git push origin HEAD:maintenance/1.5.3-field-validation
