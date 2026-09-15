@@ -1,0 +1,29 @@
+name: Fix pt-BR v1.5.3 mention
+on:
+  push:
+    paths:
+      - .github/workflows/fix-pt-version.yml
+permissions:
+  contents: write
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: maintenance/1.5.3-field-validation
+      - run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('CHANGELOG.pt-BR.md'); s=p.read_text()
+          marker='## [Não lançado]\n'
+          if '## [1.5.3]' not in s:
+              s=s.replace(marker, marker+'\n## [1.5.3] - 2026-09-14\n')
+          p.write_text(s)
+          PY
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add CHANGELOG.pt-BR.md
+          git commit -m "docs: add v1.5.3 pt-BR changelog marker"
+          git push origin HEAD:maintenance/1.5.3-field-validation
