@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 
 
 ## [Unreleased]
 
+## [1.5.3] - 2026-09-14
+
+### Changed
+
+- Reduced RFC1628 `UPS active alarms discovery` cadence from 1 minute to 30 seconds in the Zabbix 7.0 and 8.0 exports. Field validation observed a real alarm that lasted only 30 seconds, which the aggregate 30-second alarm/status polling detected while a 1-minute LLD cycle could legitimately miss the transient `upsAlarmTable` row.
+- Kept lost-resource handling unchanged (`disable after 1h`, `delete after 1d`) so captured transient alarm rows remain available for diagnostics.
+
+### Field validation
+
+- Confirmed the dedicated SNMP heartbeat updates every minute and validated the complete five-minute `nodata()` PROBLEM/recovery cycle through a controlled UDP/161 interruption.
+- Confirmed no currently enabled default item is in the Zabbix `Not supported` state on the reference ITA-20kVA / IS-UNITY-DP firmware combination.
+- Recorded SNMPv2c/UDP 161 direct-server monitoring, reviewed all three host-dashboard pages, and confirmed real historical on-battery, warning, active-alarm, blackout and battery-discharge events with automatic recovery.
+- Battery-test result collection/value mapping is validated as `Passed`; a result-state transition remains pending natural observation. Management-agent reset-trigger evidence and individual transient `upsAlarmTable` LLD-row capture also remain pending/non-forced field observations.
+
 ## [1.5.2] - 2026-09-14
 
 Released repository version: **1.5.2**.

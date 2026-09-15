@@ -10,9 +10,9 @@
 
 **Latest production release gate: PASS — 1.5.2**
 
-**Current repository version: 1.5.2**
+**Current repository version: 1.5.3**
 
-Version **1.5.2** is the current stable release. It aligns repository/template licensing and attribution with the direct GPLv3 authorization received from the original Template Vertiv author. Monitoring items, OIDs, keys, triggers, macros and read-only behavior are unchanged from 1.5.1.
+Version **1.5.2** remains the current stable release. Repository candidate **1.5.3** incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s after a real 30-second alarm demonstrated the observability gap between aggregate polling and the slower discovery cycle.
 
 Version **1.5.1** introduced the optional global-dashboard generator, bilingual deployment documentation and automated conversion/layout tests. The maintainer validated its `--dry-run` flow against a real Zabbix 7.0 environment.
 
@@ -29,7 +29,7 @@ This status deliberately does **not** claim that the reference UPS/card/firmware
 | RFC1628 identification, heartbeat, tests and alarm diagnostics | PASS | Production monitoring behavior established in 1.5.0 |
 | Global dashboard generator | VALIDATED | Introduced in 1.5.1; real Zabbix 7.0 `--dry-run` validated by maintainer |
 | GPLv3 licensing and attribution | PASS | Original template author directly authorized use as a basis and GPLv3 publication on 2026-09-14 |
-| Field compatibility record | IN PROGRESS | Real-hardware evidence exists for one Vertiv ITA-20kVA / IS-UNITY-DP environment; controlled event scenarios remain open |
+| Field compatibility record | IN PROGRESS | Heartbeat/nodata, dashboards, SNMP transport, enabled-item support and multiple real UPS events are validated; non-forced reset/test-transition/individual transient alarm-row observations remain open |
 | Zabbix 8.0 | PREVIEW | Export parity only; no production support claim |
 | Production release `v1.5.2` | PASS | Licensing/metadata patch; monitoring semantics unchanged from 1.5.1 |
 
@@ -40,8 +40,8 @@ This status deliberately does **not** claim that the reference UPS/card/firmware
 Current markers for this release:
 
 ```text
-VERSION:        1.5.2
-STABLE_VERSION: 1.5.2
+VERSION:        1.5.3
+STABLE_VERSION: 1.5.3
 ```
 
 ## Release decision

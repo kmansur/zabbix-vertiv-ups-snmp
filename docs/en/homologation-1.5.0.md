@@ -50,15 +50,27 @@ Serial numbers and credentials are intentionally excluded.
 
 The following checks require controlled access to the real monitoring environment. They are **not software-release blockers**, but they remain required before describing this exact hardware combination as fully field-homologated:
 
-- [ ] Confirm `ups.snmp.uptime` updates every minute on the production/homologation host.
-- [ ] In a controlled window, interrupt SNMP reachability long enough to verify the five-minute `nodata()` problem event and automatic recovery.
+- [x] Confirm `ups.snmp.uptime` updates every minute on the production/homologation host.
+- [x] In a controlled window, interrupt SNMP reachability long enough to verify the five-minute `nodata()` problem event and automatic recovery.
 - [ ] Confirm the management-agent uptime-reset informational event with a known card/agent restart, or document an accepted alternative verification method.
 - [ ] Generate or wait for a safe real UPS alarm and confirm `upsAlarmTable` discovery creates the expected description/time rows and clears them after recovery.
 - [ ] Observe a safe diagnostic/battery-test result transition and confirm the read-only result items/triggers. The template itself must not start the test.
-- [ ] Review all three dashboard pages during a normal window and at least one representative incident/event window.
-- [ ] Record the SNMP version/security level used in the reference environment.
-- [ ] Confirm no unexpected unsupported items remain enabled by default on this exact card/firmware.
+- [x] Review all three dashboard pages during a normal window and at least one representative incident/event window.
+- [x] Record the SNMP version/security level used in the reference environment.
+- [x] Confirm no unexpected unsupported items remain enabled by default on this exact card/firmware.
 - [ ] Record final operator sign-off and field-homologation date.
+
+## Field-validation evidence collected on 2026-09-14
+
+- `ups.snmp.uptime` was observed updating at the configured 1-minute interval.
+- A controlled monitoring-side UDP/161 interruption produced the expected HIGH `UPS SNMP data unavailable` event after five minutes and recovered automatically after SNMP was restored.
+- Zabbix `Not supported` filtering returned no enabled/default items for the reference host.
+- Reference monitoring uses SNMPv2c on UDP/161 directly from the Zabbix Server; the community secret is intentionally excluded from this record.
+- Overview, Electrical and Battery & Environment dashboards rendered correctly in normal operation; collection gaps visible in history correspond to the intentional SNMP interruption.
+- Real events from 2026-09-12 confirmed active-alarm, on-battery, warning, blackout-counter and battery-discharge-counter triggers with automatic recovery. The active alarm lasted 30 seconds.
+- `upsAlarmsPresent` and normal empty `upsAlarmTable` behavior are validated. The 30-second real alarm was shorter than the current 1-minute LLD cadence, so individual alarm-row capture is not claimed; candidate 1.5.3 reduces that discovery cadence to 30 seconds.
+- `UPS: Battery test result` is collected and mapped as `Passed`; no state transition has yet been observed in retained history, so a transition remains pending natural observation.
+- A real management-card restart occurred previously and only restarted the management card, but the Zabbix uptime-reset trigger was not retained as direct evidence; the restart is not repeated solely for validation.
 
 ## Release decision
 
@@ -74,4 +86,4 @@ When every post-release field checkbox above is complete:
 
 ## Later release context
 
-This document remains the field-validation record for monitoring release 1.5.0. The current repository candidate is **1.5.2** and the latest stable release is **1.5.2**; release 1.5.2 changes licensing/attribution and metadata without changing the monitoring semantics validated here.
+This document remains the field-validation record for monitoring release 1.5.0. The current repository candidate is **1.5.3** and the latest stable release is **1.5.3**. Candidate 1.5.3 incorporates field-validation evidence and reduces active-alarm LLD cadence from 1m to 30s; it does not introduce write/control behavior.

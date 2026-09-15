@@ -78,13 +78,16 @@ zabbix_export:
       Version 1.5.2 aligns repository and template licensing/attribution with the original template author''s GPLv3 authorization. Monitoring items, OIDs, triggers and read-only behavior are unchanged from 1.5.1.
 
 
+      Version 1.5.3 reduces RFC1628 active-alarm discovery from 1 minute to 30 seconds after field validation showed that a real 30-second UPS alarm can occur entirely between 1-minute discovery cycles. Aggregate alarm/status polling remains unchanged.
+
+
       Field homologation note: the tested ITA-20kVA management agent returns noSuchObject for RFC1628 upsBatteryCurrent and upsBatteryTemperature. These optional scalars are retained disabled by default and do not drive production dashboards or triggers.
 
 
       Export target: Zabbix 7.0.'
     vendor:
       name: Net Tech
-      version: 1.5-2
+      version: 1.5-3
     groups:
     - name: Templates/Power
     items:
@@ -2169,7 +2172,7 @@ zabbix_export:
       type: SNMP_AGENT
       snmp_oid: discovery[{#UPSALARMDESCR},1.3.6.1.2.1.33.1.6.2.1.2]
       key: ups.alarm.discovery
-      delay: 1m
+      delay: 30s
       lifetime: 1d
       enabled_lifetime_type: DISABLE_AFTER
       enabled_lifetime: 1h

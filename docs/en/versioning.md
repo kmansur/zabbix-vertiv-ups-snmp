@@ -7,13 +7,13 @@ This project uses **Semantic Versioning** (`MAJOR.MINOR.PATCH`).
 Current repository version:
 
 ```text
-1.5.1
+1.5.3
 ```
 
 Latest stable release:
 
 ```text
-1.5.1
+1.5.3
 ```
 
 `VERSION` is the source of truth for the current repository version/candidate. `STABLE_VERSION` is the source of truth for the latest tagged stable release.
@@ -22,7 +22,7 @@ Latest stable release:
 
 `main` is the active development branch. Production users should consume tagged GitHub Releases. It is valid for `VERSION` on `main` to become newer than `STABLE_VERSION` when a new candidate is under development.
 
-Candidate `1.5.1` is a backward-compatible tooling/documentation patch that adds the optional global-dashboard generator. It does not change the 1.5.0 template monitoring semantics, item keys, macros, OIDs or triggers.
+Candidate `1.5.3` is a backward-compatible tooling/documentation patch that adds the optional global-dashboard generator. It does not change the 1.5.0 template monitoring semantics, item keys, macros, OIDs or triggers.
 
 During a development candidate whose changes are outside the template export, the template may legitimately retain the latest stable `vendor.version`. The template validator therefore accepts both the current candidate vendor version and the latest stable vendor version **only while `VERSION` and `STABLE_VERSION` differ**. Once `STABLE_VERSION` is promoted to the candidate, the validator accepts only the candidate vendor version. This prevents publishing a tagged release with stale template metadata when the promoted release requires a template-version bump.
 
@@ -31,8 +31,8 @@ A candidate becomes stable after the documented release gate is accepted by the 
 Current state:
 
 ```text
-VERSION:        1.5.1
-STABLE_VERSION: 1.5.1
+VERSION:        1.5.3
+STABLE_VERSION: 1.5.3
 ```
 
 ## Rules
@@ -41,7 +41,7 @@ STABLE_VERSION: 1.5.1
 - **MINOR** — new backward-compatible metrics, triggers, graphs, device compatibility or template monitoring features;
 - **MAJOR** — incompatible changes to item keys, macro names, template identity, required setup or monitoring behavior.
 
-The maintainer selected `1.5.1` for the global-dashboard generator because the feature is external tooling derived from the existing native dashboard and does not change the imported monitoring template behavior.
+The maintainer selected `1.5.3` for the global-dashboard generator because the feature is external tooling derived from the existing native dashboard and does not change the imported monitoring template behavior.
 
 ## Release consistency
 
@@ -56,7 +56,7 @@ Git tag: vX.Y.Z
 GitHub Release: vX.Y.Z
 ```
 
-Release `1.5.1` is promoted with `vendor.version: 1.5-1` in both Zabbix exports. The monitoring semantics remain unchanged from 1.5.0; the metadata bump keeps the tagged release internally consistent.
+Release `1.5.3` is promoted with `vendor.version: 1.5-1` in both Zabbix exports. The monitoring semantics remain unchanged from 1.5.0; the metadata bump keeps the tagged release internally consistent.
 
 The release workflow validates the tag against both version markers, validates the template/documentation/production rules, runs tests and performs the Zabbix 7.0 upgrade validation before publishing assets.
 

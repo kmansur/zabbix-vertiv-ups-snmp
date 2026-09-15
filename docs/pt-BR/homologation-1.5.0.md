@@ -50,15 +50,27 @@ Números de série e credenciais são intencionalmente omitidos.
 
 Os checks abaixo exigem acesso controlado ao ambiente real de monitoramento. Eles **não são bloqueadores da release de software**, mas continuam obrigatórios antes de descrever essa combinação exata de hardware como totalmente homologada em campo:
 
-- [ ] Confirmar que `ups.snmp.uptime` atualiza a cada minuto no host de produção/homologação.
-- [ ] Em janela controlada, interromper o acesso SNMP tempo suficiente para validar o problema `nodata()` após cinco minutos e a recuperação automática.
+- [x] Confirmar que `ups.snmp.uptime` atualiza a cada minuto no host de produção/homologação.
+- [x] Em janela controlada, interromper o acesso SNMP tempo suficiente para validar o problema `nodata()` após cinco minutos e a recuperação automática.
 - [ ] Confirmar o evento informativo de reset do uptime do agente com um restart conhecido da placa/agente, ou documentar método alternativo aceito de verificação.
 - [ ] Gerar ou aguardar um alarme real seguro do nobreak e confirmar que `upsAlarmTable` cria as linhas esperadas de descrição/tempo e as remove após a recuperação.
 - [ ] Observar uma transição segura de resultado de teste diagnóstico/bateria e confirmar os itens/triggers somente leitura. O próprio template não deve iniciar o teste.
-- [ ] Revisar as três páginas do dashboard em janela normal e em pelo menos uma janela representativa de incidente/evento.
-- [ ] Registrar a versão/nível de segurança SNMP utilizado no ambiente de referência.
-- [ ] Confirmar que nenhum item inesperadamente unsupported permanece habilitado por padrão nessa combinação exata de placa/firmware.
+- [x] Revisar as três páginas do dashboard em janela normal e em pelo menos uma janela representativa de incidente/evento.
+- [x] Registrar a versão/nível de segurança SNMP utilizado no ambiente de referência.
+- [x] Confirmar que nenhum item inesperadamente unsupported permanece habilitado por padrão nessa combinação exata de placa/firmware.
 - [ ] Registrar aprovação final do operador e data da homologação em campo.
+
+## Evidência de validação em campo coletada em 14/09/2026
+
+- `ups.snmp.uptime` foi observado atualizando no intervalo configurado de 1 minuto.
+- Uma interrupção controlada de UDP/161 no lado do monitoramento gerou o evento HIGH esperado `UPS SNMP data unavailable` após cinco minutos e recuperou automaticamente após a restauração do SNMP.
+- O filtro `Not supported` do Zabbix não retornou nenhum item padrão/habilitado no host de referência.
+- O ambiente de referência usa SNMPv2c em UDP/161 monitorado diretamente pelo Zabbix Server; o segredo da community é intencionalmente omitido deste registro.
+- Os dashboards Overview, Electrical e Battery & Environment renderizaram corretamente em operação normal; as lacunas no histórico correspondem à interrupção SNMP intencional.
+- Eventos reais de 12/09/2026 confirmaram triggers de alarme ativo, operação em bateria, warning, contador de blackout e contador de descarga da bateria com recuperação automática. O alarme ativo durou 30 segundos.
+- `upsAlarmsPresent` e o comportamento normal de `upsAlarmTable` vazia estão validados. Como o alarme real de 30 segundos foi menor que a cadência atual de 1 minuto da LLD, não é afirmada a captura individual da linha; a candidata 1.5.3 reduz a descoberta para 30 segundos.
+- `UPS: Battery test result` é coletado e mapeado como `Passed`; nenhuma transição de estado foi observada no histórico retido, portanto a transição permanece pendente de observação natural.
+- Um restart real da placa de gerenciamento ocorreu anteriormente e reiniciou somente a placa, mas o trigger de reset de uptime do Zabbix não ficou retido como evidência direta; o restart não será repetido apenas para validação.
 
 ## Decisão de release
 
@@ -74,4 +86,4 @@ Quando todos os checks de campo pós-release acima forem concluídos:
 
 ## Contexto das releases posteriores
 
-Este documento permanece como registro de validação em campo da release de monitoramento 1.5.0. A candidata atual do repositório é **1.5.2** e a última release estável é **1.5.2**; a release 1.5.2 altera licenciamento/atribuição e metadados sem modificar a semântica de monitoramento validada aqui.
+Este documento permanece como registro de validação em campo da release de monitoramento 1.5.0. A candidata atual do repositório é **1.5.3** e a última release estável é **1.5.3**. A candidata 1.5.3 incorpora evidência de validação em campo e reduz a cadência da LLD de alarmes ativos de 1m para 30s, sem introduzir operações de escrita/controle.
