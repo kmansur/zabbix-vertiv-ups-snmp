@@ -1,0 +1,38 @@
+name: Promote v1.5.3 documentation
+on:
+  push:
+    paths:
+      - .github/workflows/promote-1.5.3-docs.yml
+permissions:
+  contents: write
+jobs:
+  promote:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: maintenance/1.5.3-field-validation
+      - shell: python
+        run: |
+          from pathlib import Path
+          files=['README.md','README.pt-BR.md','docs/en/README.md','docs/pt-BR/README.md','docs/en/versioning.md','docs/pt-BR/versioning.md','docs/en/project-status.md','docs/pt-BR/project-status.md','docs/en/homologation-1.5.0.md','docs/pt-BR/homologation-1.5.0.md']
+          for f in files:
+              p=Path(f); s=p.read_text()
+              s=s.replace('STABLE_VERSION` remains `1.5.2` until promotion','STABLE_VERSION` is `1.5.3` for the promoted stable release')
+              s=s.replace('`STABLE_VERSION` permanece `1.5.2` até a promoção','`STABLE_VERSION` é `1.5.3` para a release estável promovida')
+              s=s.replace('Latest stable release: **1.5.2**','Latest stable release: **1.5.3**')
+              s=s.replace('Última release estável: **1.5.2**','Última release estável: **1.5.3**')
+              s=s.replace('Última versão estável: **1.5.2**','Última versão estável: **1.5.3**')
+              s=s.replace('latest stable release remains **1.5.2** until promotion','latest stable release is **1.5.3**')
+              s=s.replace('a última release estável permanece **1.5.2** até a promoção','a última release estável é **1.5.3**')
+              s=s.replace('STABLE_VERSION: 1.5.2','STABLE_VERSION: 1.5.3')
+              s=s.replace('latest stable release remains **1.5.2**','latest stable release is **1.5.3**')
+              s=s.replace('última release estável permanece **1.5.2**','última release estável é **1.5.3**')
+              p.write_text(s)
+      - run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add README.md README.pt-BR.md docs/en docs/pt-BR
+          git commit -m "docs: promote v1.5.3 as stable release"
+          git push origin HEAD:maintenance/1.5.3-field-validation
